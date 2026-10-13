@@ -22,22 +22,21 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 ## [-] Iteration 1: Ingest Raw Combine & Physics Metric Engineering *(Phase 2)*  ← CURRENT
 
 ### 1.1 Environment
-- [x] Create `.venv` with `uv` (Python 3.12); deps declared in `pyproject.toml` (`polars pandas pyarrow numpy scipy scikit-learn lifelines matplotlib seaborn plotly nflreadpy pyyaml`; dev: `jupyter pytest`)
+- [x] Create `.venv` with `uv` (Python 3.12); deps declared in `pyproject.toml` (`polars pandas pyarrow numpy scipy scikit-learn lifelines matplotlib seaborn plotly pyyaml`; dev: `jupyter pytest`)
 - [x] Freeze via `uv.lock` and commit
 - [x] Initial commit of the scaffold
 
 ### 1.2 Data acquisition & inventory
 - [ ] Download competition data from Kaggle into `data/raw/combine_tracking/` and `data/raw/ngs/`
-- [x] Pull historical Combine results (`nflreadpy` combine loader) into `data/raw/combine/`
 - [ ] Write `notebooks/00_data_inventory.ipynb`: row counts per Combine class, drill coverage %, which drills have 10 Hz tracking, NGS season overlap
 - [ ] Document the schema of every raw file in `config/data_dictionary.md`
 
 ### 1.3 Ingestion & unit conversion (`src/eeg/ingest/`)
-- [x] `load_combine.py`: one row per prospect; columns `player_id, name, combine_year, pos, pos_group, ht_in, wt_lb, arm_in, forty, vertical_in, broad_in, bench_reps, cone, shuttle`
-- [x] Map raw positions → 5 target groups (WR, TE, DB, OL, DL); drop everyone else (EDGE → DL; see HANDOFF)
+- [ ] `load_combine.py`: one row per prospect; columns `player_id, name, combine_year, pos, pos_group, ht_in, wt_lb, arm_in, forty, vertical_in, broad_in, bench_reps, cone, shuttle`
+- [ ] Map raw positions → 5 target groups (WR, TE, DB, OL, DL); drop everyone else
 - [x] `units.py`: `in_to_m`, `lb_to_kg`, `yd_to_m`, plus constants `G = 9.80665`, `BAR_KG = 102.058` (225 lb)
-- [x] Parse height strings (`"6-2"` → 74 in); coerce DNP / blanks to null with a `*_missing` flag
-- [x] Write `data/interim/combine_si.parquet`
+- [ ] Parse height strings (`"6-2"` → 74 in); coerce DNP / blanks to null with a `*_missing` flag
+- [ ] Write `data/interim/combine_si.parquet`
 
 ### 1.4 Physics: Joule formulas per drill (`src/eeg/physics/`)
 - [ ] **Vertical jump** (`vertical.py`)

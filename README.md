@@ -43,7 +43,6 @@ The deliverable is a scouting signal that doesn't depend on positions. It measur
 | Layer | Primary (Python) | Alternative (R) |
 |---|---|---|
 | Data wrangling | **Polars** (large tracking frames), Pandas (interop) | dplyr, data.table |
-| Football data | `nflreadpy` / `nfl_data_py` (combine, draft, snaps) | `nflreadr`, `nflverse` |
 | Physics / numerics | NumPy, SciPy (`curve_fit` for sprint profiles) | base R, `minpack.lm` |
 | Clustering | **scikit-learn** (`KMeans`, `GaussianMixture`, `StandardScaler`, silhouette / BIC) | **tidymodels**, `tidyclust`, `mclust` |
 | Survival analysis | **lifelines** (`CoxPHFitter`, `KaplanMeierFitter`) | `survival`, `survminer` |
