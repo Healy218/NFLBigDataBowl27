@@ -1,0 +1,157 @@
+# Physics constants & modelling assumptions for drill -> Joule reconstruction.
+#
+# Every entry is a parameter block:
+#   value: default used in the main pipeline
+#   low / high: bounds for the sensitivity sweep (omit both => fixed, not swept)
+#   units, note: provenance and caveats
+#
+# Definitional constants (unit conversions, standard gravity G = 9.80665,
+# bar mass 225 lb = 102.058 kg) live in src/eeg/ingest/units.py, not here.
+# They are exact, and a uniform scale on every prospect cannot change rankings.
+#
+# Rule: if prospect rankings flip (Spearman < pipeline.spearman_min) when one
+# parameter moves within its bounds, that parameter needs better grounding
+# before Phase 3. See HANDOFF.md "Active Hurdles & Variables".
+
+vertical:
+  # Sayers et al. (1999): P_peak [W] = a * h[cm] + b * m[kg] + c
+  # Peak power channel only; never summed with Joules.
+  sayers_a:
+    value: 60.7
+    units: W/cm
+    note: Sayers et al. 1999, published coefficient
+  sayers_b:
+    value: 45.3
+    units: W/kg
+    note: Sayers et al. 1999, published coefficient
+  sayers_c:
+    value: -2055.0
+    units: W
+    note: Sayers et al. 1999, published intercept
+  sayers_out_of_sample_groups:
+    value: [OL, DL]
+    note: >
+      Sayers was fit on a general athletic sample; 140-160 kg linemen are
+      extrapolation. Rows in these groups get sayers_extrapolated = True.
+
+broad:
+  theta_deg:
+    value: 45.0
+    low: 30.0
+    high: 45.0
+    units: deg
+    note: >
+      Takeoff angle. 45 deg minimises required v0, so the default is a LOWER
+      bound on takeoff KE. Measured standing long-jump angles are ~30-40 deg.
+      At 30 deg, E is ~15% higher (sin 2θ = 0.866).
+
+sprint:
+  distance_yd:
+    value: 40.0
+    units: yd
+    note: Combine 40-yard dash; electronic timing starts at first movement
+  fit_strategy:
+    value: [tracking, splits, tau_fallback]
+    note: >
+      Order of preference for identifying (v_max, tau) in
+      v(t) = v_max (1 - exp(-t/tau)). The 40 time alone gives one equation
+      for two unknowns. Choice depends on the data inventory (notebook 00).
+  tau_fallback_s:
+    value: 1.2
+    low: 0.9
+    high: 1.5
+    units: s
+    note: >
+      PLACEHOLDER. Used only if neither tracking nor splits exist. Replace with
+      a cohort regression of tau on mass once tracking-fit prospects exist.
+  air_density:
+    value: 1.18
+    low: 1.15
+    high: 1.20
+    units: kg/m^3
+    note: >
+      Lucas Oil Stadium, Indianapolis, indoors: ~220 m elevation, ~20 C
+      (ideal gas gives ~1.17-1.18). Bounds cover 18-26 C and pressure swings.
+  drag_coefficient:
+    value: 0.9
+    low: 0.8
+    high: 1.0
+    units: dimensionless
+    note: Samozino et al. 2016 sprint-profiling convention
+  frontal_area_bsa_factor:
+    value: 0.266
+    low: 0.24
+    high: 0.29
+    units: dimensionless
+    note: >
+      A = factor * BSA, with Du Bois BSA = 0.2025 h^0.725 m^0.425 (h in m,
+      m in kg). Expect A ~0.54 m^2 (85 kg DB) to ~0.72 m^2 (140 kg OL).
+
+cod:
+  # Change-of-direction drills have only a total time: no plant-point speeds,
+  # no segment splits. This is the weakest reconstruction in the pipeline;
+  # top priority for replacement with tracking-measured speeds.
+  peak_speed_factor:
+    value: 1.75
+    low: 1.5
+    high: 2.0
+    units: dimensionless
+    note: >
+      Segment peak speed v_i = k * (segment distance / segment time).
+      k = 2.0 is a perfect triangular accelerate/brake profile; 1.5 allows a
+      cruise phase. Default is the midpoint pending tracking data.
+  segment_time_split:
+    value: proportional
+    note: Total time split across segments in proportion to segment length
+  count_braking_work:
+    value: absolute
+    note: Eccentric (braking) work counted as |W|; real muscular effort
+  shuttle_segments_yd:
+    value: [5.0, 10.0, 5.0]
+    units: yd
+    note: 5-10-5 pro agility; start straddling the middle line, two 180 deg plants
+  cone_segments_yd:
+    value: [5.0, 5.0, 10.0, 10.0]
+    units: yd
+    note: >
+      3-cone approximation: out 5 / back 5 (two hard plants), then two
+      10-yd legs around cones 2 and 3 treated as straight segments. Curved
+      turns are not modelled; revisit once tracking traces are available.
+
+bench:
+  rom_arm_fraction:
+    value: 0.50
+    low: 0.40
+    high: 0.55
+    units: dimensionless
+    note: >
+      ROM = alpha * Combine arm length (shoulder to fingertip, ~0.81-0.91 m),
+      giving bar travel ~0.35-0.50 m. Concentric work only. Calibrate against
+      published bench ROM data if possible.
+  arm_imputation:
+    value: height_regression
+    note: Missing arm length imputed from height on the cohort; arm_imputed = True
+
+mass:
+  lab_mass_source:
+    value: combine_weigh_in
+    note: >
+      All lab Joules use Combine weigh-in mass. Phase 4 field energy uses
+      in-season NGS mass so eta does not drift with weight change.
+
+pipeline:
+  composite_min_drills:
+    value: 3
+    units: drills
+    note: Need >= 3 of 6 drill channels for a composite; record n_drills
+  zscore_within:
+    value: combine_year
+    note: Cohort z-scores so timing/surface drift across years is not signal
+  outlier_sd:
+    value: 4.0
+    units: SD
+    note: Sanity-pass flag threshold
+  spearman_min:
+    value: 0.9
+    units: dimensionless
+    note: Minimum rank stability across sensitivity bounds

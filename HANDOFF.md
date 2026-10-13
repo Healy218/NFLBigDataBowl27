@@ -41,7 +41,9 @@ Work in this order. Each step unblocks the next.
    - [x] `pyproject.toml` + `uv.lock` (Python 3.12 pinned in `.python-version`); `uv sync` builds `.venv` and installs `eeg` in editable mode
    - [x] Dependencies frozen in `uv.lock`; first commit of the scaffold made
 2. **Constants and assumptions file:** `config/physics.yaml`
-   - [ ] Put every tunable from *Active Hurdles & Variables* below in one place (g, ρ, C_d, θ, α, shuttle peak-speed factor), each with a low/high bound for the sensitivity sweep
+   - [x] Put every tunable from *Active Hurdles & Variables* below in one place (ρ, C_d, area factor, θ, α, shuttle peak-speed factor, τ fallback), each with a low/high bound for the sensitivity sweep
+   - [x] Loader `src/eeg/config.py` (`load()`, `sweep_params()`, `with_override()`) + `tests/test_config.py`
+   - g stays in `units.py` as the exact standard value: a uniform scale on every prospect can't change rankings, so it isn't swept
 3. **Units module:** `src/eeg/ingest/units.py` + `tests/test_units.py`
    - [ ] `in_to_m = 0.0254`, `lb_to_kg = 0.45359237`, `yd_to_m = 0.9144`, `G = 9.80665`, `BAR_KG = 225 × 0.45359237 = 102.058`
 4. **Combine loader:** `src/eeg/ingest/load_combine.py`
