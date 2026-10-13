@@ -45,14 +45,21 @@ Work in this order. Each step unblocks the next.
    - [x] Loader `src/eeg/config.py` (`load()`, `sweep_params()`, `with_override()`) + `tests/test_config.py`
    - g stays in `units.py` as the exact standard value: a uniform scale on every prospect can't change rankings, so it isn't swept
 3. **Units module:** `src/eeg/ingest/units.py` + `tests/test_units.py`
-   - [ ] `in_to_m = 0.0254`, `lb_to_kg = 0.45359237`, `yd_to_m = 0.9144`, `G = 9.80665`, `BAR_KG = 225 × 0.45359237 = 102.058`
-4. **Combine loader:** `src/eeg/ingest/load_combine.py`
-   - [ ] Pull Combine data via `nflreadpy`; cache raw to `data/raw/combine/`
-   - [ ] Parse height (`"6-2"` → 74 in), map positions → 5 groups, convert to SI, add `*_missing` flags
-   - [ ] Write `data/interim/combine_si.parquet`
+   - [x] `in_to_m = 0.0254`, `lb_to_kg = 0.45359237`, `yd_to_m = 0.9144`, `G = 9.80665`, `BAR_KG = 225 × 0.45359237 = 102.058`
+4. **Combine loader:** `src/eeg/ingest/load_combine.py` (`uv run python -m eeg.ingest.load_combine [--refresh]`)
+   - [x] Pull Combine data via `nflreadpy`; cache raw to `data/raw/combine/combine_nflverse.parquet` (8,968 rows, 2000–2026)
+   - [x] Parse height (`"6-2"` → 74 in), map positions → 5 groups, convert to SI, add `*_missing` flags
+   - [x] Write `data/interim/combine_si.parquet`: **6,315 prospects** (DB 1620, OL 1479, DL 1458, WR 1246, TE 512); 4,896 have ≥ 3 drills
+   - Source findings (also in the module docstring):
+     - **No arm length in nflverse**; `arm_in` is all null. See Hurdle 5.
+     - `pfr_id`/`cfb_id` are sometimes shared by *different people*; 23 / 4 in-scope rows flagged `*_id_conflict`. Don't join on these without checking.
+     - **2021 = pro-day numbers** (no in-person Combine); flagged `test_setting = "pro_day"`.
+     - Position labels drift (DE → EDGE ~2018; generic OL/DL/DB 2019–21). **EDGE is mapped to DL**, so post-2018 3-4 rush OLBs labelled EDGE are in scope while pre-2018 OLBs aren't.
+     - Drill coverage falls sharply from 2022 (bench 14–23%, cone/shuttle 16–31%).
+     - `player_id` = `{season}_{name}_{school}_{pos}` slug (unique across the source).
 5. **Data inventory notebook:** `notebooks/00_data_inventory.ipynb`
-   - [ ] Drill coverage by year and group; check whether 40-yd **split times** exist (this decides the sprint-fit strategy, see Hurdle 3)
-   - [ ] If the Kaggle competition data is out: which drills have 10 Hz tracking, and the ID keys for joining to NGS
+   - [ ] Drill coverage by year and group; check whether 40-yd **split times** exist (this decides the sprint-fit strategy, see Hurdle 3). nflverse has **no splits**, only final 40 times
+   - [ ] Kaggle competition data (not downloaded yet; unzip to `data/raw/kaggle/` first): which drills have 10 Hz tracking, whether it has arm length / splits, and the ID keys for joining to NGS
 6. **Physics modules, simplest first:** `src/eeg/physics/`
    - [ ] `vertical.py` (mgh + Sayers) → `broad.py` → `bench.py` → `sprint.py` → `cod.py`
    - [ ] Write `tests/test_physics.py` alongside them, against these hand checks:
@@ -104,6 +111,7 @@ Every assumption below goes in `config/physics.yaml`, and each must survive the 
 - **ROM = α × arm length.** Combine arm length runs shoulder to fingertip (~32–36 in, 0.81–0.91 m). Bar travel is roughly 0.35–0.50 m.
 - Default **α = 0.50**, sweep **α ∈ [0.40, 0.55]**. Calibrate against published bench ROM data if possible.
 - **Missing arm length:** impute from height (cohort regression) and set `arm_imputed = True`.
+- **nflverse has no arm length at all**, so every prospect is currently "missing". A height regression needs a cohort *with* arm length to fit on. Check the Kaggle data first; otherwise find another source (e.g. MockDraftable) or fall back to ROM ∝ height and say so.
 - Long arms mean **more work per rep and fewer reps**. Joules are designed to correct exactly this rep-count bias, so it's a good early test that the physics adds signal.
 
 ### 6. Cross-cutting

@@ -28,16 +28,16 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 
 ### 1.2 Data acquisition & inventory
 - [ ] Download competition data from Kaggle into `data/raw/combine_tracking/` and `data/raw/ngs/`
-- [ ] Pull historical Combine results (`nflreadpy` combine loader) into `data/raw/combine/`
+- [x] Pull historical Combine results (`nflreadpy` combine loader) into `data/raw/combine/`
 - [ ] Write `notebooks/00_data_inventory.ipynb`: row counts per Combine class, drill coverage %, which drills have 10 Hz tracking, NGS season overlap
 - [ ] Document the schema of every raw file in `config/data_dictionary.md`
 
 ### 1.3 Ingestion & unit conversion (`src/eeg/ingest/`)
-- [ ] `load_combine.py`: one row per prospect; columns `player_id, name, combine_year, pos, pos_group, ht_in, wt_lb, arm_in, forty, vertical_in, broad_in, bench_reps, cone, shuttle`
-- [ ] Map raw positions → 5 target groups (WR, TE, DB, OL, DL); drop everyone else
-- [ ] `units.py`: `in_to_m`, `lb_to_kg`, `yd_to_m`, plus constants `G = 9.80665`, `BAR_KG = 102.058` (225 lb)
-- [ ] Parse height strings (`"6-2"` → 74 in); coerce DNP / blanks to null with a `*_missing` flag
-- [ ] Write `data/interim/combine_si.parquet`
+- [x] `load_combine.py`: one row per prospect; columns `player_id, name, combine_year, pos, pos_group, ht_in, wt_lb, arm_in, forty, vertical_in, broad_in, bench_reps, cone, shuttle`
+- [x] Map raw positions → 5 target groups (WR, TE, DB, OL, DL); drop everyone else (EDGE → DL; see HANDOFF)
+- [x] `units.py`: `in_to_m`, `lb_to_kg`, `yd_to_m`, plus constants `G = 9.80665`, `BAR_KG = 102.058` (225 lb)
+- [x] Parse height strings (`"6-2"` → 74 in); coerce DNP / blanks to null with a `*_missing` flag
+- [x] Write `data/interim/combine_si.parquet`
 
 ### 1.4 Physics: Joule formulas per drill (`src/eeg/physics/`)
 - [ ] **Vertical jump** (`vertical.py`)
@@ -68,7 +68,7 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 - [ ] Write `data/processed/tee.parquet`
 
 ### 1.6 Validation
-- [ ] `tests/test_units.py`: conversion round-trips
+- [x] `tests/test_units.py`: conversion round-trips
 - [ ] `tests/test_physics.py`: hand-calculated cases (100 kg, 1.0 m vertical → 980.7 J; 45° broad of 3.0 m at 100 kg → 1471 J)
 - [ ] Sanity check: plot `E_40` vs mass and `TEE_Relative` composite by pos_group; flag values more than 4 SD out
 - [ ] Sensitivity sweep: re-run with α, θ, $C_d A$ at their low/high bounds; check that prospect rankings are stable (Spearman ρ ≥ 0.9)
