@@ -55,9 +55,10 @@ Work in this order. Each step unblocks the next.
 4. ~~Combine loader~~ ✅ `uv run python -m eeg.ingest.load_combine`
 5. ~~Data inventory notebook + data dictionary~~ ✅
 6. **Physics modules, simplest first:** `src/eeg/physics/`
-   - [ ] `vertical.py` (mgh + Sayers) → `broad.py` → `bench.py` (measured arm length) → `sprint.py` (fit to tracking) → `cod.py` (tracking where available)
+   - [x] `vertical.py` (mgh + Sayers), `broad.py`, `bench.py` (measured arm length). Pure arithmetic: work on floats, numpy, polars Series and `pl.col` expressions; assumptions (θ, α, Sayers coefficients) passed in explicitly from config
+   - [ ] `sprint.py` (fit to tracking) → `cod.py` (tracking where available)
    - [ ] A tracking loader for the timed drills (`src/eeg/ingest/load_tracking.py`): PLAYER rows only, rep key (`nfl_id`, `event_id`, `attempt`), yards → m
-   - [ ] Write `tests/test_physics.py` alongside them, against these hand checks:
+   - [x] `tests/test_physics.py` (13 tests) passes these hand checks; extend it for sprint and COD:
      - 100 kg, 1.0 m vertical → **980.7 J**
      - 100 kg, 3.0 m broad at θ = 45° → **1471.0 J**
      - 25 reps, ROM 0.40 m → 25 × 102.058 × 9.80665 × 0.40 = **10,009 J**
@@ -105,7 +106,7 @@ Every assumption below goes in `config/physics.yaml`, and each must survive the 
 - $W = n_{reps} \cdot 102.058\,\text{kg} \cdot 9.80665 \cdot \text{ROM}$. Count concentric work only.
 - **ROM = α × arm length.** Measured arm length is **complete for all 510** (28.5–36.9 in, 0.72–0.94 m), so no imputation.
 - Default **α = 0.50**, sweep **α ∈ [0.40, 0.55]**.
-- Long arms mean **more work per rep and fewer reps**. Joules are designed to correct exactly this rep-count bias, so it's a good early test that the physics adds signal.
+- Long arms mean **more work per rep and fewer reps**. **Checked:** within each group, r(arm, reps) = −0.06 to −0.30, so the effect is real. But arm length varies only 3–4% (CV) against 15–22% for reps, so bench Joules rank almost identically to raw reps (Spearman 0.97–0.99). The correction is real but small; don't sell bench Joules as a big re-ranking.
 - Only 192 prospects (38%) benched.
 
 ### 6. Cross-cutting

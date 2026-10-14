@@ -40,12 +40,12 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 - [ ] `load_tracking.py`: timed-drill reps (40, shuttle, 3-cone), PLAYER rows, yards → m, rep segmentation
 
 ### 1.4 Physics: Joule formulas per drill (`src/eeg/physics/`)
-- [ ] **Vertical jump** (`vertical.py`)
-  - [ ] Potential energy: $E_{vert} = m g h$, with h in metres
-  - [ ] Sayers peak power: $P = 60.7\,h_{cm} + 45.3\,m - 2055$ (W). Store as a separate power channel, **not** summed with Joules
-- [ ] **Broad jump** (`broad.py`)
-  - [ ] Takeoff velocity: $v_0 = \sqrt{R g / \sin 2\theta}$ with θ configurable (default 45°)
-  - [ ] Kinetic energy: $E_{broad} = \tfrac12 m v_0^2$
+- [x] **Vertical jump** (`vertical.py`)
+  - [x] Potential energy: $E_{vert} = m g h$, with h in metres
+  - [x] Sayers peak power: $P = 60.7\,h_{cm} + 45.3\,m - 2055$ (W). Store as a separate power channel, **not** summed with Joules
+- [x] **Broad jump** (`broad.py`)
+  - [x] Takeoff velocity: $v_0 = \sqrt{R g / \sin 2\theta}$ with θ configurable (default 45°)
+  - [x] Kinetic energy: $E_{broad} = \tfrac12 m v_0^2$
 - [ ] **40-yard dash** (`sprint.py`)
   - [ ] Fit $v(t) = v_{max}(1 - e^{-(t-t_0)/\tau})$ to the 10 Hz tracking trace (`scipy.optimize.curve_fit`), $t_0$ free
   - [ ] Fallback (6 prospects with no trace): official 10-yd split + 40
@@ -56,8 +56,8 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
   - [ ] Segment model: 5 / 10 / 5 yd (shuttle); estimate segment entry/exit speeds
   - [ ] Change-of-direction work: $W_{cod} = \sum_i (\tfrac12 m v_{in,i}^2 + \tfrac12 m v_{out,i}^2)$, braking (negative) work counted as absolute
   - [ ] Use tracking-measured speeds at each plant when available
-- [ ] **Bench press** (`bench.py`)
-  - [ ] $W_{bench} = n_{reps} \cdot m_{bar}\, g \cdot \text{ROM}$, with $\text{ROM} = \alpha \cdot \text{arm length}$ (α from config)
+- [x] **Bench press** (`bench.py`)
+  - [x] $W_{bench} = n_{reps} \cdot m_{bar}\, g \cdot \text{ROM}$, with $\text{ROM} = \alpha \cdot \text{arm length}$ (α from config)
 
 ### 1.5 Mass normalization & TEE assembly
 - [ ] `tee.py`: build `TEE_Absolute` vector (J) per drill: `E_vert, E_broad, E_40, W_cod_shuttle, W_cod_cone, W_bench`
