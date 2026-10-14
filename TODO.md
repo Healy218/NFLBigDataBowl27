@@ -27,16 +27,17 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 - [x] Initial commit of the scaffold
 
 ### 1.2 Data acquisition & inventory
-- [ ] Download competition data from Kaggle into `data/raw/combine_tracking/` and `data/raw/ngs/`
-- [ ] Write `notebooks/00_data_inventory.ipynb`: row counts per Combine class, drill coverage %, which drills have 10 Hz tracking, NGS season overlap
-- [ ] Document the schema of every raw file in `config/data_dictionary.md`
+- [x] Download competition data from Kaggle into `data/raw/kaggle/nfl-big-data-bowl-2027/`
+- [x] Write `notebooks/00_data_inventory.ipynb`: row counts per Combine class, drill coverage %, which drills have 10 Hz tracking, NGS season overlap
+- [x] Document the schema of every raw file in `config/data_dictionary.md`
 
 ### 1.3 Ingestion & unit conversion (`src/eeg/ingest/`)
-- [ ] `load_combine.py`: one row per prospect; columns `player_id, name, combine_year, pos, pos_group, ht_in, wt_lb, arm_in, forty, vertical_in, broad_in, bench_reps, cone, shuttle`
-- [ ] Map raw positions → 5 target groups (WR, TE, DB, OL, DL); drop everyone else
+- [x] `load_combine.py`: one row per prospect (`player_id` = `nfl_id`); source-unit + SI columns, plus hand, wingspan, 10-yd split, NGS scores
+- [x] Map raw positions → 5 target groups: already given as `combine_position`; loader validates it
 - [x] `units.py`: `in_to_m`, `lb_to_kg`, `yd_to_m`, plus constants `G = 9.80665`, `BAR_KG = 102.058` (225 lb)
-- [ ] Parse height strings (`"6-2"` → 74 in); coerce DNP / blanks to null with a `*_missing` flag
-- [ ] Write `data/interim/combine_si.parquet`
+- [x] `NA` → null with a `*_missing` flag per drill (heights are already numeric inches)
+- [x] Write `data/interim/combine_si.parquet` (510 prospects)
+- [ ] `load_tracking.py`: timed-drill reps (40, shuttle, 3-cone), PLAYER rows, yards → m, rep segmentation
 
 ### 1.4 Physics: Joule formulas per drill (`src/eeg/physics/`)
 - [ ] **Vertical jump** (`vertical.py`)
@@ -46,8 +47,8 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
   - [ ] Takeoff velocity: $v_0 = \sqrt{R g / \sin 2\theta}$ with θ configurable (default 45°)
   - [ ] Kinetic energy: $E_{broad} = \tfrac12 m v_0^2$
 - [ ] **40-yard dash** (`sprint.py`)
-  - [ ] Fit $v(t) = v_{max}(1 - e^{-t/\tau})$ to 10/20/40-yd splits (`scipy.optimize.curve_fit`)
-  - [ ] If 10 Hz tracking exists, fit to the measured velocity trace instead
+  - [ ] Fit $v(t) = v_{max}(1 - e^{-(t-t_0)/\tau})$ to the 10 Hz tracking trace (`scipy.optimize.curve_fit`), $t_0$ free
+  - [ ] Fallback (6 prospects with no trace): official 10-yd split + 40
   - [ ] Kinetic energy at $v_{max}$: $\tfrac12 m v_{max}^2$
   - [ ] Drag work: $W_d = \int_0^{T} \tfrac12 \rho C_d A\, v(t)^3\, dt$; frontal area $A$ from height/mass (see HANDOFF hurdles)
   - [ ] $E_{40} = \tfrac12 m v_{max}^2 + W_d$
@@ -57,7 +58,6 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
   - [ ] Use tracking-measured speeds at each plant when available
 - [ ] **Bench press** (`bench.py`)
   - [ ] $W_{bench} = n_{reps} \cdot m_{bar}\, g \cdot \text{ROM}$, with $\text{ROM} = \alpha \cdot \text{arm length}$ (α from config)
-  - [ ] Impute missing arm length from height (regression on the cohort) and flag it
 
 ### 1.5 Mass normalization & TEE assembly
 - [ ] `tee.py`: build `TEE_Absolute` vector (J) per drill: `E_vert, E_broad, E_40, W_cod_shuttle, W_cod_cone, W_bench`

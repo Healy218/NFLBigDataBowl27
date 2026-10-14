@@ -54,16 +54,17 @@ sprint:
     value: [tracking, splits, tau_fallback]
     note: >
       Order of preference for identifying (v_max, tau) in
-      v(t) = v_max (1 - exp(-t/tau)). The 40 time alone gives one equation
-      for two unknowns. Choice depends on the data inventory (notebook 00).
+      v(t) = v_max (1 - exp(-(t - t0)/tau)). 418 of 424 prospects with an
+      official 40 have a 10 Hz trace; the other 6 use the official 10-yd split.
+      Tracked windows start 0.17-0.29 s before the official clock, so t0 is fit.
   tau_fallback_s:
     value: 1.2
     low: 0.9
     high: 1.5
     units: s
     note: >
-      PLACEHOLDER. Used only if neither tracking nor splits exist. Replace with
-      a cohort regression of tau on mass once tracking-fit prospects exist.
+      PLACEHOLDER. Every prospect with a 40 has tracking or a 10-yd split, so
+      this should go unused. Kept as a last-resort fallback.
   air_density:
     value: 1.18
     low: 1.15
@@ -88,9 +89,9 @@ sprint:
       m in kg). Expect A ~0.54 m^2 (85 kg DB) to ~0.72 m^2 (140 kg OL).
 
 cod:
-  # Change-of-direction drills have only a total time: no plant-point speeds,
-  # no segment splits. This is the weakest reconstruction in the pipeline;
-  # top priority for replacement with tracking-measured speeds.
+  # 170 (shuttle) / 160 (cone) prospects have 10 Hz tracking, so turn speeds
+  # are measured. The k-factor model below is the fallback for the ~40 / ~30
+  # with only an official time.
   peak_speed_factor:
     value: 1.75
     low: 1.5
@@ -128,9 +129,6 @@ bench:
       ROM = alpha * Combine arm length (shoulder to fingertip, ~0.81-0.91 m),
       giving bar travel ~0.35-0.50 m. Concentric work only. Calibrate against
       published bench ROM data if possible.
-  arm_imputation:
-    value: height_regression
-    note: Missing arm length imputed from height on the cohort; arm_imputed = True
 
 mass:
   lab_mass_source:
