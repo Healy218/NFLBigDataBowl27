@@ -56,8 +56,9 @@ Work in this order. Each step unblocks the next.
 5. ~~Data inventory notebook + data dictionary~~ ✅
 6. **Physics modules, simplest first:** `src/eeg/physics/`
    - [x] `vertical.py` (mgh + Sayers), `broad.py`, `bench.py` (measured arm length). Pure arithmetic: work on floats, numpy, polars Series and `pl.col` expressions; assumptions (θ, α, Sayers coefficients) passed in explicitly from config
-   - [ ] `sprint.py` (fit to tracking) → `cod.py` (tracking where available)
-   - [ ] A tracking loader for the timed drills (`src/eeg/ingest/load_tracking.py`): PLAYER rows only, rep key (`nfl_id`, `event_id`, `attempt`), yards → m
+   - [x] `src/eeg/ingest/load_tracking.py` → `data/interim/timed_drills.parquet`: PLAYER frames of 40/shuttle/cone, `rep_id`, `t_s`, SI units (keeps `x_yd` for yard-line geometry; drops `dis`)
+   - [x] `sprint.py` (`uv run python -m eeg.physics.sprint` → `data/interim/forty_fits.parquet`): fits all 793 reps in < 1 s; **417 prospects get E_40**
+   - [ ] `cod.py`: **next**, see Hurdle 4 for what's known about segmentation
    - [x] `tests/test_physics.py` (13 tests) passes these hand checks; extend it for sprint and COD:
      - 100 kg, 1.0 m vertical → **980.7 J**
      - 100 kg, 3.0 m broad at θ = 45° → **1471.0 J**
@@ -86,19 +87,26 @@ Every assumption below goes in `config/physics.yaml`, and each must survive the 
 
 ### 3. 40-yard dash: sprint profile and drag
 - **Model:** $v(t) = v_{max}(1 - e^{-(t-t_0)/\tau})$, so $x(t) = v_{max}\left[(t-t_0) - \tau(1 - e^{-(t-t_0)/\tau})\right]$.
-- **Identifiability: solved.** 418 of 424 prospects with an official 40 have a 10 Hz trace (793 reps), so fit $v_{max}$, τ to the measured speed. The 6 without tracking fall back to the official 10-yd split + 40 (two equations, two unknowns), then τ fallback.
-- **Start time:** the tracked window starts 0.17–0.29 s *before* the official clock, and the lead varies by year. Fit $t_0$ as a free parameter (or anchor on the x = 10 crossing). Never use the first frame as t = 0. The flying 30 (x 20 → 50) can validate the fit against `forty − ten_yd_split`.
-- **Which rep:** the official time is the best attempt. Use the rep with the fastest x = 10 → 50 crossing (decide when writing `sprint.py`).
+- **Done:** `sprint.py` fits $(v_{max}, τ, t_0)$ to each 40 trace (frames up to the x = 50 crossing). Median RMSE 0.18 m/s; v_max ≈ 10.5 (WR) → 8.8 m/s (OL); τ ≈ 1.27 s. Only 1 rep hits a bound.
+- **Modelled 40 vs official:** `t40_model = t_finish − t0` has r = 0.91–0.97 against the official time but runs **0.12–0.23 s long** (per year). The model's motion onset comes before the official clock starts. This doesn't affect v_max or τ, but don't present t40_model as a 40 time.
+- **No split fallback.** The 6 prospects with a 40 but no trace get **no E_40**. Fitting official 10-yd split + 40 is biased against tracking (v_max 0.5–0.8 m/s low, τ r ≈ 0.06–0.26, even with a per-year timing offset). The τ fallback was removed from config.
+- **Rep choice:** reps with RMSE > 0.4 m/s (`sprint.max_fit_rmse_mps`; 13 of 793) are excluded, then each player's fastest `t40_model` rep is used. 1 player loses E_40 this way.
+- **Start time:** the tracked window starts 0.17–0.29 s *before* the official clock, and the lead varies by year, so $t_0$ is a free fit parameter. The flying 30 (x 20 → 50) validates the tracking against `forty − ten_yd_split` (r ≈ 0.98).
 - **Drag:** $F_d = \tfrac12 \rho C_d A v^2$, so $W_d = \int \tfrac12 \rho C_d A\, v^3\, dt$.
   - **ρ ≈ 1.18 kg/m³**: Combine is indoors at Lucas Oil Stadium, Indianapolis (~220 m elevation, ~20 °C).
   - **C_d ≈ 0.9** (Samozino et al., 2016 sprint-profiling convention).
   - **Frontal area:** $A = 0.266 \cdot \text{BSA}$, with Du Bois body surface area $\text{BSA} = 0.2025 \cdot h^{0.725} \cdot m^{0.425}$ (h in m, m in kg). Expect A ≈ 0.54 m² (85 kg DB) to 0.72 m² (140 kg OL).
-  - **Scale check:** at 9.5 m/s, $F_d \approx \tfrac12 (1.18)(0.9)(0.6)(9.5^2) \approx 29$ N. Over 36.6 m, drag work comes to roughly 500–800 J against about 4,000 J of peak KE. It is small but systematic, and it penalizes large frontal areas (OL/DL).
+  - **Scale check:** at 9.5 m/s, $F_d \approx \tfrac12 (1.18)(0.9)(0.6)(9.5^2) \approx 29$ N. **Actual:** W_drag median 832 J (686–1009) against KE median 5,232 J, about 14% of E_40. It is systematic and penalizes large frontal areas (OL/DL). Drag uses the closed-form ∫v³ for the mono-exponential model.
 - Tracking `s` is in **yd/s**; convert to m/s before computing energy.
 
 ### 4. Shuttle (5-10-5) and 3-cone: change-of-direction speeds
 - **Tracking exists for 170 (shuttle) / 160 (cone) prospects**, so plant-point and segment speeds can be measured. But only ~200 prospects have an official time at all.
 - **Segmentation needed first:** the rep windows include pre/post movement (≈ 0.4–0.5 s longer than official, r ≈ 0.2). Detect the start (first movement) and finish of each run before using the trace.
+- **What's known so far** (first attempt, 2026-10-13):
+  - Windows **end at the finish crossing**; some start stationary (s ≈ 0.1) and others already moving (s ≈ 0.7 yd/s).
+  - The **torso (sensor) turns short of the lines**: shuttle legs ≈ 4 / 7.8 / 4 yd instead of 5 / 10 / 5, because the hand touches the line. Use measured path length, not nominal distances.
+  - **Shuttle:** the run passes back through the start line mid-way through the 10-yd leg. The finish is the *final* crossing, not the first + → − crossing (my first detector got this wrong).
+  - **3-cone:** trimmed times line up in 2024 (r = 0.92 vs official) but not in 2023/2025 (sd ≈ 0.9 s), and 26 of 203 reps never cross back over the start line. Check whether some traces are truncated or the course orientation differs by year.
 - For the ~40 / ~30 prospects with an official time but no tracking, fall back to the k-factor placeholder: segment peak speed $v_i \approx k \cdot (\text{segment distance} / \text{segment time})$, **k ∈ [1.5, 2.0]**, time split in proportion to segment length. Flag them, or drop the channel for them if the two methods don't agree.
 - Count braking (eccentric) work as **absolute** work. It is real muscular effort even though it is negative mechanical work.
 

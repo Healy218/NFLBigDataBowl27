@@ -26,7 +26,6 @@ def test_swept_parameters(raw):
     keys = {p.key for p in config.sweep_params(raw)}
     assert keys == {
         "broad.theta_deg",
-        "sprint.tau_fallback_s",
         "sprint.air_density",
         "sprint.drag_coefficient",
         "sprint.frontal_area_bsa_factor",

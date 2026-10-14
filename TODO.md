@@ -37,7 +37,8 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 - [x] `units.py`: `in_to_m`, `lb_to_kg`, `yd_to_m`, plus constants `G = 9.80665`, `BAR_KG = 102.058` (225 lb)
 - [x] `NA` → null with a `*_missing` flag per drill (heights are already numeric inches)
 - [x] Write `data/interim/combine_si.parquet` (510 prospects)
-- [ ] `load_tracking.py`: timed-drill reps (40, shuttle, 3-cone), PLAYER rows, yards → m, rep segmentation
+- [x] `load_tracking.py`: timed-drill reps (40, shuttle, 3-cone), PLAYER rows, yards → m → `timed_drills.parquet`
+- [ ] Shuttle / 3-cone rep segmentation (start/finish detection): in `cod.py`
 
 ### 1.4 Physics: Joule formulas per drill (`src/eeg/physics/`)
 - [x] **Vertical jump** (`vertical.py`)
@@ -46,12 +47,12 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 - [x] **Broad jump** (`broad.py`)
   - [x] Takeoff velocity: $v_0 = \sqrt{R g / \sin 2\theta}$ with θ configurable (default 45°)
   - [x] Kinetic energy: $E_{broad} = \tfrac12 m v_0^2$
-- [ ] **40-yard dash** (`sprint.py`)
-  - [ ] Fit $v(t) = v_{max}(1 - e^{-(t-t_0)/\tau})$ to the 10 Hz tracking trace (`scipy.optimize.curve_fit`), $t_0$ free
-  - [ ] Fallback (6 prospects with no trace): official 10-yd split + 40
-  - [ ] Kinetic energy at $v_{max}$: $\tfrac12 m v_{max}^2$
-  - [ ] Drag work: $W_d = \int_0^{T} \tfrac12 \rho C_d A\, v(t)^3\, dt$; frontal area $A$ from height/mass (see HANDOFF hurdles)
-  - [ ] $E_{40} = \tfrac12 m v_{max}^2 + W_d$
+- [x] **40-yard dash** (`sprint.py`)
+  - [x] Fit $v(t) = v_{max}(1 - e^{-(t-t_0)/\tau})$ to the 10 Hz tracking trace (`scipy.optimize.curve_fit`), $t_0$ free
+  - [x] ~~Fallback via official 10-yd split + 40~~: biased against tracking, not used; 6 prospects get no E_40
+  - [x] Kinetic energy at $v_{max}$: $\tfrac12 m v_{max}^2$
+  - [x] Drag work: $W_d = \int_0^{T} \tfrac12 \rho C_d A\, v(t)^3\, dt$; frontal area $A$ from height/mass (see HANDOFF hurdles)
+  - [x] $E_{40} = \tfrac12 m v_{max}^2 + W_d$
 - [ ] **5-10-5 shuttle & 3-cone** (`cod.py`)
   - [ ] Segment model: 5 / 10 / 5 yd (shuttle); estimate segment entry/exit speeds
   - [ ] Change-of-direction work: $W_{cod} = \sum_i (\tfrac12 m v_{in,i}^2 + \tfrac12 m v_{out,i}^2)$, braking (negative) work counted as absolute

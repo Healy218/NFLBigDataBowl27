@@ -51,20 +51,20 @@ sprint:
     units: yd
     note: Combine 40-yard dash; electronic timing starts at first movement
   fit_strategy:
-    value: [tracking, splits, tau_fallback]
+    value: [tracking]
     note: >
-      Order of preference for identifying (v_max, tau) in
-      v(t) = v_max (1 - exp(-(t - t0)/tau)). 418 of 424 prospects with an
-      official 40 have a 10 Hz trace; the other 6 use the official 10-yd split.
-      Tracked windows start 0.17-0.29 s before the official clock, so t0 is fit.
-  tau_fallback_s:
-    value: 1.2
-    low: 0.9
-    high: 1.5
-    units: s
+      (v_max, tau, t0) in v(t) = v_max (1 - exp(-(t - t0)/tau)) are fit to the
+      10 Hz speed trace; t0 is free because the tracked window starts before
+      the official clock. 418 of 424 prospects with an official 40 have a
+      trace. The other 6 get no E_40: fitting the official 10-yd split + 40
+      instead is biased against tracking (v_max ~0.5-0.8 m/s low, tau r ~0.06-0.26,
+      even after a per-year timing offset), so it is not used as a fallback.
+  max_fit_rmse_mps:
+    value: 0.4
+    units: m/s
     note: >
-      PLACEHOLDER. Every prospect with a 40 has tracking or a 10-yd split, so
-      this should go unused. Kept as a last-resort fallback.
+      Reps whose speed fit RMSE exceeds this are excluded before choosing a
+      player's best rep (13 of 793 reps; median RMSE 0.18 m/s).
   air_density:
     value: 1.18
     low: 1.15
