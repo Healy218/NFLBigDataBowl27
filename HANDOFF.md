@@ -64,7 +64,11 @@ Work in this order. Each step unblocks the next.
      - 100 kg, 1.0 m vertical → **980.7 J**
      - 100 kg, 3.0 m broad at θ = 45° → **1471.0 J**
      - 25 reps, ROM 0.40 m → 25 × 102.058 × 9.80665 × 0.40 = **10,009 J**
-7. **TEE assembly:** `src/eeg/physics/tee.py` → `data/processed/tee.parquet`
+7. ~~**TEE assembly**~~ ✅ `uv run python -m eeg.physics.tee` → `data/processed/tee.parquet` (510 rows; schema in the data dictionary). Takes the rep tables plus a config, so the sweep can rebuild it with `config.with_override`.
+   - Channel coverage: E_vert 438, E_broad 423, **E_40 417**, W_bench 192, **W_cod_shuttle 156, W_cod_cone 156**; **412 prospects have a composite** (≥ 3 channels), against 422 with ≥ 3 official drills. 12 lose their composite because a channel needs tracking; 2 gain one from a tracked-only W_cod.
+   - Tracked W_cod without an official time (5 shuttle, 9 cone) is **kept and flagged** (`W_cod_<drill>_unofficial`) so the sweep or Phase 3 can drop it.
+   - ⚠️ **Both composites are mostly body mass:** r(TEE_z_abs, mass) = +0.89, r(TEE_z_rel, mass) = −0.81. Per-kg channels correlate with each other (vert–broad ρ 0.83, vert–40 0.66, vert–cone 0.34), and bench/kg is independent (ρ ≈ 0). Phase 3 clustering must handle this: e.g. residualise on mass, or cluster absolute and relative channels together.
+   - Composites average whatever channels are present (3–6), so a 3-channel composite isn't strictly comparable to a 6-channel one. `n_drills` is stored.
 8. **Sanity and sensitivity pass:** plots by group, 4-SD outlier flags, and a Spearman rank-stability check across the assumption bounds
 
 ---

@@ -61,11 +61,11 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
   - [x] $W_{bench} = n_{reps} \cdot m_{bar}\, g \cdot \text{ROM}$, with $\text{ROM} = \alpha \cdot \text{arm length}$ (α from config)
 
 ### 1.5 Mass normalization & TEE assembly
-- [ ] `tee.py`: build `TEE_Absolute` vector (J) per drill: `E_vert, E_broad, E_40, W_cod_shuttle, W_cod_cone, W_bench`
-- [ ] Body-mass normalization → `TEE_Relative` (J/kg) for every channel
-- [ ] Composite score: mean of per-drill z-scores (within Combine-year cohort), not a raw Joule sum
-- [ ] Missingness policy: require ≥ 3 of 6 drills for a composite; record `n_drills`
-- [ ] Write `data/processed/tee.parquet`
+- [x] `tee.py`: build `TEE_Absolute` vector (J) per drill: `E_vert, E_broad, E_40, W_cod_shuttle, W_cod_cone, W_bench`
+- [x] Body-mass normalization → `TEE_Relative` (J/kg) for every channel
+- [x] Composite score: mean of per-drill z-scores (within Combine-year cohort), not a raw Joule sum → `TEE_z_abs`, `TEE_z_rel`
+- [x] Missingness policy: require ≥ 3 of 6 drills for a composite; record `n_drills` (412 prospects have one)
+- [x] Write `data/processed/tee.parquet`
 
 ### 1.6 Validation
 - [x] `tests/test_units.py`: conversion round-trips

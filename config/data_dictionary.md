@@ -116,3 +116,28 @@ One row per prospect per play (64 columns). Grouped:
 - **Pass rush / defense (player):** `quick_pressure`, `unblocked_pressure`, `blitzing`, `player_get_off`, `sack`, `tackle`, `assist`, `caused_forced_fumble`, `recovered_fumble`, `tackle_for_loss`, `time_to_pressure`, `time_to_qb_hurry`, `coverage_assignment`, `coverage_assignment_at_snap`
 
 Most player-level columns are null unless relevant to that player's role on the play.
+
+---
+
+# Derived files
+
+## `data/processed/tee.parquet`
+
+Built by `uv run python -m eeg.physics.tee` from `combine_si.parquet`, `forty_fits.parquet` and `cod_reps.parquet`. One row per prospect (510).
+
+| Column | Units | Notes |
+|---|---|---|
+| `player_id`, `combine_year`, `pos_group`, `mass_kg` | | `pos_group` scopes the study; never a model feature |
+| `E_vert` | J | m g h |
+| `E_broad` | J | ½ m R g / sin 2θ (θ = `broad.theta_deg`) |
+| `E_40` | J | ½ m v_max² + drag work; tracking only (417) |
+| `W_cod_shuttle`, `W_cod_cone` | J | ½ m Σ\|Δ(v²)\|; tracking only (156 each) |
+| `W_bench` | J | reps · 102.058 kg · g · α · arm length |
+| `<channel>_per_kg` | J/kg | TEE_Relative |
+| `P_sayers` | W | Sayers peak power; separate channel, not in composites |
+| `sayers_extrapolated` | bool | OL/DL: out of the Sayers sample |
+| `W_cod_<drill>_unofficial` | bool | tracked W_cod but no official time (5 shuttle, 9 cone) |
+| `<channel>_missing` | bool | channel is null |
+| `n_drills` | int | non-null channels (0–6) |
+| `z_<channel>`, `z_<channel>_per_kg` | SD | z-score within `combine_year` |
+| `TEE_z_abs`, `TEE_z_rel` | SD | mean of available absolute / per-kg z-scores; null if `n_drills` < 3 (412 non-null) |
