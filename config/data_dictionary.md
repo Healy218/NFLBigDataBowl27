@@ -83,7 +83,7 @@ Coverage by timed drill: 40 = 418 prospects / 793 reps, shuttle = 170 / 223, 3-c
 
 **Alignment with official results:**
 - **40:** on absolute lines, tracked flying 30 (x 20 → 50) vs official `forty − ten_yd_split` has bias −0.025 s, r = 0.97–0.99. The rep window starts 0.17–0.29 s *before* the official clock, and the lead varies by year, so don't use the first frame as t = 0.
-- **Shuttle / 3-cone:** rep windows run ~0.4–0.5 s longer than the official times and correlate weakly with them (r ≈ 0.15–0.27). They include pre/post movement and need start/stop segmentation.
+- **Shuttle / 3-cone:** raw windows start ~0.2 s before the official clock and end at (or just short of) the finish line. After segmentation (`src/eeg/physics/cod.py`: onset at 1 m/s → finish crossing anchored to the far point), tracked time vs official has Spearman 0.82 (shuttle) / 0.88 (cone), with bias +0.24 s / +0.10 s. The sensor turns ~1 yd short of every line. The shuttle's first leg goes either way; the 3-cone always runs +x first with the cone-3 loop on the −y side.
 
 ## `games.csv`
 

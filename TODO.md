@@ -38,7 +38,7 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 - [x] `NA` → null with a `*_missing` flag per drill (heights are already numeric inches)
 - [x] Write `data/interim/combine_si.parquet` (510 prospects)
 - [x] `load_tracking.py`: timed-drill reps (40, shuttle, 3-cone), PLAYER rows, yards → m → `timed_drills.parquet`
-- [ ] Shuttle / 3-cone rep segmentation (start/finish detection): in `cod.py`
+- [x] Shuttle / 3-cone rep segmentation (start/finish detection): in `cod.py`
 
 ### 1.4 Physics: Joule formulas per drill (`src/eeg/physics/`)
 - [x] **Vertical jump** (`vertical.py`)
@@ -53,10 +53,10 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
   - [x] Kinetic energy at $v_{max}$: $\tfrac12 m v_{max}^2$
   - [x] Drag work: $W_d = \int_0^{T} \tfrac12 \rho C_d A\, v(t)^3\, dt$; frontal area $A$ from height/mass (see HANDOFF hurdles)
   - [x] $E_{40} = \tfrac12 m v_{max}^2 + W_d$
-- [ ] **5-10-5 shuttle & 3-cone** (`cod.py`)
-  - [ ] Segment model: 5 / 10 / 5 yd (shuttle); estimate segment entry/exit speeds
-  - [ ] Change-of-direction work: $W_{cod} = \sum_i (\tfrac12 m v_{in,i}^2 + \tfrac12 m v_{out,i}^2)$, braking (negative) work counted as absolute
-  - [ ] Use tracking-measured speeds at each plant when available
+- [x] **5-10-5 shuttle & 3-cone** (`cod.py`)
+  - [x] Segment each rep from tracking: first-leg direction, far point / cone-3 loop, finish crossing (or window end within 1 yd); reject jogged-out and truncated reps
+  - [x] Change-of-direction work: $W_{cod} = \tfrac12 m \sum |\Delta(v^2)|$ over the measured speed trace (≡ Σ ½ m v_in² + ½ m v_out² per leg), braking counted as absolute
+  - [x] ~~k-factor fallback from official time~~: reduces to m/T², ranks tracked W_cod at ρ 0.07–0.56 within groups; not used. 156 prospects per drill get W_cod
 - [x] **Bench press** (`bench.py`)
   - [x] $W_{bench} = n_{reps} \cdot m_{bar}\, g \cdot \text{ROM}$, with $\text{ROM} = \alpha \cdot \text{arm length}$ (α from config)
 
@@ -69,7 +69,7 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 
 ### 1.6 Validation
 - [x] `tests/test_units.py`: conversion round-trips
-- [ ] `tests/test_physics.py`: hand-calculated cases (100 kg, 1.0 m vertical → 980.7 J; 45° broad of 3.0 m at 100 kg → 1471 J)
+- [x] `tests/test_physics.py`: hand-calculated cases (100 kg, 1.0 m vertical → 980.7 J; 45° broad of 3.0 m at 100 kg → 1471 J); `tests/test_cod.py`: synthetic shuttle / cone reps with exact Σ|Δv²|
 - [ ] Sanity check: plot `E_40` vs mass and `TEE_Relative` composite by pos_group; flag values more than 4 SD out
 - [ ] Sensitivity sweep: re-run with α, θ, $C_d A$ at their low/high bounds; check that prospect rankings are stable (Spearman ρ ≥ 0.9)
 

@@ -90,34 +90,46 @@ sprint:
 
 cod:
   # 170 (shuttle) / 160 (cone) prospects have 10 Hz tracking, so turn speeds
-  # are measured. The k-factor model below is the fallback for the ~40 / ~30
-  # with only an official time.
-  peak_speed_factor:
-    value: 1.75
-    low: 1.5
-    high: 2.0
+  # are measured: W_cod = ½ m Σ|Δ(v²)| (src/eeg/physics/cod.py).
+  min_leg_yd:
+    value: 2.5
+    units: yd
+    note: >
+      A valid rep must reach this far along the first leg and (shuttle) the far
+      leg or (3-cone) laterally round cone 3. Measured turn points sit ~1 yd
+      short of the lines (shuttle ~3.7 / -3.6 yd, cone loop ~5.5 yd), so this
+      only rejects truncated or aborted windows.
+  finish_tol_yd:
+    value: 1.0
+    units: yd
+    note: >
+      If the window ends before the sensor re-crosses the start line, the
+      window end is the finish when it is within this distance of the line.
+  min_finish_speed_ratio:
+    value: 0.8
     units: dimensionless
     note: >
-      Segment peak speed v_i = k * (segment distance / segment time).
-      k = 2.0 is a perfect triangular accelerate/brake profile; 1.5 allows a
-      cruise phase. Default is the midpoint pending tracking data.
-  segment_time_split:
-    value: proportional
-    note: Total time split across segments in proportion to segment length
+      A real rep sprints through the line (finish speed > 0.9 v_peak in ~90%
+      of reps). Reps finishing below this fraction of their peak speed were
+      jogged out: they run 0.9-1.8 s over the official time, so they are invalid.
+  onset_speed_mps:
+    value: 1.0
+    units: m/s
+    note: >
+      Tracked time runs from the first frame at this speed to the finish; the
+      window itself starts ~0.2 s earlier than the official clock.
+  fit_strategy:
+    value: [tracking]
+    note: >
+      W_cod is measured from the speed trace only. 156 prospects per drill get
+      it. The k-factor model (v_i = k * segment distance / segment time, from
+      the official time) is not used as a fallback for the ~40 / ~30 with only
+      an official time: within position groups it ranks tracked W_cod at
+      Spearman 0.07-0.56, worse than mass alone. Within a drill it reduces to
+      W ∝ m / T², so k only rescales and was never a ranking parameter.
   count_braking_work:
     value: absolute
     note: Eccentric (braking) work counted as |W|; real muscular effort
-  shuttle_segments_yd:
-    value: [5.0, 10.0, 5.0]
-    units: yd
-    note: 5-10-5 pro agility; start straddling the middle line, two 180 deg plants
-  cone_segments_yd:
-    value: [5.0, 5.0, 10.0, 10.0]
-    units: yd
-    note: >
-      3-cone approximation: out 5 / back 5 (two hard plants), then two
-      10-yd legs around cones 2 and 3 treated as straight segments. Curved
-      turns are not modelled; revisit once tracking traces are available.
 
 bench:
   rom_arm_fraction:

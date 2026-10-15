@@ -4,7 +4,7 @@ Session-start state for the Explosion Efficiency Gap project. Everything here co
 
 - **Current Iteration:** Iteration 1, Ingest Raw Combine & Physics Metric Engineering
 - **Roadmap Phase:** Phase 2, Physics Engine: Drills → Joules
-- **Last updated:** 2026-10-13
+- **Last updated:** 2026-10-14
 
 ---
 
@@ -24,14 +24,15 @@ Done means every in-scope prospect has per-drill Joules (`E_vert, E_broad, E_40,
 
 ---
 
-## Last Session Accomplishments (2026-10-13)
+## Last Session Accomplishments (2026-10-13 → 10-14)
 
 - Environment: `pyproject.toml` + `uv.lock`, Python 3.12, `uv sync`. Repo pushed to `github.com/Healy218/NFLBigDataBowl27` (private).
 - `config/physics.yaml` + `src/eeg/config.py` (assumptions with sweep bounds), `src/eeg/ingest/units.py`.
 - Kaggle data downloaded to `data/raw/kaggle/nfl-big-data-bowl-2027/` (9 CSVs, 2.7 GB).
 - `notebooks/00_data_inventory.ipynb` + `config/data_dictionary.md`: full inventory; key findings below.
 - `src/eeg/ingest/load_combine.py` → `data/interim/combine_si.parquet` (510 prospects, 33 columns).
-- 18 tests pass (`uv run pytest`).
+- Physics: `vertical.py`, `broad.py`, `bench.py`, `sprint.py` (417 prospects with E_40), `cod.py` (156 per drill with W_cod).
+- 56 tests pass (`uv run pytest`).
 
 **Key data findings** (details in the data dictionary):
 - **510 prospects**, 2023–25 drafts; `combine_position` is already our 5 groups; `nfl_id` links every file.
@@ -40,7 +41,7 @@ Done means every in-scope prospect has per-drill Joules (`E_vert, E_broad, E_40,
 - **Combine tracking** (10 Hz, yards, yd/s) exists for the **40 (418 prospects), shuttle (170) and 3-cone (160)**. None for vertical, broad or bench.
 - **`dis` is unreliable** in the Combine tracking. Use `x`/`y` or `s`.
 - 40 tracking matches official times on absolute field lines (flying 30 bias −0.025 s, r ≈ 0.98). The rep window starts 0.17–0.29 s before the official clock.
-- Shuttle/cone rep windows include pre/post movement (≈ 0.4–0.5 s longer than official; r ≈ 0.2). They need segmentation.
+- Shuttle/cone rep windows open ~0.2 s before the official clock and end at or just short of the finish. After segmentation, tracked vs official has Spearman 0.82 / 0.88 (Hurdle 4).
 - **No in-season body mass** anywhere in the data (`players.csv` has no weight).
 
 ---
@@ -58,8 +59,8 @@ Work in this order. Each step unblocks the next.
    - [x] `vertical.py` (mgh + Sayers), `broad.py`, `bench.py` (measured arm length). Pure arithmetic: work on floats, numpy, polars Series and `pl.col` expressions; assumptions (θ, α, Sayers coefficients) passed in explicitly from config
    - [x] `src/eeg/ingest/load_tracking.py` → `data/interim/timed_drills.parquet`: PLAYER frames of 40/shuttle/cone, `rep_id`, `t_s`, SI units (keeps `x_yd` for yard-line geometry; drops `dis`)
    - [x] `sprint.py` (`uv run python -m eeg.physics.sprint` → `data/interim/forty_fits.parquet`): fits all 793 reps in < 1 s; **417 prospects get E_40**
-   - [ ] `cod.py`: **next**, see Hurdle 4 for what's known about segmentation
-   - [x] `tests/test_physics.py` (13 tests) passes these hand checks; extend it for sprint and COD:
+   - [x] `cod.py` (`uv run python -m eeg.physics.cod` → `data/interim/cod_reps.parquet`): segments every shuttle / 3-cone rep, W_cod = ½ m Σ|Δ(v²)|; **156 prospects per drill get W_cod** (see Hurdle 4)
+   - [x] `tests/test_physics.py` + `tests/test_cod.py` (56 tests total) pass these hand checks plus synthetic sprint / COD reps with known answers:
      - 100 kg, 1.0 m vertical → **980.7 J**
      - 100 kg, 3.0 m broad at θ = 45° → **1471.0 J**
      - 25 reps, ROM 0.40 m → 25 × 102.058 × 9.80665 × 0.40 = **10,009 J**
@@ -99,16 +100,18 @@ Every assumption below goes in `config/physics.yaml`, and each must survive the 
   - **Scale check:** at 9.5 m/s, $F_d \approx \tfrac12 (1.18)(0.9)(0.6)(9.5^2) \approx 29$ N. **Actual:** W_drag median 832 J (686–1009) against KE median 5,232 J, about 14% of E_40. It is systematic and penalizes large frontal areas (OL/DL). Drag uses the closed-form ∫v³ for the mono-exponential model.
 - Tracking `s` is in **yd/s**; convert to m/s before computing energy.
 
-### 4. Shuttle (5-10-5) and 3-cone: change-of-direction speeds
-- **Tracking exists for 170 (shuttle) / 160 (cone) prospects**, so plant-point and segment speeds can be measured. But only ~200 prospects have an official time at all.
-- **Segmentation needed first:** the rep windows include pre/post movement (≈ 0.4–0.5 s longer than official, r ≈ 0.2). Detect the start (first movement) and finish of each run before using the trace.
-- **What's known so far** (first attempt, 2026-10-13):
-  - Windows **end at the finish crossing**; some start stationary (s ≈ 0.1) and others already moving (s ≈ 0.7 yd/s).
-  - The **torso (sensor) turns short of the lines**: shuttle legs ≈ 4 / 7.8 / 4 yd instead of 5 / 10 / 5, because the hand touches the line. Use measured path length, not nominal distances.
-  - **Shuttle:** the run passes back through the start line mid-way through the 10-yd leg. The finish is the *final* crossing, not the first + → − crossing (my first detector got this wrong).
-  - **3-cone:** trimmed times line up in 2024 (r = 0.92 vs official) but not in 2023/2025 (sd ≈ 0.9 s), and 26 of 203 reps never cross back over the start line. Check whether some traces are truncated or the course orientation differs by year.
-- For the ~40 / ~30 prospects with an official time but no tracking, fall back to the k-factor placeholder: segment peak speed $v_i \approx k \cdot (\text{segment distance} / \text{segment time})$, **k ∈ [1.5, 2.0]**, time split in proportion to segment length. Flag them, or drop the channel for them if the two methods don't agree.
-- Count braking (eccentric) work as **absolute** work. It is real muscular effort even though it is negative mechanical work.
+### 4. Shuttle (5-10-5) and 3-cone: change-of-direction work
+- **Done:** `cod.py` measures work straight from the 10 Hz speed trace: $W_{cod} = \tfrac12 m \sum |\Delta(v^2)|$, the total absolute change in kinetic energy from motion onset to the finish. Each leg between plants contributes ≈ $m v_{peak}^2$ (accelerate + brake), the last leg ½ m v_end². Braking counts as **absolute** work. Curved 3-cone turns count only the speed actually shed, so no nominal segment lengths are needed. (The sensor turns ~1 yd short of every line: measured paths are 13.4 m shuttle and 20.1 m cone, against 18.3 m and 27.4 m nominal.)
+- **Segmentation** (u = displacement along the first leg's direction):
+  - **Shuttle:** out (u ≥ +2.5 yd), then the far leg (u ≤ −2.5 yd). The finish is the first − → + crossing of the start line *after the far point*, because the run already passes u = 0 mid-way through the 10-yd leg. First legs go either way (≈ 75% +x).
+  - **3-cone:** out (u ≥ 2.5 yd), then the cone-3 loop (|lateral| ≥ 2.5 yd; always −y). The finish is the first + → − crossing after the loop's extreme.
+  - **Window end as finish:** many windows stop just short of the line (sensor behind the hand), and 35 shuttle / 7 cone reps use that rule. The window end counts as the finish when it is within 1 yd of the line.
+  - **Rejected reps:** shuttle 35 of 223, cone 13 of 203. Most finish below 0.8 × peak speed ("jogged out": 22 shuttle, 7 cone; these run 0.9–1.8 s over the official time). The rest are aborted or truncated windows: no far leg or loop, or fewer than 2 plants.
+  - Energy starts at the last frame below 1 m/s, so idle jitter in long windows isn't counted. Best rep = fastest tracked time, as for the 40.
+- **The earlier "2023/2025 cone mismatch" was a detector bug.** The first frame (u = 0) counted as a crossing, and finishes weren't anchored to the far point. Tracked time (onset → finish) vs official now has **Spearman 0.82 (shuttle), 0.88 (cone)**; 2023 is 0.87 / 0.97, with bias +0.24 s (shuttle) and +0.10 s (cone). The remaining 2024–25 scatter is symmetric and concentrated in players with a single tracked rep (MAD 0.10–0.14 s vs 0.04–0.08 s for multi-rep players). The tracked rep is probably not always the official one (an untracked or faulted attempt), not a segmentation error.
+- **No k-factor fallback.** For prospects with an official time but no usable trace (50 shuttle, 33 cone), $v_i = k \cdot d_i / t_i$ reduces within a drill to W ∝ m / T². So k only rescales and was never a ranking parameter (it was removed from the sweep). Within position groups that proxy ranks tracked W_cod at Spearman **0.07–0.56, worse than mass alone**, so those prospects get no W_cod (per the plan: "drop the channel if the two methods don't agree").
+- **Open question:** 5 shuttle / 9 cone prospects have a valid tracked rep but **no official time**. W_cod is kept for them for now; decide in `tee.py` whether a drill without an official result should count.
+- **Scale:** W_cod median ≈ 5,260 J (shuttle) / 4,730 J (cone). Per kg, DB/WR are highest (shuttle ≈ 50 J/kg vs OL 42).
 
 ### 5. Bench press: arm length and range of motion
 - $W = n_{reps} \cdot 102.058\,\text{kg} \cdot 9.80665 \cdot \text{ROM}$. Count concentric work only.

@@ -29,7 +29,6 @@ def test_swept_parameters(raw):
         "sprint.air_density",
         "sprint.drag_coefficient",
         "sprint.frontal_area_bsa_factor",
-        "cod.peak_speed_factor",
         "bench.rom_arm_fraction",
     }
     for p in config.sweep_params(raw):
