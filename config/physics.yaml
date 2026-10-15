@@ -11,7 +11,7 @@
 #
 # Rule: if prospect rankings flip (Spearman < pipeline.spearman_min) when one
 # parameter moves within its bounds, that parameter needs better grounding
-# before Phase 3. See HANDOFF.md "Active Hurdles & Variables".
+# before Phase 3. See reports/phase2_physics_notes.md.
 
 vertical:
   # Sayers et al. (1999): P_peak [W] = a * h[cm] + b * m[kg] + c

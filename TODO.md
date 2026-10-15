@@ -4,7 +4,7 @@ Legend: `[x]` Completed · `[-]` In Progress · `[ ]` Not Started
 
 Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iteration changes, update [`HANDOFF.md`](HANDOFF.md) to match.
 
-> ## ▶ Current Iteration: **Iteration 1, Ingest Raw Combine & Physics Metric Engineering** (Phase 2)
+> ## ▶ Current Iteration: **Iteration 2, Kinetic Profile Clustering** (Phase 3)
 
 ---
 
@@ -19,7 +19,7 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 
 ---
 
-## [-] Iteration 1: Ingest Raw Combine & Physics Metric Engineering *(Phase 2)*  ← CURRENT
+## [x] Iteration 1: Ingest Raw Combine & Physics Metric Engineering *(Phase 2)*
 
 ### 1.1 Environment
 - [x] Create `.venv` with `uv` (Python 3.12); deps declared in `pyproject.toml` (`polars pandas pyarrow numpy scipy scikit-learn lifelines matplotlib seaborn plotly pyyaml`; dev: `jupyter pytest`)
@@ -51,7 +51,7 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
   - [x] Fit $v(t) = v_{max}(1 - e^{-(t-t_0)/\tau})$ to the 10 Hz tracking trace (`scipy.optimize.curve_fit`), $t_0$ free
   - [x] ~~Fallback via official 10-yd split + 40~~: biased against tracking, not used; 6 prospects get no E_40
   - [x] Kinetic energy at $v_{max}$: $\tfrac12 m v_{max}^2$
-  - [x] Drag work: $W_d = \int_0^{T} \tfrac12 \rho C_d A\, v(t)^3\, dt$; frontal area $A$ from height/mass (see HANDOFF hurdles)
+  - [x] Drag work: $W_d = \int_0^{T} \tfrac12 \rho C_d A\, v(t)^3\, dt$; frontal area $A$ from height/mass (see `reports/phase2_physics_notes.md`)
   - [x] $E_{40} = \tfrac12 m v_{max}^2 + W_d$
 - [x] **5-10-5 shuttle & 3-cone** (`cod.py`)
   - [x] Segment each rep from tracking: first-leg direction, far point / cone-3 loop, finish crossing (or window end within 1 yd); reject jogged-out and truncated reps
@@ -75,8 +75,9 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 
 ---
 
-## [ ] Iteration 2: Kinetic Profile Clustering *(Phase 3)*
+## [-] Iteration 2: Kinetic Profile Clustering *(Phase 3)*  ← CURRENT
 
+- [ ] Decide mass handling (residualise on log mass?) and missing-drill policy (core 369?): see HANDOFF
 - [ ] Feature matrix from `tee.parquet` (no position columns)
 - [ ] Standardize; correlation audit; optional PCA
 - [ ] K-Means baseline (k = 2..10; silhouette, gap statistic)
@@ -87,7 +88,7 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 
 ## [ ] Iteration 3: NGS Alignment & Explosion Efficiency (η) *(Phase 4a–4b)*
 
-- [ ] Player-ID crosswalk: Combine prospect ↔ NGS `nflId` (via gsis_id / pfr_id)
+- [ ] Player-ID link: Combine `nfl_id` ↔ NGS `nflId` (same ID in every competition file; confirm coverage)
 - [ ] Per-frame $E_k$ and propulsive power from NGS speed/acceleration
 - [ ] Context filters: burst-from-rest windows, change-of-direction windows
 - [ ] High-percentile aggregation per player-season
