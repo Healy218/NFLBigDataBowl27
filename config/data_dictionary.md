@@ -141,3 +141,26 @@ Built by `uv run python -m eeg.physics.tee` from `combine_si.parquet`, `forty_fi
 | `n_drills` | int | non-null channels (0–6) |
 | `z_<channel>`, `z_<channel>_per_kg` | SD | z-score within `combine_year` |
 | `TEE_z_abs`, `TEE_z_rel` | SD | mean of available absolute / per-kg z-scores; null if `n_drills` < 3 (412 non-null) |
+
+## `data/processed/tee_outliers.parquet`
+
+Built by `uv run python -m eeg.physics.sanity`. One row per value with |z| > `pipeline.outlier_sd` (4); empty for the current data.
+
+| Column | Units | Notes |
+|---|---|---|
+| `player_id`, `combine_year`, `pos_group`, `mass_kg` | | |
+| `channel` | | one of the 12 absolute / per-kg channels |
+| `scope` | | `combine_year` (the tee.parquet z) or `pos_group` (z within group, pooled over years) |
+| `z` | SD | |
+
+## `reports/sensitivity.csv` (committed)
+
+Same script. One row per sweep case × column; aggregate statistics only, no player rows.
+
+| Column | Notes |
+|---|---|
+| `param`, `bound` | swept parameter (`section.name`, or `all` for the corners) and `low` / `high` |
+| `column` | channel, per-kg channel or composite |
+| `rho_pooled` | Spearman ρ against the default build, all prospects |
+| `rho_group_min`, `worst_group` | lowest within-pos_group ρ and its group |
+| `pass` | both ρ ≥ `pipeline.spearman_min` (0.9) |

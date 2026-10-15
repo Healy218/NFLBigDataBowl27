@@ -4,7 +4,7 @@ Session-start state for the Explosion Efficiency Gap project. Everything here co
 
 - **Current Iteration:** Iteration 1, Ingest Raw Combine & Physics Metric Engineering
 - **Roadmap Phase:** Phase 2, Physics Engine: Drills → Joules
-- **Last updated:** 2026-10-14
+- **Last updated:** 2026-10-15
 
 ---
 
@@ -24,15 +24,15 @@ Done means every in-scope prospect has per-drill Joules (`E_vert, E_broad, E_40,
 
 ---
 
-## Last Session Accomplishments (2026-10-13 → 10-14)
+## Last Session Accomplishments (2026-10-13 → 10-15)
 
 - Environment: `pyproject.toml` + `uv.lock`, Python 3.12, `uv sync`. Repo pushed to `github.com/Healy218/NFLBigDataBowl27` (private).
 - `config/physics.yaml` + `src/eeg/config.py` (assumptions with sweep bounds), `src/eeg/ingest/units.py`.
 - Kaggle data downloaded to `data/raw/kaggle/nfl-big-data-bowl-2027/` (9 CSVs, 2.7 GB).
 - `notebooks/00_data_inventory.ipynb` + `config/data_dictionary.md`: full inventory; key findings below.
 - `src/eeg/ingest/load_combine.py` → `data/interim/combine_si.parquet` (510 prospects, 33 columns).
-- Physics: `vertical.py`, `broad.py`, `bench.py`, `sprint.py` (417 prospects with E_40), `cod.py` (156 per drill with W_cod).
-- 56 tests pass (`uv run pytest`).
+- Physics: `vertical.py`, `broad.py`, `bench.py`, `sprint.py` (417 prospects with E_40), `cod.py` (156 per drill with W_cod), `tee.py` (412 composites), `sanity.py` (outliers + sensitivity sweep).
+- 66 tests pass (`uv run pytest`).
 
 **Key data findings** (details in the data dictionary):
 - **510 prospects**, 2023–25 drafts; `combine_position` is already our 5 groups; `nfl_id` links every file.
@@ -69,7 +69,12 @@ Work in this order. Each step unblocks the next.
    - Tracked W_cod without an official time (5 shuttle, 9 cone) is **kept and flagged** (`W_cod_<drill>_unofficial`) so the sweep or Phase 3 can drop it.
    - ⚠️ **Both composites are mostly body mass:** r(TEE_z_abs, mass) = +0.89, r(TEE_z_rel, mass) = −0.81. Per-kg channels correlate with each other (vert–broad ρ 0.83, vert–40 0.66, vert–cone 0.34), and bench/kg is independent (ρ ≈ 0). Phase 3 clustering must handle this: e.g. residualise on mass, or cluster absolute and relative channels together.
    - Composites average whatever channels are present (3–6), so a 3-channel composite isn't strictly comparable to a 6-channel one. `n_drills` is stored.
-8. **Sanity and sensitivity pass:** plots by group, 4-SD outlier flags, and a Spearman rank-stability check across the assumption bounds
+8. ~~**Sanity and sensitivity pass**~~ ✅ `uv run python -m eeg.physics.sanity` → `data/processed/tee_outliers.parquet`, `reports/sensitivity.csv`, `reports/figures/sanity_{e40_vs_mass,by_group}.png`
+   - **Outliers: none beyond 4 SD**, within combine_year or within pos_group (pooled over years; a single group-year has 13–50 prospects, too few to reach 4 SD). Largest is a 94 kg DB with E_40 3.8 SD above the DB mean (4.36 s, v_max 11.5 m/s): real, not a data error.
+   - **Sensitivity: 154 / 154 cases pass** (ρ ≥ 0.9, pooled and within every group). Cases: each swept parameter at low and high (θ high = default, skipped) plus all-low / all-high corners; 14 columns each (12 channels + 2 composites). Worst within-group ρ is 0.9986 (TEE_z_abs among TEs, all-high corner).
+   - ⚠️ **This is a weak test by construction.** θ and α are uniform scale factors (ρ = 1 exactly), and ρ, C_d, A only rescale drag, which is 12–17% of E_40 with little spread. A global constant can't reorder prospects much; what could is *per-athlete* variation (individual takeoff angle, bench ROM technique), which the data can't measure. Say so in the write-up rather than claiming robustness.
+   - Spearman rounds to 8 significant figures first: tied broad jumps (recorded to the inch) give per-kg values that differ by float noise, and a rescale reordered them (ρ 0.997 for a pure scale).
+9. **Close Iteration 1 → start Iteration 2 (Phase 3, kinetic profile clustering):** flip the Current Iteration in `TODO.md`, rewrite this file. First decision: how to handle the mass dominance from step 7
 
 ---
 
@@ -114,7 +119,7 @@ Every assumption below goes in `config/physics.yaml`, and each must survive the 
   - Energy starts at the last frame below 1 m/s, so idle jitter in long windows isn't counted. Best rep = fastest tracked time, as for the 40.
 - **The earlier "2023/2025 cone mismatch" was a detector bug.** The first frame (u = 0) counted as a crossing, and finishes weren't anchored to the far point. Tracked time (onset → finish) vs official now has **Spearman 0.82 (shuttle), 0.88 (cone)**; 2023 is 0.87 / 0.97, with bias +0.24 s (shuttle) and +0.10 s (cone). The remaining 2024–25 scatter is symmetric and concentrated in players with a single tracked rep (MAD 0.10–0.14 s vs 0.04–0.08 s for multi-rep players). The tracked rep is probably not always the official one (an untracked or faulted attempt), not a segmentation error.
 - **No k-factor fallback.** For prospects with an official time but no usable trace (50 shuttle, 33 cone), $v_i = k \cdot d_i / t_i$ reduces within a drill to W ∝ m / T². So k only rescales and was never a ranking parameter (it was removed from the sweep). Within position groups that proxy ranks tracked W_cod at Spearman **0.07–0.56, worse than mass alone**, so those prospects get no W_cod (per the plan: "drop the channel if the two methods don't agree").
-- **Open question:** 5 shuttle / 9 cone prospects have a valid tracked rep but **no official time**. W_cod is kept for them for now; decide in `tee.py` whether a drill without an official result should count.
+- **Resolved in `tee.py`:** 5 shuttle / 9 cone prospects have a valid tracked rep but **no official time**. Their W_cod is kept and flagged `W_cod_<drill>_unofficial`.
 - **Scale:** W_cod median ≈ 5,260 J (shuttle) / 4,730 J (cone). Per kg, DB/WR are highest (shuttle ≈ 50 J/kg vs OL 42).
 
 ### 5. Bench press: arm length and range of motion

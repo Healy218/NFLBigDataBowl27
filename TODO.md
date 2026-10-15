@@ -70,8 +70,8 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 ### 1.6 Validation
 - [x] `tests/test_units.py`: conversion round-trips
 - [x] `tests/test_physics.py`: hand-calculated cases (100 kg, 1.0 m vertical → 980.7 J; 45° broad of 3.0 m at 100 kg → 1471 J); `tests/test_cod.py`: synthetic shuttle / cone reps with exact Σ|Δv²|
-- [ ] Sanity check: plot `E_40` vs mass and `TEE_Relative` composite by pos_group; flag values more than 4 SD out
-- [ ] Sensitivity sweep: re-run with α, θ, $C_d A$ at their low/high bounds; check that prospect rankings are stable (Spearman ρ ≥ 0.9)
+- [x] Sanity check (`sanity.py`): plot `E_40` vs mass and `TEE_Relative` composite by pos_group; flag values more than 4 SD out (none)
+- [x] Sensitivity sweep: re-run with α, θ, ρ, $C_d$, A at their low/high bounds (+ all-low / all-high); rankings stable (154/154 cases ρ ≥ 0.9, min 0.9986) → `reports/sensitivity.csv`
 
 ---
 
