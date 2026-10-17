@@ -180,6 +180,14 @@ clustering:
       tau is noisy (rep-to-rep r 0.51 vs 0.97 for v_max) and widest in 2024,
       but valid: with v_max held fixed it correlates 0.58 with the official
       10-yd split (0.65 in 2024), so it stays (reports/feature_audit.md).
+  mass_trend_degree:
+    value: 1
+    units: polynomial degree in log mass
+    note: >
+      1 = power law (log-linear). The power law is curved in the data: middle-mass
+      prospects sit 0.4-0.6 SD above it on vert, broad and v_max (x² F 39-77),
+      so degree-1 residuals still depend on mass non-linearly. Degree 2 removes
+      that (see HANDOFF, K-Means baseline).
   descriptors:
     value: [E_40, W_bench, W_cod_shuttle, W_cod_cone]
     note: >

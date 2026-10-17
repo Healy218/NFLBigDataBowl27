@@ -68,6 +68,18 @@ def test_mass_residual_recovers_slope_and_removes_year_level():
     assert abs(np.corrcoef(d["r"], np.log(d["mass_kg"]))[0, 1]) < 1e-9
 
 
+def test_quadratic_trend_removes_curvature():
+    tee = _tee()
+    x = np.log(tee["mass_kg"].to_numpy())
+    x = x - x.mean()
+    tee = tee.with_columns(pl.Series("E_vert", np.exp(5 + 0.6 * x - 0.9 * x**2) * tee["E_vert"].to_numpy() ** 0.01))
+    r1, f1 = F.mass_residual(tee, "E_vert", degree=1)
+    r2, f2 = F.mass_residual(tee, "E_vert", degree=2)
+    assert f1["curvature"] is None and f2["curvature"] == pytest.approx(-0.9, abs=0.05)
+    assert abs(np.corrcoef(r1, x**2)[0, 1]) > 0.5  # a power law leaves the curve in the residual
+    assert abs(np.corrcoef(r2, x**2)[0, 1]) < 1e-6
+
+
 def test_mass_residual_keeps_row_alignment_with_gaps():
     tee = _tee()
     resid, fit = F.mass_residual(tee, "W_bench")

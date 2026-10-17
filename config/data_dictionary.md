@@ -188,4 +188,21 @@ Same script and rows. Used only to read the clusters afterwards.
 
 ## `reports/feature_fits.csv` (committed)
 
-Same script. One row per feature / descriptor: `role`, `column`, `slope` (log-log on mass, within year), `n`, `r_log_mass` (pooled r of log value with log mass), `resid_sd` (SD of the log residual).
+Same script. One row per feature / descriptor: `role`, `column`, `slope` (d log y / d log m at the mean mass, within year), `curvature` (x² coefficient; null when `clustering.mass_trend_degree` is 1), `n`, `r_log_mass` (pooled r of log value with log mass), `resid_sd` (SD of the log residual).
+
+## `data/processed/kmeans_labels.parquet`
+
+Built by `uv run python -m eeg.clustering.kmeans` from `features.parquet`. Long format: `player_id`, `k` (2–10), `cluster` (0..k−1).
+
+## `reports/kmeans_selection.csv` (committed)
+
+Same script. One row per k (k = 1 has the gap statistic only).
+
+| Column | Notes |
+|---|---|
+| `inertia` | within-cluster sum of squares |
+| `silhouette` | mean silhouette |
+| `sil_null`, `sil_excess_sd` | mean silhouette under the Gaussian null (real log mass, other features Gaussian with observed covariance); excess in null SDs |
+| `ari_pos_group` | ARI of the labels against pos_group (read after fitting) |
+| `min_cluster`, `max_cluster` | cluster sizes |
+| `gap`, `gap_s` | gap statistic and its SE (uniform reference in the principal-axes box) |

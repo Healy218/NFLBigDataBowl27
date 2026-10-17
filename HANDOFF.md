@@ -4,7 +4,7 @@ Session-start state for the Explosion Efficiency Gap project. Everything here co
 
 - **Current Iteration:** Iteration 2, Kinetic Profile Clustering
 - **Roadmap Phase:** Phase 3, Kinetic Profiles: Position-Blind Clustering
-- **Last updated:** 2026-10-17
+- **Last updated:** 2026-10-17 (K-Means baseline)
 
 ---
 
@@ -84,6 +84,23 @@ From `uv run python -m eeg.clustering.audit` → [`reports/feature_audit.md`](re
 - **Decision: cluster on the five standardized features directly**, so centroids stay readable. GMM with full covariance handles the correlations. K-Means will give the PC1 direction extra weight (three features load on it); keep that in mind when comparing the two.
 - Feature correlations: vert–broad 0.64, broad–v_max 0.46, v_max–τ 0.50, all with mass ≈ 0 by construction.
 
+### K-Means baseline (step 5): no natural clusters
+
+From `uv run python -m eeg.clustering.kmeans` → `reports/kmeans_selection.csv`, `reports/figures/kmeans_selection.png`, `data/processed/kmeans_labels.parquet`.
+- **Silhouette is 0.19–0.24 at every k**, below the 0.25 usually read as "no substantial structure". A structureless Gaussian cloud scores ~0.20, so the module compares each k with a **Gaussian null**: real log mass, the other four features redrawn from a Gaussian with their observed covariance.
+- **The gap statistic picks k = 1** (no clusters).
+- **The only excess over the null is k = 3 (6 null SDs), and it's an artifact of the mass trend.** The log-linear (power-law) trend is curved: middle-mass prospects (TE, DL) sit 0.4–0.6 SD above it on vert, broad and v_max (x² term F = 39–77; τ is flat). So degree-1 residuals are uncorrelated with mass but still depend on it non-linearly, and the k = 3 clusters are "explosive middle-mass" / "heavy" / "light" (ARI vs position 0.23).
+- **With a quadratic trend (`clustering.mass_trend_degree: 2`), the data match the null at every k** (excess −0.6 to +2.1 SD; gap still picks k = 1; ARI vs position ≈ 0 for k ≤ 3), and position-group means on every non-mass feature are within ±0.22 SD.
+- **Conclusion: for its size, the Combine engine is a continuous, roughly Gaussian 4-D cloud.** The only lumpiness is body mass itself (bimodal: skill-sized vs lineman-sized). The ROADMAP's discrete archetypes aren't supported as natural types.
+
+### Decision needed before step 6
+
+1. **Mass trend:** degree 2 (recommended: degree-1 residuals still carry mass, which breaks the "for your size" definition) or degree 1 (keeps the middle-mass bump as cluster structure). The middle-mass bump can be reported as a descriptive finding either way.
+2. **What Phase 3 delivers, given no natural clusters:**
+   - (a) GMM anyway, framing archetypes as regions of a continuum (soft membership). Expect bootstrap ARI to struggle against the ≥ 0.7 bar.
+   - (b) **Continuous kinetic profiles (recommended):** per-prospect scores on the interpretable axes (general explosiveness, speed-build vs bounce, up vs out, mass) plus a "Kinetic Anomaly" score (Mahalanobis distance / GMM log-likelihood). Phase 4 Cox models take continuous covariates more efficiently than an archetype label.
+   - Either way, step 6 should still fit the GMM with BIC **including k = 1**, as the formal test.
+
 ---
 
 ## Next Session Steps
@@ -92,7 +109,8 @@ From `uv run python -m eeg.clustering.audit` → [`reports/feature_audit.md`](re
 2. ~~Decide A and B~~ ✅ (above)
 3. ~~Feature matrix~~ ✅ `uv run python -m eeg.clustering.features` → `data/processed/features.parquet` (clustering input), `features_context.parquet` (pos_group, raw values, descriptors), `reports/feature_fits.csv`. 71 tests pass.
 4. ~~Correlation audit + PCA~~ ✅ keep all five features, no PCA (above). 75 tests pass.
-5. **K-Means baseline:** k = 2..10; silhouette, gap statistic. Also report ARI vs pos_group per k, as the "is it just position?" check
-6. GMM: BIC over k × covariance type; export membership probabilities
+5. ~~K-Means baseline~~ ✅ no natural clusters (above). 80 tests pass.
+   - **Decide** mass-trend degree and the Phase 3 deliverable (above)
+6. GMM: BIC over k (from 1) × covariance type; export membership probabilities
 7. Bootstrap stability (ARI ≥ 0.7)
 8. Name archetypes from centroids; cross-tab archetype × position group; describe archetypes with bench / COD where present

@@ -80,8 +80,9 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 - [x] Decide mass handling: residualise each channel on log mass (pooled, within year) + log mass as one feature; missing drills: core vertical / broad / v_max / τ only (369), bench and COD as descriptors
 - [x] Feature matrix (`clustering/features.py`) → `data/processed/features.parquet` (no position columns) + `features_context.parquet`
 - [x] Standardize; correlation audit; optional PCA (`clustering/audit.py` → `reports/feature_audit.md`: τ valid vs official split, VIF ≤ 2.1, no PCA)
-- [ ] K-Means baseline (k = 2..10; silhouette, gap statistic)
-- [ ] GMM (BIC over k × covariance type); export membership probabilities
+- [x] K-Means baseline (k = 2..10; silhouette vs a Gaussian null, gap statistic from k = 1): **no natural clusters**; the k = 3 excess is curvature in the power-law mass trend
+- [ ] Decide: mass-trend degree (1 vs 2) and discrete archetypes vs continuous profiles (see HANDOFF)
+- [ ] GMM (BIC over k from 1 × covariance type); export membership probabilities
 - [ ] Bootstrap stability (ARI)
 - [ ] Name archetypes from centroids (Heavy Engines, Hyper-Velocity Rockets, Kinetic Anomalies, …)
 - [ ] Post-hoc cross-tab: archetype × position group
