@@ -67,8 +67,10 @@ Notes:
 
 Group prospects by **mechanical signature alone**.
 
-- **Features:** `TEE_Relative` channels, `TEE_Absolute` composite, body mass, Sayers peak power, sprint-profile parameters ($v_{max}$, τ). **No position labels.**
-- **Preprocessing:** standardize (z-score); check collinearity (vert and broad are strongly correlated) and consider PCA before clustering.
+- **Features: output for your size, plus size.** Absolute Joules and J/kg both mostly measure body mass: clustering on them (or on the original list of J/kg channels, absolute composite, mass, Sayers power, $v_{max}$, τ) recovers size classes and therefore position groups. So each core channel (vertical energy, broad energy, $v_{max}$, τ) enters as its **residual on log mass**: log value minus a log-log mass trend fit across all prospects, never by position. Log mass is one explicit feature. **No position labels.**
+  - Core channels only, so every clustered prospect has every feature: 369 of 510. Bench and shuttle / 3-cone are too sparse to define clusters and too position-dependent to impute; they get the same residual treatment and **describe** archetypes after fitting.
+  - Dropped as redundant: 40-yd energy (its mass residual correlates 1.00 with $v_{max}$'s) and Sayers power (r 0.99 with vertical energy).
+- **Preprocessing:** residuals and log mass are z-scored within Combine year (cohort drift); check collinearity (vertical and broad residuals r ≈ 0.64) and consider PCA before clustering. Built by `src/eeg/clustering/features.py`.
 - **Models:**
   - **K-Means**: baseline; choose *k* by silhouette, elbow and gap statistic.
   - **Gaussian Mixture Model**: preferred; soft membership probabilities and ellipsoidal clusters; choose *k* and covariance type by **BIC**.
@@ -76,9 +78,9 @@ Group prospects by **mechanical signature alone**.
 
 | Archetype | Mechanical signature |
 |---|---|
-| **Heavy Engines** | Very high absolute Joules, moderate J/kg. Mass-driven power. |
-| **Hyper-Velocity Rockets** | Very high $v_{max}$ and J/kg, lower absolute output. Speed-driven power. |
-| **Kinetic Anomalies** | Off-manifold profiles (e.g., elite J/kg at heavy mass). Low GMM likelihood / outlier scores. |
+| **Heavy Engines** | High mass, typical-or-better output for that mass. Mass-driven power. |
+| **Hyper-Velocity Rockets** | High $v_{max}$ for their mass, lighter frames. Speed-driven power. |
+| **Kinetic Anomalies** | Off-manifold profiles (e.g., elite output for their mass at heavy mass). Low GMM likelihood / outlier scores. |
 | *(further clusters as BIC supports)* | |
 
 **Validation:** cross-tabulate archetypes against the 5 position groups *after* fitting. The interesting findings are the cross-position overlaps, such as a DL and a TE who share an engine.

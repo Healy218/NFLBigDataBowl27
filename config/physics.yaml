@@ -146,8 +146,8 @@ mass:
   lab_mass_source:
     value: combine_weigh_in
     note: >
-      All lab Joules use Combine weigh-in mass. Phase 4 field energy uses
-      in-season NGS mass so eta does not drift with weight change.
+      All lab Joules use Combine weigh-in mass. The competition data has no
+      in-season weight, so Phase 4 field energy must use Combine mass too.
 
 pipeline:
   composite_min_drills:
@@ -165,3 +165,24 @@ pipeline:
     value: 0.9
     units: dimensionless
     note: Minimum rank stability across sensitivity bounds
+
+clustering:
+  # Phase 3 feature matrix (src/eeg/clustering/features.py). Each feature is
+  # log(value) with its pooled log-log mass trend removed (slope fit within
+  # combine_year, no positions), then z-scored within combine_year. log mass
+  # is added as one explicit feature. Prospects missing any feature are dropped.
+  features:
+    value: [E_vert, E_broad, v_max, tau]
+    note: >
+      Core drills with the widest coverage (369 complete). E_40 is left out:
+      its mass residual correlates 1.00 with v_max's. Sayers power is ~linear
+      in jump height and mass (r 0.99 with E_vert), so it is reporting-only.
+      tau is noisy in 2024 (log SD ~2x 2023/2025), which the within-year
+      z-score scales down but does not remove.
+  descriptors:
+    value: [E_40, W_bench, W_cod_shuttle, W_cod_cone]
+    note: >
+      Same mass-residual z-scores, computed on each channel's own rows, used
+      only to describe fitted archetypes. Too sparse to define them (core +
+      bench 146, core + both COD drills 89) and imputing would leak position,
+      since who skips bench or agility drills depends on position.

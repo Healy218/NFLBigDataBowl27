@@ -164,3 +164,28 @@ Same script. One row per sweep case × column; aggregate statistics only, no pla
 | `rho_pooled` | Spearman ρ against the default build, all prospects |
 | `rho_group_min`, `worst_group` | lowest within-pos_group ρ and its group |
 | `pass` | both ρ ≥ `pipeline.spearman_min` (0.9) |
+
+## `data/processed/features.parquet`
+
+Built by `uv run python -m eeg.clustering.features` from `tee.parquet` and `forty_fits.parquet` (v_max, τ from each player's best 40 rep). One row per prospect with every core feature (369). **The clustering input: no position, year or raw columns.**
+
+| Column | Units | Notes |
+|---|---|---|
+| `player_id` | | |
+| `f_log_mass` | SD | log Combine mass, z-scored within `combine_year` |
+| `f_E_vert`, `f_E_broad`, `f_v_max`, `f_tau` | SD | log value minus its log-mass trend (slope fit within year, all prospects), z-scored within `combine_year` (`clustering.features`) |
+
+## `data/processed/features_context.parquet`
+
+Same script and rows. Used only to read the clusters afterwards.
+
+| Column | Units | Notes |
+|---|---|---|
+| `player_id`, `combine_year`, `pos_group`, `mass_kg` | | |
+| `E_vert`, `E_broad`, `v_max`, `tau` | J, J, m/s, s | raw values behind the features |
+| `E_40`, `W_bench`, `W_cod_shuttle`, `W_cod_cone` | J | descriptors (`clustering.descriptors`) |
+| `d_<descriptor>` | SD | same mass-residual z-score, fit on the clustered prospects that have the channel; null where missing |
+
+## `reports/feature_fits.csv` (committed)
+
+Same script. One row per feature / descriptor: `role`, `column`, `slope` (log-log on mass, within year), `n`, `r_log_mass` (pooled r of log value with log mass), `resid_sd` (SD of the log residual).

@@ -77,8 +77,8 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 
 ## [-] Iteration 2: Kinetic Profile Clustering *(Phase 3)*  ← CURRENT
 
-- [ ] Decide mass handling (residualise on log mass?) and missing-drill policy (core 369?): see HANDOFF
-- [ ] Feature matrix from `tee.parquet` (no position columns)
+- [x] Decide mass handling: residualise each channel on log mass (pooled, within year) + log mass as one feature; missing drills: core vertical / broad / v_max / τ only (369), bench and COD as descriptors
+- [x] Feature matrix (`clustering/features.py`) → `data/processed/features.parquet` (no position columns) + `features_context.parquet`
 - [ ] Standardize; correlation audit; optional PCA
 - [ ] K-Means baseline (k = 2..10; silhouette, gap statistic)
 - [ ] GMM (BIC over k × covariance type); export membership probabilities
