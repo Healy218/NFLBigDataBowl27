@@ -177,8 +177,9 @@ clustering:
       Core drills with the widest coverage (369 complete). E_40 is left out:
       its mass residual correlates 1.00 with v_max's. Sayers power is ~linear
       in jump height and mass (r 0.99 with E_vert), so it is reporting-only.
-      tau is noisy in 2024 (log SD ~2x 2023/2025), which the within-year
-      z-score scales down but does not remove.
+      tau is noisy (rep-to-rep r 0.51 vs 0.97 for v_max) and widest in 2024,
+      but valid: with v_max held fixed it correlates 0.58 with the official
+      10-yd split (0.65 in 2024), so it stays (reports/feature_audit.md).
   descriptors:
     value: [E_40, W_bench, W_cod_shuttle, W_cod_cone]
     note: >

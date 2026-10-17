@@ -79,7 +79,7 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 
 - [x] Decide mass handling: residualise each channel on log mass (pooled, within year) + log mass as one feature; missing drills: core vertical / broad / v_max / τ only (369), bench and COD as descriptors
 - [x] Feature matrix (`clustering/features.py`) → `data/processed/features.parquet` (no position columns) + `features_context.parquet`
-- [ ] Standardize; correlation audit; optional PCA
+- [x] Standardize; correlation audit; optional PCA (`clustering/audit.py` → `reports/feature_audit.md`: τ valid vs official split, VIF ≤ 2.1, no PCA)
 - [ ] K-Means baseline (k = 2..10; silhouette, gap statistic)
 - [ ] GMM (BIC over k × covariance type); export membership probabilities
 - [ ] Bootstrap stability (ARI)

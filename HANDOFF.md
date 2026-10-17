@@ -71,10 +71,18 @@ On the 369 prospects with vertical, broad and 40, each feature set was clustered
 - **Features:** log mass, E_vert, E_broad, v_max, τ for 369 prospects (DB 87, DL 82, OL 85, TE 30, WR 85).
 - **Descriptors** (describe archetypes after fitting, never define them): E_40, bench (146 of the 369), shuttle (126), cone (128), as the same mass-residual z-scores. Not imputed: who skips bench or agility drills depends on position.
 
-### Feature caveats for the next steps
+### Feature audit (step 4): keep all five features, no PCA
 
-- **τ is noisy in 2024:** its log residual SD is ~0.17 against ~0.09 in 2023 / 2025, with values from 0.33 s to 2.2 s (sprinters are ~1.0–1.3 s). It isn't explained by window start speed or a block of player IDs. The within-year z-score scales it down but doesn't remove it. The correlation audit should check whether τ earns its place.
-- Feature correlations: vert–broad 0.64, broad–v_max 0.46, v_max–τ 0.50 (a higher top speed takes longer to reach), all with mass ≈ 0 by construction.
+From `uv run python -m eeg.clustering.audit` → [`reports/feature_audit.md`](reports/feature_audit.md).
+- **τ is noisy but real.** Rep-to-rep r is 0.51 (0.43–0.56 by year) against 0.97 for v_max. But with v_max held fixed, τ correlates **0.58** with the official 10-yd split (an independent stopwatch measure), and adding it raises the split R² from 0.80 to 0.87 in every year. 2024's wider spread is mostly real: its partial r is the highest (0.65). Averaging τ over both reps doesn't help (0.55), so best-rep τ stays.
+- **No redundancy.** VIF ≤ 2.14 (broad). Vert–broad r is 0.64, but merging them would erase the jump-up vs jump-out contrast.
+- **PCA** (eigenvalues 1.97 / 1.34 / 1.00 / 0.42 / 0.27; 39 / 27 / 20 / 8 / 5 %):
+  - PC1: general "explosive for your size" (vert, broad, v_max load 0.55–0.61)
+  - PC2: τ + v_max against the jumps: a top speed that builds late vs quick, bouncy power
+  - PC3: mass alone
+  - PC4: vertical vs broad / v_max (up vs out)
+- **Decision: cluster on the five standardized features directly**, so centroids stay readable. GMM with full covariance handles the correlations. K-Means will give the PC1 direction extra weight (three features load on it); keep that in mind when comparing the two.
+- Feature correlations: vert–broad 0.64, broad–v_max 0.46, v_max–τ 0.50, all with mass ≈ 0 by construction.
 
 ---
 
@@ -83,8 +91,8 @@ On the 369 prospects with vertical, broad and 40, each feature set was clustered
 1. ~~Close Iteration 1~~ ✅ (2026-10-15)
 2. ~~Decide A and B~~ ✅ (above)
 3. ~~Feature matrix~~ ✅ `uv run python -m eeg.clustering.features` → `data/processed/features.parquet` (clustering input), `features_context.parquet` (pos_group, raw values, descriptors), `reports/feature_fits.csv`. 71 tests pass.
-4. **Correlation audit + optional PCA:** does τ add signal or 2024 noise? Do vert and broad collapse to one jump axis?
-5. K-Means baseline: k = 2..10; silhouette, gap statistic
+4. ~~Correlation audit + PCA~~ ✅ keep all five features, no PCA (above). 75 tests pass.
+5. **K-Means baseline:** k = 2..10; silhouette, gap statistic. Also report ARI vs pos_group per k, as the "is it just position?" check
 6. GMM: BIC over k × covariance type; export membership probabilities
 7. Bootstrap stability (ARI ≥ 0.7)
 8. Name archetypes from centroids; cross-tab archetype × position group; describe archetypes with bench / COD where present
