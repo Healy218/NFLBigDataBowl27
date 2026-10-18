@@ -11,7 +11,7 @@ Scouts read the Combine through position labels. A 4.45 forty is "elite" for a d
 This project drops named positions as model inputs and works in **physics**:
 
 1. **Lab Power.** Each Combine drill (vertical, broad, 40-yard dash, 5-10-5 shuttle, 3-cone, bench) becomes the **mechanical work it required, in Joules**, using biomechanical equations (Sayers peak-power regression, projectile kinetic energy, sprint impulse with aerodynamic drag). Where the 10 Hz Combine sensor tracking is available, we measure the velocity profiles directly instead of reconstructing them from split times. The result is a **Total Explosive Energy** vector per prospect, reported as absolute Joules (`TEE_Absolute`) and as mass-normalized J/kg (`TEE_Relative`).
-2. **Kinetic Profiles.** Unsupervised clustering (K-Means / Gaussian Mixture Models) groups prospects into purely mathematical engine archetypes, such as *Heavy Engines*, *Hyper-Velocity Rockets* and *Kinetic Anomalies*, with no positional label in the feature set.
+2. **Kinetic Profiles.** Each prospect's drill output relative to body size is described on continuous engine axes (general explosiveness, late-building speed vs quick bounce, jumping up vs out) plus a *Kinetic Anomaly* score for unusual engines, with no positional label in the feature set. Clustering (K-Means, Gaussian Mixture Models) was tested first: for its size, the engine has no natural archetypes; only body size itself comes in classes.
 3. **On-Field Motor.** Next Gen Stats (NGS) player tracking from regular-season games gives realized on-field kinetic output: peak speed, acceleration bursts, and kinetic energy at the moments that matter.
 4. **Explosion Efficiency (η).** The ratio of realized on-field output to lab capacity:
 

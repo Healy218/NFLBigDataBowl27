@@ -6,7 +6,7 @@ This is the macro timeline, from the official competition brief to the final del
 |---|---|---|---|
 | 1 | Competition Grounding: *Combine to NFL Performance* | 0 | Scoped question, data inventory, repo |
 | 2 | Physics Engine: Drills → Joules | 1 | `TEE_Absolute` (J) and `TEE_Relative` (J/kg) per prospect |
-| 3 | Kinetic Profiles: Position-Blind Clustering | 2 | Archetype label + membership probabilities per prospect |
+| 3 | Kinetic Profiles: Position-Blind Engine Analysis | 2 | Engine axis scores, Kinetic Anomaly score and size class per prospect |
 | 4 | Explosion Efficiency (η) + Survival | 3, 4, 5 | η per player, Cox PH tenure model, final submission |
 
 ---
@@ -63,29 +63,29 @@ Notes:
 
 ---
 
-## Phase 3: Kinetic Profiles. Position-Blind Archetype Clustering
+## Phase 3: Kinetic Profiles. Position-Blind Engine Analysis
 
 Group prospects by **mechanical signature alone**.
 
-- **Features: output for your size, plus size.** Absolute Joules and J/kg both mostly measure body mass: clustering on them (or on the original list of J/kg channels, absolute composite, mass, Sayers power, $v_{max}$, τ) recovers size classes and therefore position groups. So each core channel (vertical energy, broad energy, $v_{max}$, τ) enters as its **residual on log mass**: log value minus a log-log mass trend fit across all prospects, never by position. Log mass is one explicit feature. **No position labels.**
-  - Core channels only, so every clustered prospect has every feature: 369 of 510. Bench and shuttle / 3-cone are too sparse to define clusters and too position-dependent to impute; they get the same residual treatment and **describe** archetypes after fitting.
+- **Features: output for your size, plus size.** Absolute Joules and J/kg both mostly measure body mass: clustering on them (or on the original list of J/kg channels, absolute composite, mass, Sayers power, $v_{max}$, τ) recovers size classes and therefore position groups. So each core channel (vertical energy, broad energy, $v_{max}$, τ) enters as its **residual on log mass**: log value minus a trend in log mass (quadratic: a power law leaves middle-mass prospects 0.4–0.6 SD above it) fit across all prospects, never by position. Log mass is one explicit feature. **No position labels.**
+  - Core channels only, so every clustered prospect has every feature: 369 of 510. Bench and shuttle / 3-cone are too sparse to define clusters and too position-dependent to impute; they get the same residual treatment and **describe** profiles after fitting.
   - Dropped as redundant: 40-yd energy (its mass residual correlates 1.00 with $v_{max}$'s) and Sayers power (r 0.99 with vertical energy).
 - **Preprocessing:** residuals and log mass are z-scored within Combine year (cohort drift); check collinearity (vertical and broad residuals r ≈ 0.64) and consider PCA before clustering. Built by `src/eeg/clustering/features.py`.
-- **Models:**
-  - **K-Means**: baseline; choose *k* by silhouette, elbow and gap statistic.
-  - **Gaussian Mixture Model**: preferred; soft membership probabilities and ellipsoidal clusters; choose *k* and covariance type by **BIC**.
-- **Target archetypes** (names are given *after* fitting, from cluster centroids):
+- **Clustering test (done): there are no engine archetypes.**
+  - **K-Means**: silhouette ≈ 0.20 at every *k*, the same as a structureless Gaussian cloud with the observed covariance; the gap statistic picks *k* = 1.
+  - **Gaussian Mixture Model**: BIC over *k* = 1–8 × covariance type picks *k* = 1 on the engine features (96 % of bootstrap resamples). With log mass added, the best model is three **size classes** (skill-sized, TE / lighter DL, OL / heavier DL) times **one** engine Gaussian, independent of size (ΔBIC 46 over the joint mixture).
+  - So for its size, the Combine engine is a continuous cloud. The planned archetypes (*Heavy Engines*, *Hyper-Velocity Rockets*) aren't natural types; they become regions of the profile axes below.
+- **Deliverable: continuous kinetic profiles.**
 
-| Archetype | Mechanical signature |
+| Output | Definition |
 |---|---|
-| **Heavy Engines** | High mass, typical-or-better output for that mass. Mass-driven power. |
-| **Hyper-Velocity Rockets** | High $v_{max}$ for their mass, lighter frames. Speed-driven power. |
-| **Kinetic Anomalies** | Off-manifold profiles (e.g., elite output for their mass at heavy mass). Low GMM likelihood / outlier scores. |
-| *(further clusters as BIC supports)* | |
+| **Engine axes** | PCA of the four engine features (mass excluded), named from loadings: general explosiveness for your size; late-building top speed vs quick, bouncy power; jumping up vs out |
+| **Kinetic Anomaly score** | Squared Mahalanobis distance of the engine features (χ²₄ under the single Gaussian the GMM test supports) and its tail probability |
+| **Size class** | The three-class mass mixture, with membership probabilities |
 
-**Validation:** cross-tabulate archetypes against the 5 position groups *after* fitting. The interesting findings are the cross-position overlaps, such as a DL and a TE who share an engine.
+**Validation (post hoc, by position group):** axis distributions per group, and **cross-position engine twins**: nearest neighbours in engine space with different positions, such as a DL and a TE who share an engine. Descriptors (bench, shuttle / 3-cone, 40 energy) are read against the axes.
 
-**Phase 3 exit criteria:** stable cluster solution (bootstrap ARI ≥ 0.7), named archetypes, per-prospect membership probabilities.
+**Phase 3 exit criteria:** per-prospect profile table; axes stable under bootstrap (Tucker congruence ≥ 0.95); anomaly ranks stable (bootstrap Spearman reported).
 
 ---
 
@@ -113,15 +113,15 @@ $$
 
 - **Duration:** seasons (or games) from draft to last meaningful participation.
 - **Event:** league exit (no snaps for a full season, or last season on record). Active players are **right-censored**.
-- **Covariates:** Kinetic Profile (categorical), η, `TEE_Relative` composite, body mass. **Controls:** draft round/pick, so the model measures signal *beyond* draft capital.
+- **Covariates:** Kinetic Profile axis scores and Kinetic Anomaly score (continuous), size class, η, `TEE_Relative` composite, body mass. **Controls:** draft round/pick, so the model measures signal *beyond* draft capital.
 - **Secondary outcomes:** snap share trajectory and **weighted Approximate Value (wAV)**, modeled as tenure-quality measures.
-- **Diagnostics:** Schoenfeld residuals for the proportional-hazards assumption; Kaplan–Meier curves by archetype; concordance index.
+- **Diagnostics:** Schoenfeld residuals for the proportional-hazards assumption; Kaplan–Meier curves by profile-axis tertile; concordance index.
 
 **Questions to answer**
 1. Do certain engine profiles have **lower league-exit hazard** regardless of position?
 2. Does η predict tenure **after controlling for draft slot**? (This is where the actionable signal is.)
-3. Which archetype × η combinations are systematically **under- or over-drafted**?
+3. Which profile × η combinations are systematically **under- or over-drafted**?
 
 ### 4d. Submission
 
-A Kaggle notebook with the narrative, method, archetype visuals, η leaderboards for the 5 position groups, survival curves, and the specific scouting recommendations that follow.
+A Kaggle notebook with the narrative, method, kinetic profile visuals, η leaderboards for the 5 position groups, survival curves, and the specific scouting recommendations that follow.

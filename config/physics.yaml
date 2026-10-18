@@ -168,7 +168,7 @@ pipeline:
 
 clustering:
   # Phase 3 feature matrix (src/eeg/clustering/features.py). Each feature is
-  # log(value) with its pooled log-log mass trend removed (slope fit within
+  # log(value) with its pooled trend in log mass removed (mass_trend_degree; fit within
   # combine_year, no positions), then z-scored within combine_year. log mass
   # is added as one explicit feature. Prospects missing any feature are dropped.
   features:
@@ -181,17 +181,18 @@ clustering:
       but valid: with v_max held fixed it correlates 0.58 with the official
       10-yd split (0.65 in 2024), so it stays (reports/feature_audit.md).
   mass_trend_degree:
-    value: 1
+    value: 2
     units: polynomial degree in log mass
     note: >
-      1 = power law (log-linear). The power law is curved in the data: middle-mass
-      prospects sit 0.4-0.6 SD above it on vert, broad and v_max (x² F 39-77),
-      so degree-1 residuals still depend on mass non-linearly. Degree 2 removes
-      that (see HANDOFF, K-Means baseline).
+      Quadratic in log mass. A power law (degree 1) is curved in the data:
+      middle-mass prospects sit 0.4-0.6 SD above it on vert, broad and v_max
+      (x² F 39-77), so degree-1 residuals still depend on mass non-linearly and
+      K-Means finds "explosive middle-mass" as a cluster. Degree 2 removes that
+      (decided 2026-10-18; see HANDOFF, decision C).
   descriptors:
     value: [E_40, W_bench, W_cod_shuttle, W_cod_cone]
     note: >
       Same mass-residual z-scores, computed on each channel's own rows, used
-      only to describe fitted archetypes. Too sparse to define them (core +
+      only to describe the profiles. Too sparse to define them (core +
       bench 146, core + both COD drills 89) and imputing would leak position,
       since who skips bench or agility drills depends on position.

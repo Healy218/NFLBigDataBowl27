@@ -1,9 +1,9 @@
 role,column,slope,curvature,n,r_log_mass,resid_sd
-feature,E_vert,0.6012,,369,0.8136,0.0904
-feature,E_broad,0.7079,,369,0.9520,0.0481
-feature,v_max,-0.3438,,369,-0.8635,0.0423
-feature,tau,-0.0438,,369,-0.0781,0.1239
-descriptor,E_40,0.2647,,369,0.5664,0.0809
-descriptor,W_bench,1.1900,,146,0.7886,0.1857
-descriptor,W_cod_shuttle,0.6643,,126,0.8550,0.0758
-descriptor,W_cod_cone,0.7698,,128,0.8584,0.0871
+feature,E_vert,0.6152,-0.8942,369,0.8136,0.0859
+feature,E_broad,0.7179,-0.6359,369,0.9520,0.0437
+feature,v_max,-0.3358,-0.5140,369,-0.8635,0.0391
+feature,tau,-0.0461,0.1461,369,-0.0781,0.1238
+descriptor,E_40,0.2808,-1.0263,369,0.5664,0.0741
+descriptor,W_bench,1.1533,-1.5566,146,0.7886,0.1807
+descriptor,W_cod_shuttle,0.6453,-0.3343,126,0.8550,0.0751
+descriptor,W_cod_cone,0.7463,-0.2284,128,0.8584,0.0867

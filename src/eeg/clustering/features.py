@@ -15,7 +15,7 @@ of a channel never leaks into them. Positions are never used in a fit.
 
 Features (config clustering.features) define the clusters; prospects missing any
 are dropped. Descriptors (clustering.descriptors) get the same treatment, fit on
-the clustered prospects that have them, and only describe archetypes afterwards.
+the clustered prospects that have them, and only describe the profiles afterwards.
 
 Writes data/processed/features.parquet (player_id + f_* only),
 data/processed/features_context.parquet (year, pos_group, mass, raw values,

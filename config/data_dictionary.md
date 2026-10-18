@@ -206,3 +206,11 @@ Same script. One row per k (k = 1 has the gap statistic only).
 | `ari_pos_group` | ARI of the labels against pos_group (read after fitting) |
 | `min_cluster`, `max_cluster` | cluster sizes |
 | `gap`, `gap_s` | gap statistic and its SE (uniform reference in the principal-axes box) |
+
+## `data/processed/gmm_membership.parquet`
+
+Built by `uv run python -m eeg.clustering.gmm` from `features.parquet`. One row per clustered prospect: `player_id`, `size_class` (1 = lightest; most probable class of the BIC-best mixture on log mass), `p_size_1` … `p_size_k` (membership probabilities, sum to 1). Size classes only: the engine features are one Gaussian cloud, so there is no engine archetype to assign.
+
+## `reports/gmm_selection.csv` (committed)
+
+Same script. One row per feature set × covariance type × k: `features` (`all` = log mass + 4 engine features, `engine` = the 4 engine features, `mass` = log mass), `cov` (full / tied / diag / spherical), `k` (1–8), `bic`, `delta_bic` (vs the best model in that feature set), `loglik`, `n_params`. The summary, including the separable model and the bootstrap, is `reports/gmm_report.md`.

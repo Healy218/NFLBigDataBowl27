@@ -4,7 +4,7 @@ Legend: `[x]` Completed · `[-]` In Progress · `[ ]` Not Started
 
 Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iteration changes, update [`HANDOFF.md`](HANDOFF.md) to match.
 
-> ## ▶ Current Iteration: **Iteration 2, Kinetic Profile Clustering** (Phase 3)
+> ## ▶ Current Iteration: **Iteration 2, Kinetic Profiles** (Phase 3)
 
 ---
 
@@ -75,17 +75,17 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 
 ---
 
-## [-] Iteration 2: Kinetic Profile Clustering *(Phase 3)*  ← CURRENT
+## [-] Iteration 2: Kinetic Profiles *(Phase 3)*  ← CURRENT
 
 - [x] Decide mass handling: residualise each channel on log mass (pooled, within year) + log mass as one feature; missing drills: core vertical / broad / v_max / τ only (369), bench and COD as descriptors
 - [x] Feature matrix (`clustering/features.py`) → `data/processed/features.parquet` (no position columns) + `features_context.parquet`
 - [x] Standardize; correlation audit; optional PCA (`clustering/audit.py` → `reports/feature_audit.md`: τ valid vs official split, VIF ≤ 2.1, no PCA)
 - [x] K-Means baseline (k = 2..10; silhouette vs a Gaussian null, gap statistic from k = 1): **no natural clusters**; the k = 3 excess is curvature in the power-law mass trend
-- [ ] Decide: mass-trend degree (1 vs 2) and discrete archetypes vs continuous profiles (see HANDOFF)
-- [ ] GMM (BIC over k from 1 × covariance type); export membership probabilities
-- [ ] Bootstrap stability (ARI)
-- [ ] Name archetypes from centroids (Heavy Engines, Hyper-Velocity Rockets, Kinetic Anomalies, …)
-- [ ] Post-hoc cross-tab: archetype × position group
+- [x] Decide: mass trend quadratic in log mass; Phase 3 delivers continuous profiles, not archetypes (HANDOFF decisions C, D)
+- [x] GMM (`clustering/gmm.py`; BIC over k = 1–8 × covariance type): engine-only k = 1 (96 % of bootstraps); with mass, 3 size classes × one engine Gaussian; size-class probabilities exported
+- [ ] Profiles (`clustering/profiles.py`): engine PCA axes, Kinetic Anomaly score (Mahalanobis, χ²₄), size class → `data/processed/profiles.parquet`
+- [ ] Bootstrap stability: axis loadings (Tucker congruence ≥ 0.95), anomaly ranks (Spearman)
+- [ ] Post-hoc read: axes by position group, descriptors vs axes, cross-position engine twins, anomaly list, middle-mass bump figure
 
 ## [ ] Iteration 3: NGS Alignment & Explosion Efficiency (η) *(Phase 4a–4b)*
 
@@ -100,13 +100,13 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 
 - [ ] Build duration/event table (draft → exit; right-censor active players)
 - [ ] Join snap counts, wAV, draft round/pick
-- [ ] Kaplan–Meier by archetype
-- [ ] Cox PH: archetype + η + TEE_Relative + mass, controlling for draft capital
+- [ ] Kaplan–Meier by profile-axis tertile
+- [ ] Cox PH: profile axes + anomaly score + η + TEE_Relative + mass, controlling for draft capital
 - [ ] Schoenfeld residuals; concordance index; stratify if PH is violated
 - [ ] Secondary models: snap-share trajectory, wAV
 
 ## [ ] Iteration 5: Submission *(Phase 4d)*
 
-- [ ] Final figures (archetype map, η vs. tenure, survival curves)
+- [ ] Final figures (kinetic profile map, η vs. tenure, survival curves)
 - [ ] Kaggle notebook narrative
 - [ ] Reproducibility pass: clean run end-to-end from `data/raw/`
