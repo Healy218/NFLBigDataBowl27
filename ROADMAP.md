@@ -79,13 +79,13 @@ Group prospects by **mechanical signature alone**.
 
 | Output | Definition |
 |---|---|
-| **Engine axes** | PCA of the four engine features (mass excluded), named from loadings: general explosiveness for your size; late-building top speed vs quick, bouncy power; jumping up vs out |
-| **Kinetic Anomaly score** | Squared Mahalanobis distance of the engine features (χ²₄ under the single Gaussian the GMM test supports) and its tail probability |
+| **Engine axes** | PCA of the four engine features (mass excluded), named from loadings: general explosiveness for your size; late-building top speed vs quick, bouncy power; jumping up vs out. The fourth axis is dropped: it is mostly τ rep-to-rep noise (score reliability 0.35) |
+| **Kinetic Anomaly score** | Squared Mahalanobis distance on the three kept axes (χ²₃ under the single Gaussian the GMM test supports) and its tail probability |
 | **Size class** | The three-class mass mixture, with membership probabilities |
 
 **Validation (post hoc, by position group):** axis distributions per group, and **cross-position engine twins**: nearest neighbours in engine space with different positions, such as a DL and a TE who share an engine. Descriptors (bench, shuttle / 3-cone, 40 energy) are read against the axes.
 
-**Phase 3 exit criteria:** per-prospect profile table; axes stable under bootstrap (Tucker congruence ≥ 0.95); anomaly ranks stable (bootstrap Spearman reported).
+**Phase 3 exit criteria:** per-prospect profile table; axes stable under bootstrap (Tucker congruence ≥ 0.95); anomaly ranks stable (bootstrap Spearman reported). Met (`reports/profiles_report.md`): median congruence 0.99–1.00, axis-score and anomaly-rank ρ ≥ 0.96 in 95 % of resamples. What remains is the post-hoc read.
 
 ---
 

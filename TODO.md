@@ -83,8 +83,8 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 - [x] K-Means baseline (k = 2..10; silhouette vs a Gaussian null, gap statistic from k = 1): **no natural clusters**; the k = 3 excess is curvature in the power-law mass trend
 - [x] Decide: mass trend quadratic in log mass; Phase 3 delivers continuous profiles, not archetypes (HANDOFF decisions C, D)
 - [x] GMM (`clustering/gmm.py`; BIC over k = 1–8 × covariance type): engine-only k = 1 (96 % of bootstraps); with mass, 3 size classes × one engine Gaussian; size-class probabilities exported
-- [ ] Profiles (`clustering/profiles.py`): engine PCA axes, Kinetic Anomaly score (Mahalanobis, χ²₄), size class → `data/processed/profiles.parquet`
-- [ ] Bootstrap stability: axis loadings (Tucker congruence ≥ 0.95), anomaly ranks (Spearman)
+- [x] Profiles (`clustering/profiles.py`): 3 engine PCA axes (4th is τ noise), Kinetic Anomaly score (Mahalanobis, χ²₃), size class → `data/processed/profiles.parquet`
+- [x] Stability: bootstrap congruence median 0.99–1.00 (p5 0.94–0.98), score ρ p5 ≥ 0.96, anomaly ρ p5 0.97; leave-one-year-out ≥ 0.98; score reliability 0.95 / 0.79 / 0.73
 - [ ] Post-hoc read: axes by position group, descriptors vs axes, cross-position engine twins, anomaly list, middle-mass bump figure
 
 ## [ ] Iteration 3: NGS Alignment & Explosion Efficiency (η) *(Phase 4a–4b)*

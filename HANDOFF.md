@@ -4,7 +4,7 @@ Session-start state for the Explosion Efficiency Gap project. Everything here co
 
 - **Current Iteration:** Iteration 2, Kinetic Profiles
 - **Roadmap Phase:** Phase 3, Kinetic Profiles: Position-Blind Engine Analysis
-- **Last updated:** 2026-10-18 (GMM test; Phase 3 re-planned around continuous profiles)
+- **Last updated:** 2026-10-18 (profiles built and stability-checked)
 
 ---
 
@@ -45,9 +45,10 @@ uv run python -m eeg.clustering.features     # → data/processed/features.parqu
 uv run python -m eeg.clustering.audit        # → reports/feature_audit.md
 uv run python -m eeg.clustering.kmeans       # → reports/kmeans_selection.csv, data/processed/kmeans_labels.parquet
 uv run python -m eeg.clustering.gmm          # → reports/gmm_report.md, gmm_selection.csv, data/processed/gmm_membership.parquet
+uv run python -m eeg.clustering.profiles     # → data/processed/profiles.parquet, reports/profiles_report.md
 ```
 
-84 tests (`uv run pytest`). Every drill model, assumption and rejected alternative from Phase 2 is in [`reports/phase2_physics_notes.md`](reports/phase2_physics_notes.md). Schemas are in [`config/data_dictionary.md`](config/data_dictionary.md).
+91 tests (`uv run pytest`). Every drill model, assumption and rejected alternative from Phase 2 is in [`reports/phase2_physics_notes.md`](reports/phase2_physics_notes.md). Schemas are in [`config/data_dictionary.md`](config/data_dictionary.md).
 
 **Data facts that matter for Phase 3:**
 - 510 prospects, 2023–25 drafts; `nfl_id` (= `player_id`) links every file.
@@ -119,6 +120,23 @@ From `uv run python -m eeg.clustering.gmm` → [`reports/gmm_report.md`](reports
 - **Separable model wins:** a 3-class mixture on log mass × one engine Gaussian, independent of it, beats the joint mixture by **ΔBIC = 46** with 20 parameters instead of 32. Engine and size class carry no information about each other.
 - **Size classes** (post hoc): 1 = WR 82 + DB 86; 2 = TE 30 + DL 40 (+ 4 skill players); 3 = OL 85 + DL 42. DL splits evenly across the middle and heavy classes. Soft membership is exported; most prospects are certain (median max-probability > 0.99).
 
+### Profiles (steps 7–8): three stable axes, an anomaly score, size class
+
+From `uv run python -m eeg.clustering.profiles` → [`reports/profiles_report.md`](reports/profiles_report.md), `data/processed/profiles.parquet`, `reports/figures/profiles_map.png`.
+
+| Axis | Loadings (vert, broad, v_max, τ) | Variance | Score reliability |
+|---|---|---|---|
+| 1 `explosive` | +0.51, +0.59, +0.56, +0.29 | 46 % | 0.95 |
+| 2 `speed_vs_bounce` | −0.45, −0.35, +0.43, +0.70 | 35 % | 0.79 |
+| 3 `up_vs_out` | +0.69, −0.47, −0.36, +0.43 | 11 % | 0.73 |
+| 4 (dropped) | +0.25, −0.56, +0.62, −0.50 | 8 % | 0.35 |
+
+- **Score reliability** comes from 40 rep-to-rep noise: the mass residual of v_max is 0.85 reliable and τ's is 0.44 (322 players with two reps). The jumps have one recorded value each, so they count as 1 and the figures are upper bounds. **Axis 4 is mostly τ noise**, so it is dropped (`clustering.profile_axes: 3`) and kept out of the anomaly score.
+- **Bootstrap over prospects (200):** Tucker congruence median 1.00 / 1.00 / 0.99 (5th percentile 0.98 / 0.98 / 0.94). Axes 3 and 4 have close eigenvalues (0.44 vs 0.30), so they occasionally rotate into each other. Every prospect's axis scores keep ρ ≥ 0.96, and the anomaly ranks ρ 0.97, in 95 % of resamples.
+- **Leave one combine year out:** congruence ≥ 0.98 on every axis. 2024 (the noisy-τ year) moves axis 3 the most.
+- **Kinetic Anomaly score:** χ²₃ on the kept axes. It is calibrated: 23 prospects at p < 0.05 (18 expected), 5 at p < 0.01 (3.7), none at p < 0.001.
+- **Phase 4 caveat:** axes 2–3 carry τ noise, so their effects on tenure will be attenuated (about 0.8 and 0.7 of the true slope).
+
 ---
 
 ## Next Session Steps
@@ -129,9 +147,7 @@ From `uv run python -m eeg.clustering.gmm` → [`reports/gmm_report.md`](reports
 4. ~~Correlation audit + PCA~~ ✅
 5. ~~K-Means baseline~~ ✅ no natural clusters; ~~decide C and D~~ ✅
 6. ~~GMM test (BIC from k = 1)~~ ✅ engine is one cloud; size classes only
-7. **Profiles** (`clustering/profiles.py` → `data/processed/profiles.parquet`):
-   - engine axes: PCA of the four engine features (mass excluded), signs fixed, named from loadings (general explosiveness, speed-build vs bounce, up vs out, …)
-   - Kinetic Anomaly score: squared Mahalanobis distance of the engine features (χ²₄ under the Gaussian the GMM test supports) and its tail p-value; size class + probabilities from `gmm_membership.parquet`
-8. Stability: bootstrap the axis loadings (Tucker congruence, target ≥ 0.95) and the anomaly ranks (Spearman); τ's noise matters most here
-9. Read the results (post hoc): axis distributions by position group; descriptors (bench, COD, E_40) against the axes; **cross-position engine twins** (nearest neighbours in engine space with different positions); the anomaly list; the middle-mass bump figure
+7. ~~Profiles~~ ✅ three axes, anomaly score, size class (above)
+8. ~~Stability~~ ✅ congruence median ≥ 0.99, score and anomaly ρ ≥ 0.96 (above)
+9. **Read the results** (post hoc): axis distributions by position group; descriptors (bench, COD, E_40) against the axes; **cross-position engine twins** (nearest neighbours in engine space with different positions); the anomaly list; the middle-mass bump figure
 10. Close Iteration 2 → Iteration 3 (NGS alignment, η)

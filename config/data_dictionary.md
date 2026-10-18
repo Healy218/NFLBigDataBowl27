@@ -173,7 +173,7 @@ Built by `uv run python -m eeg.clustering.features` from `tee.parquet` and `fort
 |---|---|---|
 | `player_id` | | |
 | `f_log_mass` | SD | log Combine mass, z-scored within `combine_year` |
-| `f_E_vert`, `f_E_broad`, `f_v_max`, `f_tau` | SD | log value minus its log-mass trend (slope fit within year, all prospects), z-scored within `combine_year` (`clustering.features`) |
+| `f_E_vert`, `f_E_broad`, `f_v_max`, `f_tau` | SD | log value minus its trend in log mass (polynomial of degree `clustering.mass_trend_degree`, fit within year, all prospects), z-scored within `combine_year` (`clustering.features`) |
 
 ## `data/processed/features_context.parquet`
 
@@ -214,3 +214,19 @@ Built by `uv run python -m eeg.clustering.gmm` from `features.parquet`. One row 
 ## `reports/gmm_selection.csv` (committed)
 
 Same script. One row per feature set × covariance type × k: `features` (`all` = log mass + 4 engine features, `engine` = the 4 engine features, `mass` = log mass), `cov` (full / tied / diag / spherical), `k` (1–8), `bic`, `delta_bic` (vs the best model in that feature set), `loglik`, `n_params`. The summary, including the separable model and the bootstrap, is `reports/gmm_report.md`.
+
+## `data/processed/profiles.parquet`
+
+Built by `uv run python -m eeg.clustering.profiles` from `features.parquet` and `gmm_membership.parquet`. One row per profiled prospect (369). No position columns.
+
+| Column | Units | Notes |
+|---|---|---|
+| `player_id` | | |
+| `ax_explosive` | SD | engine axis 1: vert, broad, v_max (weakly τ) together, i.e. output for your size |
+| `ax_speed_vs_bounce` | SD | axis 2: τ, v_max (+) against the jumps (−); high = top speed that builds late, low = quick, bouncy power |
+| `ax_up_vs_out` | SD | axis 3: vert, τ (+) against broad, v_max (−); high = jumps up more than out |
+| `anomaly_d2` | | Kinetic Anomaly score: sum of squared axis scores over the `clustering.profile_axes` kept axes |
+| `anomaly_p` | | χ² tail probability of `anomaly_d2` (df = kept axes) |
+| `size_class`, `p_size_*` | | from `gmm_membership.parquet` |
+
+Axis scores are standardized principal-component scores of the engine features' correlation matrix (SD 1 over the 369). Loadings, reliabilities and stability: `reports/profiles_report.md` (committed).
