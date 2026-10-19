@@ -4,7 +4,7 @@ Session-start state for the Explosion Efficiency Gap project. Everything here co
 
 - **Current Iteration:** Iteration 2, Kinetic Profiles
 - **Roadmap Phase:** Phase 3, Kinetic Profiles: Position-Blind Engine Analysis
-- **Last updated:** 2026-10-18 (profiles built and stability-checked)
+- **Last updated:** 2026-10-19 (Phase 3 readout done; Iteration 2 ready to close)
 
 ---
 
@@ -46,9 +46,10 @@ uv run python -m eeg.clustering.audit        # → reports/feature_audit.md
 uv run python -m eeg.clustering.kmeans       # → reports/kmeans_selection.csv, data/processed/kmeans_labels.parquet
 uv run python -m eeg.clustering.gmm          # → reports/gmm_report.md, gmm_selection.csv, data/processed/gmm_membership.parquet
 uv run python -m eeg.clustering.profiles     # → data/processed/profiles.parquet, reports/profiles_report.md
+uv run python -m eeg.clustering.readout      # → reports/phase3_readout.md, engine_twins.parquet, anomalies.parquet
 ```
 
-91 tests (`uv run pytest`). Every drill model, assumption and rejected alternative from Phase 2 is in [`reports/phase2_physics_notes.md`](reports/phase2_physics_notes.md). Schemas are in [`config/data_dictionary.md`](config/data_dictionary.md).
+97 tests (`uv run pytest`). Every drill model, assumption and rejected alternative from Phase 2 is in [`reports/phase2_physics_notes.md`](reports/phase2_physics_notes.md). Schemas are in [`config/data_dictionary.md`](config/data_dictionary.md).
 
 **Data facts that matter for Phase 3:**
 - 510 prospects, 2023–25 drafts; `nfl_id` (= `player_id`) links every file.
@@ -137,6 +138,17 @@ From `uv run python -m eeg.clustering.profiles` → [`reports/profiles_report.md
 - **Kinetic Anomaly score:** χ²₃ on the kept axes. It is calibrated: 23 prospects at p < 0.05 (18 expected), 5 at p < 0.01 (3.7), none at p < 0.001.
 - **Phase 4 caveat:** axes 2–3 carry τ noise, so their effects on tenure will be attenuated (about 0.8 and 0.7 of the true slope).
 
+### Readout by position group (step 9)
+
+From `uv run python -m eeg.clustering.readout` → [`reports/phase3_readout.md`](reports/phase3_readout.md), `reports/figures/readout_axes_by_position.png`, `readout_mass_bump.png`. Positions are used here for the first time, only to read results. Named per-prospect tables (`engine_twins.parquet`, `anomalies.parquet`) stay in `data/processed/`, which is not committed; committed reports hold aggregates only.
+
+- **Position barely shows in the engine.** Position group explains 0.8 % of `explosive` and 0.8 % of `speed_vs_bounce` (ANOVA p 0.55), and 3.8 % of `up_vs_out` (p 0.007). Relative to the others, DL jump out more than up (−0.28), TE and OL more up (+0.26, +0.20).
+- **Your engine neighbour's position is close to chance.** The nearest prospect has the same position 26 % of the time in profile space, against 21.5 % under permuted labels (z 1.7). With log mass in the space it's 54 % (z 12): size, not engine, is what tracks position.
+- **Engine twins:** 95 mutual cross-position nearest-neighbour pairs, spanning every position pair (DB–DL 16, DB–WR 15, DL–OL 13, …, DL–TE 6). Median distance to the nearest other-position prospect is 0.33 SD. The interesting twins sit far from the centre, e.g. a CB and a DE who are both about +2.1 SD `explosive` for their size.
+- **Kinetic Anomalies are concentrated in OL.** At p < 0.05: OL 11 (4.2 expected), WR 1 (4.2); by size class, heavy 14 (6.4 expected). OL engines are simply more spread out (axis SDs 1.14–1.22 against 0.81–1.05 elsewhere), in every direction: the anomalies' largest axes split 8 / 8 / 7. Scoring each size class against its own covariance barely changes the ranking (Spearman 0.97; OL still 8), so the pooled score stays. **Write-up point:** linemen vary more in engine for their size than skill players do.
+- **Bench and agility are separate qualities.** E_40 tracks `explosive` (r 0.76) and `speed_vs_bounce` (0.47), as expected since it is built from v_max. Bench, shuttle and 3-cone correlate |r| ≤ 0.20 with every axis, pooled and within position. The core axes don't capture change of direction or upper-body strength; they would have to enter Phase 4 separately, on their sparse subsets.
+- **Middle-mass bump:** against a power law, output for size peaks in the ~115 kg decile (vert +5 %, broad +3.7 %, v_max +3 %), and the lightest and heaviest deciles sit 2–4 % below.
+
 ---
 
 ## Next Session Steps
@@ -149,5 +161,5 @@ From `uv run python -m eeg.clustering.profiles` → [`reports/profiles_report.md
 6. ~~GMM test (BIC from k = 1)~~ ✅ engine is one cloud; size classes only
 7. ~~Profiles~~ ✅ three axes, anomaly score, size class (above)
 8. ~~Stability~~ ✅ congruence median ≥ 0.99, score and anomaly ρ ≥ 0.96 (above)
-9. **Read the results** (post hoc): axis distributions by position group; descriptors (bench, COD, E_40) against the axes; **cross-position engine twins** (nearest neighbours in engine space with different positions); the anomaly list; the middle-mass bump figure
-10. Close Iteration 2 → Iteration 3 (NGS alignment, η)
+9. ~~Read the results~~ ✅ (above)
+10. **Close Iteration 2 → Iteration 3** (NGS alignment, η): move the Phase 3 decisions and results into `reports/phase3_profiles_notes.md`, mark Iteration 2 done in TODO, rewrite this file for Iteration 3

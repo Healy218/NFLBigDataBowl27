@@ -230,3 +230,11 @@ Built by `uv run python -m eeg.clustering.profiles` from `features.parquet` and 
 | `size_class`, `p_size_*` | | from `gmm_membership.parquet` |
 
 Axis scores are standardized principal-component scores of the engine features' correlation matrix (SD 1 over the 369). Loadings, reliabilities and stability: `reports/profiles_report.md` (committed).
+
+## `data/processed/engine_twins.parquet`
+
+Built by `uv run python -m eeg.clustering.readout` from `profiles.parquet` and `features_context.parquet`. One row per profiled prospect: `player_id`, `pos_group`, `twin_id` and `twin_pos_group` (nearest prospect in profile-axis space with a different position group), `distance` (Euclidean, SD units), `mutual` (the twin's twin is this prospect). Post hoc only; not committed.
+
+## `data/processed/anomalies.parquet`
+
+Same script. Prospects with `anomaly_p` < 0.05, sorted by `anomaly_p`: `player_id`, `pos_group`, `size_class`, the axis scores, `anomaly_d2`, `anomaly_p`. Not committed. The aggregate readout is `reports/phase3_readout.md` (committed).

@@ -85,7 +85,7 @@ Group prospects by **mechanical signature alone**.
 
 **Validation (post hoc, by position group):** axis distributions per group, and **cross-position engine twins**: nearest neighbours in engine space with different positions, such as a DL and a TE who share an engine. Descriptors (bench, shuttle / 3-cone, 40 energy) are read against the axes.
 
-**Phase 3 exit criteria:** per-prospect profile table; axes stable under bootstrap (Tucker congruence ≥ 0.95); anomaly ranks stable (bootstrap Spearman reported). Met (`reports/profiles_report.md`): median congruence 0.99–1.00, axis-score and anomaly-rank ρ ≥ 0.96 in 95 % of resamples. What remains is the post-hoc read.
+**Phase 3 exit criteria:** per-prospect profile table; axes stable under bootstrap (Tucker congruence ≥ 0.95); anomaly ranks stable (bootstrap Spearman reported). Met (`reports/profiles_report.md`): median congruence 0.99–1.00, axis-score and anomaly-rank ρ ≥ 0.96 in 95 % of resamples. Post-hoc read: `reports/phase3_readout.md`.
 
 ---
 

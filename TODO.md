@@ -85,7 +85,8 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 - [x] GMM (`clustering/gmm.py`; BIC over k = 1–8 × covariance type): engine-only k = 1 (96 % of bootstraps); with mass, 3 size classes × one engine Gaussian; size-class probabilities exported
 - [x] Profiles (`clustering/profiles.py`): 3 engine PCA axes (4th is τ noise), Kinetic Anomaly score (Mahalanobis, χ²₃), size class → `data/processed/profiles.parquet`
 - [x] Stability: bootstrap congruence median 0.99–1.00 (p5 0.94–0.98), score ρ p5 ≥ 0.96, anomaly ρ p5 0.97; leave-one-year-out ≥ 0.98; score reliability 0.95 / 0.79 / 0.73
-- [ ] Post-hoc read: axes by position group, descriptors vs axes, cross-position engine twins, anomaly list, middle-mass bump figure
+- [x] Post-hoc read (`clustering/readout.py` → `reports/phase3_readout.md`): position explains ≤ 4 % of any axis; engine neighbours ≈ chance by position; 95 mutual cross-position twin pairs; OL over-represented among anomalies (wider engine spread); bench / COD nearly independent of the axes; middle-mass bump peaks ~115 kg
+- [ ] Close Iteration 2; rewrite HANDOFF for Iteration 3
 
 ## [ ] Iteration 3: NGS Alignment & Explosion Efficiency (η) *(Phase 4a–4b)*
 
