@@ -114,7 +114,7 @@ $$
 - **Duration:** seasons (or games) from draft to last meaningful participation.
 - **Event:** league exit (no snaps for a full season, or last season on record). Active players are **right-censored**.
 - **Covariates:** Kinetic Profile axis scores and Kinetic Anomaly score (continuous), size class, η, `TEE_Relative` composite, body mass. **Controls:** draft round/pick, so the model measures signal *beyond* draft capital.
-- **Secondary outcomes:** snap share trajectory and **weighted Approximate Value (wAV)**, modeled as tenure-quality measures.
+- **Secondary outcomes:** snap share trajectory (from `player_play` / game tracking per season) and career totals in `player_career_successes.csv` (snaps, games active and started, All-Pro / Pro Bowl), modeled as tenure-quality measures. Competition data only: no external value metrics such as wAV.
 - **Diagnostics:** Schoenfeld residuals for the proportional-hazards assumption; Kaplan–Meier curves by profile-axis tertile; concordance index.
 
 **Questions to answer**

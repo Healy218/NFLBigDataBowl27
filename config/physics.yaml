@@ -188,7 +188,7 @@ clustering:
       middle-mass prospects sit 0.4-0.6 SD above it on vert, broad and v_max
       (x² F 39-77), so degree-1 residuals still depend on mass non-linearly and
       K-Means finds "explosive middle-mass" as a cluster. Degree 2 removes that
-      (decided 2026-10-18; see HANDOFF, decision C).
+      (decided 2026-10-18; see reports/phase3_profiles_notes.md, decision C).
   profile_axes:
     value: 3
     units: principal axes of the engine features

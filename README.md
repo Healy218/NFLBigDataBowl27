@@ -23,7 +23,7 @@ $$
 
 A prospect with a large lab engine and a low η is a "Combine warrior" whose power doesn't transfer to the field. A modest engine with high η is a player who gets the most out of the engine they have.
 
-5. **Tenure.** Cox Proportional Hazards survival models test whether engine profile and η predict how long a player lasts in the NFL (snap share, weighted Approximate Value, and league-exit risk) beyond what draft slot already tells us.
+5. **Tenure.** Cox Proportional Hazards survival models test whether engine profile and η predict how long a player lasts in the NFL (snap share, games started, and league-exit risk) beyond what draft slot already tells us.
 
 The deliverable is a scouting signal that doesn't depend on positions. It measures how much engine a player has, separately from how efficiently he uses it.
 
@@ -37,7 +37,7 @@ The deliverable is a scouting signal that doesn't depend on positions. It measur
                                                                                    ▼
  NGS game tracking ──► On-field kinetic output ──────────────────────────► η = E_field / E_lab
                                                                                    │
- Snap counts, wAV, roster history ─────────────────────────────────────────► Cox PH survival
+ Snaps, games, draft slot (competition data) ──────────────────────────────► Cox PH survival
 ```
 
 | Layer | Primary (Python) | Alternative (R) |
@@ -65,11 +65,8 @@ NFLBigDataBowl27/
 ├── .gitignore             # Excludes all data (competition terms) and build artifacts
 ├── config/                # Physical constants & modeling assumptions (YAML)
 ├── data/                  # Git-ignored
-│   ├── raw/
-│   │   ├── combine/           # Combine results (drills, height, weight, arm length)
-│   │   ├── combine_tracking/  # 10 Hz Combine sensor tracking (competition data)
-│   │   ├── ngs/               # Regular-season NFL game tracking (competition data)
-│   │   └── outcomes/          # Snap counts, wAV, draft, roster history
+│   ├── raw/kaggle/nfl-big-data-bowl-2027/   # Competition files: Combine results + 10 Hz tracking,
+│   │                                         # game tracking, player_play, players, career successes
 │   ├── interim/           # Cleaned / unit-converted intermediates
 │   └── processed/         # Model-ready tables (TEE vectors, η, survival frames)
 ├── notebooks/             # Exploration & the final Kaggle submission notebook

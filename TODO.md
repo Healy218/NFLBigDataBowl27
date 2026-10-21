@@ -4,7 +4,7 @@ Legend: `[x]` Completed · `[-]` In Progress · `[ ]` Not Started
 
 Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iteration changes, update [`HANDOFF.md`](HANDOFF.md) to match.
 
-> ## ▶ Current Iteration: **Iteration 2, Kinetic Profiles** (Phase 3)
+> ## ▶ Current Iteration: **Iteration 3, NGS Alignment & Explosion Efficiency (η)** (Phase 4a–4b)
 
 ---
 
@@ -75,7 +75,7 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 
 ---
 
-## [-] Iteration 2: Kinetic Profiles *(Phase 3)*  ← CURRENT
+## [x] Iteration 2: Kinetic Profiles *(Phase 3)*
 
 - [x] Decide mass handling: residualise each channel on log mass (pooled, within year) + log mass as one feature; missing drills: core vertical / broad / v_max / τ only (369), bench and COD as descriptors
 - [x] Feature matrix (`clustering/features.py`) → `data/processed/features.parquet` (no position columns) + `features_context.parquet`
@@ -86,25 +86,27 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 - [x] Profiles (`clustering/profiles.py`): 3 engine PCA axes (4th is τ noise), Kinetic Anomaly score (Mahalanobis, χ²₃), size class → `data/processed/profiles.parquet`
 - [x] Stability: bootstrap congruence median 0.99–1.00 (p5 0.94–0.98), score ρ p5 ≥ 0.96, anomaly ρ p5 0.97; leave-one-year-out ≥ 0.98; score reliability 0.95 / 0.79 / 0.73
 - [x] Post-hoc read (`clustering/readout.py` → `reports/phase3_readout.md`): position explains ≤ 4 % of any axis; engine neighbours ≈ chance by position; 95 mutual cross-position twin pairs; OL over-represented among anomalies (wider engine spread); bench / COD nearly independent of the axes; middle-mass bump peaks ~115 kg
-- [ ] Close Iteration 2; rewrite HANDOFF for Iteration 3
+- [x] Close Iteration 2: decisions and results → `reports/phase3_profiles_notes.md`; HANDOFF rewritten for Iteration 3
 
-## [ ] Iteration 3: NGS Alignment & Explosion Efficiency (η) *(Phase 4a–4b)*
+## [-] Iteration 3: NGS Alignment & Explosion Efficiency (η) *(Phase 4a–4b)*  ← CURRENT
 
-- [ ] Player-ID link: Combine `nfl_id` ↔ NGS `nflId` (same ID in every competition file; confirm coverage)
+- [x] Player-ID link: `nfl_id` is the same in every file; 497 of 510 prospects appear in game tracking, 292 of the 369 profiled in regular-season games
+- [ ] Ingest game tracking (`ingest/load_games.py`): REG + POST, SI units, speed and acceleration re-derived from x/y, glitch flags
+- [ ] Validate field kinematics against the Combine (field top speed vs lab v_max; glitch filter)
 - [ ] Per-frame $E_k$ and propulsive power from NGS speed/acceleration
 - [ ] Context filters: burst-from-rest windows, change-of-direction windows
-- [ ] High-percentile aggregation per player-season
+- [ ] High-percentile aggregation per player-season; exposure threshold and split-half reliability
 - [ ] Compute η per matching channel and the overall Explosion Efficiency Gap
 - [ ] η leaderboards per position group
 
 ## [ ] Iteration 4: Survival Modeling *(Phase 4c)*
 
 - [ ] Build duration/event table (draft → exit; right-censor active players)
-- [ ] Join snap counts, wAV, draft round/pick
+- [ ] Join career outcomes (`player_career_successes`, per-season snaps from `player_play`) and draft round/pick (`players`)
 - [ ] Kaplan–Meier by profile-axis tertile
 - [ ] Cox PH: profile axes + anomaly score + η + TEE_Relative + mass, controlling for draft capital
 - [ ] Schoenfeld residuals; concordance index; stratify if PH is violated
-- [ ] Secondary models: snap-share trajectory, wAV
+- [ ] Secondary models: snap-share trajectory, games started
 
 ## [ ] Iteration 5: Submission *(Phase 4d)*
 
