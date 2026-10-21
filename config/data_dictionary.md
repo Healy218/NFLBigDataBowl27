@@ -75,7 +75,7 @@ All integer counts, complete for 510 prospects. Careers are right-censored at th
 | `attempt` | int | 1–4 | A rep = (`nfl_id`, `event_id`, `attempt`) |
 | `x`, `y` | float | yd | Field coordinates. 40-yd start line at x = 10, finish at x = 50 |
 | `s` | float | yd/s | Consistent with x/y displacement (±1%). Max 11.85; no glitches > 13 |
-| `a` | float | yd/s² | Unsigned magnitude (min 0 in 2024 REG), so no braking sign; negative only in broken 2025 tracks. Use `a_t_mps2` (derived) for signed tangential acceleration |
+| `a` | float | yd/s² | **Total** acceleration magnitude, turning included: r 0.88 with \|a\| from x/y, 0.61 with \|dv/dt\| (`reports/field_kinematics.md`). Never negative in clean tracks, so no braking sign. Use `a_s_mps2` (derived) for signed tangential acceleration |
 | `dis` | float | | **Do not use.** 0.25–0.90 × the x/y step depending on drill. Derive distance from `x`/`y` |
 | `dir` | float | deg | |
 
@@ -135,14 +135,18 @@ Built by `uv run python -m eeg.ingest.load_games` from `game_tracking_{season}.c
 | `x_m`, `y_m` | m | Field position |
 | `s_mps`, `a_mps2` | m/s, m/s² | NGS speed and (unsigned) acceleration, converted |
 | `v_xy_mps` | m/s | Speed from central x/y differences, one-sided at track ends |
-| `a_t_mps2` | m/s² | Signed tangential acceleration: central difference of `v_xy_mps`. Unsmoothed, noisy at contact |
+| `a_s_mps2` | m/s² | Signed tangential acceleration: Savitzky–Golay d(`s_mps`)/dt, window `games.accel_window_frames` (5), polyorder 2. Null within 2 frames of the track ends. Same estimator as the lab 40 (`eeg.ngs.kinematics`) |
 | `dir`, `event` | deg, – | As in the source |
-| `flag_gap`, `flag_jump`, `flag_speed`, `flag_accel` | bool | Glitches: step ≠ 0.1 s; x/y step implying > `games.max_speed_mps`; reported speed > it; reported \|a\| > `games.max_accel_mps2` |
-| `glitch`, `glitch_track` | bool | Any glitch flag on the frame / anywhere in the track. 0–0.23% of tracks per season and type (452 of 264 k) |
+| `flag_gap`, `flag_jump`, `flag_speed`, `flag_accel` | bool | Glitches: step ≠ 0.1 s; x/y step implying > `games.max_speed_mps`; reported speed > it; reported \|a\| or \|`a_s_mps2`\| > `games.max_accel_mps2` (the second catches reported speed jumping while `a` stays 0) |
+| `glitch`, `glitch_track` | bool | Any glitch flag on the frame / anywhere in the track. 0–0.23% of tracks per season and type (457 of 264 k) |
 | `flag_mismatch` | bool | Quality only: \|`s_mps` − `v_xy_mps`\| > `games.max_speed_mismatch_mps`. Mostly low-speed contact, where positions stop abruptly and the smoothed NGS speed lags |
 
 Frames (REG): 2.82 M / 6.23 M / 9.06 M for 2023 / 2024 / 2025; POST adds 0.11 M / 0.31 M / 0.52 M.
 
+
+## `data/processed/field_validation.parquet`
+
+Built by `uv run python -m eeg.ngs.validate`. One row per player-season (723), clean tracks only: `player_id`, `season`, `plays`, `s_peak`, `s_peak_sust` (speed held for 3 frames), `a_peak`, `a_peak_sust` (from `a_s_mps2`), the lab values on the best 40 rep up to the finish (`lab_v_max`, `lab_a0` = v_max/τ, `lab_s_peak`, `lab_s_peak_sust`, `lab_a_peak`, `lab_a_peak_sust`; null without a usable 40), and `pos_group` (reading only). Not committed; the aggregate report is `reports/field_kinematics.md`.
 
 ## `data/processed/tee.parquet`
 

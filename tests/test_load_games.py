@@ -13,6 +13,7 @@ CFG = {
         max_speed_mps=11.0,
         max_accel_mps2=12.0,
         max_speed_mismatch_mps=1.0,
+        accel_window_frames=5,
     )
 }
 GAMES = pl.DataFrame(
@@ -56,7 +57,8 @@ def test_constant_speed_units_and_snap_time():
     out = _build(_track(2, 1, 7, x))
     assert out["v_xy_mps"].to_list() == pytest.approx([5 * 0.9144] * 8)
     assert out["s_mps"].to_list() == pytest.approx([5 * 0.9144] * 8)
-    assert out["a_t_mps2"].to_list() == pytest.approx([0.0] * 8, abs=1e-9)
+    a_s = out["a_s_mps2"]  # window 5: two frames at each end have no full window
+    assert a_s.null_count() == 4 and a_s.drop_nulls().to_list() == pytest.approx([0.0] * 4, abs=1e-9)
     assert out["x_m"][0] == pytest.approx(9.144)
     assert out["t_snap_s"].to_list() == pytest.approx([-0.2, -0.1, 0.0, 0.1, 0.2, 0.3, 0.4, 0.5])
     assert not out["glitch_track"].any()
@@ -64,8 +66,8 @@ def test_constant_speed_units_and_snap_time():
 
 def test_acceleration_from_positions():
     t = 0.1 * np.arange(10)
-    out = _build(_track(2, 1, 7, 10 + 0.5 * 4.0 * t**2))  # 4 yd/s^2 from rest
-    inner = out["a_t_mps2"].to_numpy()[2:-2]
+    out = _build(_track(2, 1, 7, 10 + 0.5 * 4.0 * t**2, s=4.0 * t))  # 4 yd/s^2 from rest
+    inner = out["a_s_mps2"].to_numpy()[2:-2]
     assert inner == pytest.approx(4 * 0.9144, rel=1e-6)
     assert out["v_xy_mps"].to_numpy()[1:-1] == pytest.approx(4 * t[1:-1] * 0.9144, rel=1e-6)
 
@@ -100,3 +102,12 @@ def test_glitch_flags():
     reg = summ.filter(pl.col("season_type") == "REG").row(0, named=True)
     assert reg["tracks"] == 4 and reg["glitch_tracks"] == 4 and reg["flag_jump"] == 1
     assert summ.filter(pl.col("season_type") == "POST")["glitch_tracks"][0] == 0
+
+
+def test_speed_jump_is_an_accel_glitch():
+    x = 10 + 0.5 * np.arange(10)
+    s = np.r_[[0.0] * 4, [8.0] * 6]  # reported speed jumps 0 -> 8 yd/s in one frame; NGS a stays 0
+    out = _build(_track(2, 1, 7, x, s=s), _track(2, 2, 7, x))
+    jumped = out.filter(pl.col("play_id") == 1)
+    assert jumped["flag_accel"].any() and jumped["glitch_track"].all()
+    assert not out.filter(pl.col("play_id") == 2)["glitch_track"].any()

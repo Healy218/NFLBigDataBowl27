@@ -229,7 +229,18 @@ games:
     units: m/s^2
     note: >
       Above elite sprint-start acceleration (~8-10 m/s^2). Reported p99.999 is
-      ~9.2 m/s^2 (2025 REG + POST).
+      ~9.2 m/s^2 (2025 REG + POST). Applied to reported a and to a_s (smoothed
+      d(speed)/dt), which catches reported speed jumping while a stays 0.
+  accel_window_frames:
+    value: 5
+    units: frames (10 Hz)
+    note: >
+      Savitzky-Golay window (polyorder 2) for signed tangential acceleration,
+      d(reported speed)/dt, applied identically to game tracks and Combine 40
+      traces (src/eeg/ngs/kinematics.py). NGS `a` can't be used: it is total
+      acceleration magnitude (r 0.88 with |a| from x/y, 0.61 with |dv/dt|), so it
+      includes turning and has no braking sign. 0.5 s keeps burst peaks; the
+      window sensitivity is in reports/field_kinematics.md.
   max_speed_mismatch_mps:
     value: 1.0
     units: m/s

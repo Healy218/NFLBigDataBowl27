@@ -9,14 +9,17 @@ Joins games.csv for season type and week and keeps `games.season_types`
 Per frame it adds:
 - t_snap_s: time since the track's first `ball_snap` event (null if none)
 - v_xy_mps: speed from central x/y differences (one-sided at track ends)
-- a_t_mps2: tangential acceleration, the central difference of v_xy_mps. NGS
-  `a` is kept as reported (a_mps2) for comparison.
+- a_s_mps2: signed tangential acceleration, the Savitzky–Golay derivative of
+  reported speed (`games.accel_window_frames`; see eeg.ngs.kinematics). NGS `a`
+  is total acceleration magnitude (no braking sign, includes turning); it is
+  kept as reported (a_mps2) for the glitch rule.
 - flags (`games.*` in config/physics.yaml), never dropped. Glitches are
   physically impossible or broken frames:
     flag_gap       step from the previous frame is not frame_dt_s
     flag_jump      the x/y step from the previous frame implies > max_speed_mps
     flag_speed     reported speed > max_speed_mps
-    flag_accel     |reported a| > max_accel_mps2
+    flag_accel     |reported a| or |a_s_mps2| > max_accel_mps2 (the second catches
+                   reported speed jumping, e.g. 0 -> 7.5 m/s in a frame, while `a` stays 0)
   glitch is any of these; glitch_track marks every frame of a track with one.
   A quality flag, not a glitch:
     flag_mismatch  |reported speed − v_xy_mps| > max_speed_mismatch_mps. Mostly
@@ -36,6 +39,7 @@ import polars as pl
 from eeg.config import PROJECT_ROOT
 from eeg.ingest import units as u
 from eeg.ingest.load_combine import RAW_DIR
+from eeg.ngs.kinematics import savgol_track
 
 OUT_DIR = PROJECT_ROOT / "data" / "interim"
 SEASONS = (2023, 2024, 2025)
@@ -89,39 +93,43 @@ def build_game_frames(raw: pl.LazyFrame | pl.DataFrame, games: pl.DataFrame, cfg
     )
     lf = lf.with_columns((pl.col("vx") ** 2 + pl.col("vy") ** 2).sqrt().alias("v_xy_mps"))
     lf = lf.with_columns(
-        central_diff("v_xy_mps").alias("a_t_mps2"),
         (pl.col("s_mps") > g["max_speed_mps"]).fill_null(False).alias("flag_speed"),
-        (pl.col("a_mps2").abs() > g["max_accel_mps2"]).fill_null(False).alias("flag_accel"),
         ((pl.col("s_mps") - pl.col("v_xy_mps")).abs() > g["max_speed_mismatch_mps"])
         .fill_null(False)
         .alias("flag_mismatch"),
     )
+    df = lf.with_columns(pl.len().over(TRACK_KEY).alias("n_frames")).collect()
+    a_s = savgol_track(
+        df["s_mps"].to_numpy(), df["frame_id"].to_numpy(), df["n_frames"].to_numpy(),
+        window=g["accel_window_frames"], dt=g["frame_dt_s"],
+    )  # fmt: skip
+    df = df.with_columns(pl.Series("a_s_mps2", a_s).fill_nan(None)).with_columns(
+        ((pl.col("a_mps2").abs() > g["max_accel_mps2"]) | (pl.col("a_s_mps2").abs() > g["max_accel_mps2"]))
+        .fill_null(False)
+        .alias("flag_accel")
+    )
     glitch = pl.any_horizontal(GLITCH_FLAGS)
-    return (
-        lf.with_columns(glitch.alias("glitch"), glitch.any().over(TRACK_KEY).alias("glitch_track"))
-        .select(
-            pl.col("nfl_id").alias("player_id"),
-            "season",
-            "season_type",
-            "week",
-            "game_id",
-            "play_id",
-            "frame_id",
-            "t_s",
-            "t_snap_s",
-            "x_m",
-            "y_m",
-            "s_mps",
-            "a_mps2",
-            "v_xy_mps",
-            "a_t_mps2",
-            "dir",
-            "event",
-            *FLAGS,
-            "glitch",
-            "glitch_track",
-        )  # fmt: skip
-        .collect()
+    return df.with_columns(glitch.alias("glitch"), glitch.any().over(TRACK_KEY).alias("glitch_track")).select(
+        pl.col("nfl_id").alias("player_id"),
+        "season",
+        "season_type",
+        "week",
+        "game_id",
+        "play_id",
+        "frame_id",
+        "t_s",
+        "t_snap_s",
+        "x_m",
+        "y_m",
+        "s_mps",
+        "a_mps2",
+        "v_xy_mps",
+        "a_s_mps2",
+        "dir",
+        "event",
+        *FLAGS,
+        "glitch",
+        "glitch_track",
     )
 
 
