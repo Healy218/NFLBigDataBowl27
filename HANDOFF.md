@@ -4,7 +4,7 @@ Session-start state for the Explosion Efficiency Gap project. Everything here co
 
 - **Current Iteration:** Iteration 3, NGS Alignment & Explosion Efficiency (η)
 - **Roadmap Phase:** Phase 4a–4b, On-field motor and Explosion Efficiency
-- **Last updated:** 2026-10-21 (steps 1–3 done: game tracking ingested, validated, field channels built)
+- **Last updated:** 2026-10-21 (steps 1–4 done: ingest, validation, field channels, reliability and exposure)
 
 ---
 
@@ -47,9 +47,10 @@ uv run python -m eeg.clustering.readout      # → reports/phase3_readout.md
 uv run python -m eeg.ingest.load_games       # → data/interim/game_tracking_{season}.parquet (REG + POST, ~5 s)
 uv run python -m eeg.ngs.validate            # → reports/field_kinematics.md, data/processed/field_validation.parquet
 uv run python -m eeg.ngs.channels            # → data/processed/field_{plays,games,seasons}.parquet, lab_channels.parquet
+uv run python -m eeg.ngs.reliability         # → reports/field_reliability.md, reports/field_reliability.csv
 ```
 
-115 tests (`uv run pytest`). Schemas: [`config/data_dictionary.md`](config/data_dictionary.md). Settings: [`config/physics.yaml`](config/physics.yaml).
+120 tests (`uv run pytest`). Schemas: [`config/data_dictionary.md`](config/data_dictionary.md). Settings: [`config/physics.yaml`](config/physics.yaml).
 
 **What carries into Phase 4:**
 - **Lab channels** (`forty_fits.parquet`, best rep; `combine_si.parquet` mass): v_max (rep-to-rep r 0.97), τ (r 0.51, noisy), E_40. Derived from the 40 model $v(t) = v_{max}(1 - e^{-t/τ})$: initial acceleration $a_0 = v_{max}/τ$ and peak propulsive power per kg $v_{max}^2 / 4τ$ (before drag).
@@ -93,12 +94,27 @@ From the raw files and [`config/data_dictionary.md`](config/data_dictionary.md):
 - 510 player-seasons with ≥ 100 plays (302 prospects); median 14–16 games. Season-peak medians: speed 8.3 m/s, burst 5.5 m/s², power 20 W/kg (WR 24, OL 13).
 - First look against the lab (season peaks): speed 0.86 (r 0.90), $E_k$ 0.73, power **0.83 (r 0.65, ρ 0.75)**, burst 1.04 (r 0.39). Power, mostly a speed channel at the top, is the second usable one; burst is the weak one.
 
+
+## Reliability and exposure (step 4, [`reports/field_reliability.md`](reports/field_reliability.md))
+
+- **Season value = `top3`** (mean of the 3 best game maxima; `games.season_statistic`), for every channel: best or tied within-position η reliability. The single season peak is the worst (speed η 0.53 vs 0.69).
+- **Exposure:** games count with ≥ 5 plays (drops 11%, mostly special-teams cameos, whose maxima are jogs); a player-season needs ≥ 100 plays and ≥ 6 counting games → `qualified` in `field_seasons.parquet`: **481 player-seasons, 288 prospects**. Over 6 games, reliability within position is 0.65 for speed and 0.73–0.84 for burst and power.
+- Within position (pooled figures are inflated by role):
+
+| Channel | Field rel. | Lab rel. (1 rep) | Field–lab r | η rel. | SD of log η |
+|---|---|---|---|---|---|
+| speed | 0.81 | 0.95 | 0.59 | **0.69** | 0.052 |
+| burst | 0.91 | 0.45 | 0.12 | 0.67 | 0.150 |
+| power | 0.85 | 0.69 | 0.32 | 0.65 | 0.150 |
+
+- **Reading:** speed η is a genuine ratio: the lab is precise and predicts the field. Burst is the most reliable *field* channel, but the lab 40 acceleration is noisy and barely related to it, so burst η is mostly game burst over a noisy constant. Power is in between. Single-game speed is weak (0.23): top speed needs an opportunity.
+
 ---
 
 ## Open decisions (decide when the data is in front of us)
 
 1. ~~**Season types**~~ **Decided 2026-10-21:** REG + POST, PRE dropped (preseason snaps are few, and effort and rosters aren't comparable). `games.season_types` in `config/physics.yaml`.
-2. **Field statistic:** a high percentile of frame values, or per-game maxima summarised over the season. Pick on split-half (odd vs even games) reliability at step 4. Speed is already stable as a season peak (retest 0.90); acceleration is not (0.59).
+2. ~~**Field statistic**~~ **Decided 2026-10-21:** `top3`, the mean of the 3 best game maxima, with the exposure rules above (`games.*` in `config/physics.yaml`).
 3. **Role dependence of field output:** an OL rarely needs top speed in a game, so raw η for speed will track role. Options: read η within position group (a scope use, already how the leaderboards work), restrict channels to contexts every role shares (e.g. the first second after the snap), or both. Decide at step 5. The gap is measured: OL 0.78 → DB 0.90 of lab speed.
 
 ---
@@ -108,7 +124,7 @@ From the raw files and [`config/data_dictionary.md`](config/data_dictionary.md):
 1. ~~**Ingest game tracking**~~ Done (see facts above).
 2. ~~**Validate field kinematics**~~ Done (see findings above).
 3. ~~**Field channels**~~ Done (see above). Change of direction deferred (lab COD covers only 126–128 profiled prospects).
-4. **Exposure and reliability** (`src/eeg/ngs/reliability.py`): split-half by game (odd vs even games within a player-season, Spearman–Brown) for each channel × statistic (`_max`, `_game_med`, `_top3`) in `field_games.parquet`; pick the statistic per channel (open decision 2); reliability against games played to set the minimum exposure.
-5. **η per matching channel** (speed, burst acceleration, peak power) and the overall Explosion Efficiency Gap; decide on role dependence (open decision 3). η on acceleration and power inherits τ's noise; η on speed is the clean one.
+4. ~~**Exposure and reliability**~~ Done (see above).
+5. **η per matching channel** (`src/eeg/ngs/eta.py` → `data/processed/eta.parquet`): η = field `top3` / lab peak for speed, $E_k$ (= η_speed²), burst and power on qualified player-seasons, plus a career value per prospect (pooled over qualified seasons, for Iteration 4). Decide role dependence (open decision 3) and how to combine channels into the Explosion Efficiency Gap given the reliability table: speed is clean; burst η is mostly field burst.
 6. **Read the results** (post hoc): η leaderboards per position group; η against the profile axes.
 7. Close Iteration 3 → Iteration 4 (survival).

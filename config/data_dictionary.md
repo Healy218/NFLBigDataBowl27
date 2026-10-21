@@ -156,8 +156,12 @@ Built by `uv run python -m eeg.ngs.channels` from the game tracking parquets (cl
 |---|---|---|
 | `field_plays` | track (263,695) | `game_id`, `play_id`, `player_id`, `season`, `season_type`, `week`, `burst_eligible` (below `games.burst_start_speed_mps` at the snap), `s_peak`, `ke_peak` (½ `s_peak`²), `a_peak`, `burst_a` (peak a_s in the first `games.burst_window_s` after the snap; null if not eligible), `p_peak` ((a_s + k v²) v) |
 | `field_games` | player-game (8,279) | keys, `plays`, `burst_plays`, max of each channel over the game's plays |
-| `field_seasons` | player-season (723) | `games`, `plays`, `burst_plays`, `burst_games`; per channel `{ch}_max` (season peak), `{ch}_game_med` (median game max), `{ch}_top3` (mean of the 3 highest game maxima) |
+| `field_seasons` | player-season | Over counting games (≥ `games.min_game_plays` plays): `games`, `plays`, `burst_plays`, `burst_games`, `qualified` (≥ `games.min_season_plays` plays and ≥ `games.min_season_games` games; 481); per channel `{ch}_max` (season peak), `{ch}_game_med` (median game max), `{ch}_top3` (mean of the 3 highest game maxima: the season value, `games.season_statistic`) |
 | `lab_channels` | prospect (417) | same estimators on the best 40 rep up to the finish: `lab_s_peak`, `lab_ke_peak`, `lab_a_peak` (from rest: the burst analogue), `lab_p_peak`; 40 model: `lab_v_max`, `lab_a0` (v_max/τ), `lab_p_model` (v_max²/4τ) |
+
+## `reports/field_reliability.csv` (committed)
+
+Built by `uv run python -m eeg.ngs.reliability`. One row per field channel × season statistic: split-half reliability (`r_half_*`, `rel_*`), reliability of log η with the lab rep-to-rep error (`rel_eta_*`), field–lab correlation and spread of log η; each pooled and within position group (centred on the group mean).
 
 ## `data/processed/tee.parquet`
 

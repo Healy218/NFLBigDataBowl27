@@ -269,3 +269,31 @@ games:
     note: >
       A play is burst-eligible only if the player is below this speed at the
       snap (a start from near rest, like the 40). Excludes pre-snap motion.
+  min_game_plays:
+    value: 5
+    units: plays
+    note: >
+      Games with fewer plays (11%, mostly special-teams cameos) don't enter
+      season statistics: their maxima are jogs, and they drag single-game
+      reliability of top speed to ~0.04 (0.16 with the filter). Season-level
+      reliability barely moves (reports/field_reliability.md).
+  min_season_plays:
+    value: 100
+    units: plays
+    note: A player-season needs this many plays (in games that count) to get field channels and η
+  min_season_games:
+    value: 6
+    units: games
+    note: >
+      And this many games that count. The season statistic is a mean over the
+      3 best games; over 6 games its within-position reliability is 0.65 for
+      speed and 0.73-0.84 for burst and power, and it flattens beyond (speed
+      0.68 at 8). 6 rather than 4 costs 13 of 494 player-seasons
+      (reports/field_reliability.md, exposure curve).
+  season_statistic:
+    value: top3
+    note: >
+      Season value of every field channel: mean of the 3 highest game maxima.
+      Highest (or tied) within-position reliability of η for every channel;
+      the single season peak is the least reliable (decided 2026-10-21, open
+      decision 2; reports/field_reliability.md).

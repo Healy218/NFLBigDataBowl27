@@ -77,6 +77,9 @@ def test_game_and_season_statistics():
     assert season["s_peak_max"] == 9.0 and season["s_peak_game_med"] == 6.5
     assert season["s_peak_top3"] == pytest.approx((9 + 7 + 6) / 3)
     assert season["burst_a_top3"] == pytest.approx(5.0)  # only 3 games with a burst
+    strict = C.season_channels(games, min_game_plays=2, min_plays=2, min_games=1).row(0, named=True)
+    assert strict["games"] == 1 and strict["s_peak_max"] == 9.0 and strict["qualified"]
+    assert not C.season_channels(games, min_games=5)["qualified"][0]
 
 
 def test_lab_channels_same_estimators():

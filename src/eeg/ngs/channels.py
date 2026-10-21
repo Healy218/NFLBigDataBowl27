@@ -18,7 +18,10 @@ Peaks are "sustained": the frame value must hold for `games.sustain_frames`
 Per game: the maximum of each over the game's plays. Per player-season, three
 candidate statistics for each channel (chosen on reliability in step 4):
 `{ch}_max` (season peak), `{ch}_game_med` (median of game maxima) and
-`{ch}_top3` (mean of the 3 highest game maxima).
+`{ch}_top3` (mean of the 3 highest game maxima), over games with at least
+`games.min_game_plays` plays; `qualified` marks seasons with enough exposure
+(`games.min_season_plays`, `games.min_season_games`). The season value used
+downstream is `games.season_statistic` (top3; see eeg.ngs.reliability).
 
 Lab: the same estimators on each prospect's best 40 rep up to the finish line
 (the 40 starts from rest, so its acceleration peak is the burst analogue), plus
@@ -105,17 +108,30 @@ def game_channels(plays: pl.DataFrame) -> pl.DataFrame:
     )
 
 
-def season_channels(games: pl.DataFrame, top_k: int = TOP_K) -> pl.DataFrame:
-    """Per player-season: exposure and, per channel, season peak, median game max and mean of the top-k game maxima."""
-    stats = []
-    for c in CHANNELS:
-        stats += [
-            pl.col(c).max().alias(f"{c}_max"),
-            pl.col(c).median().alias(f"{c}_game_med"),
-            pl.col(c).drop_nulls().sort(descending=True).head(top_k).mean().alias(f"{c}_top{top_k}"),
-        ]
+def season_stats(channel: str, top_k: int = TOP_K) -> dict[str, pl.Expr]:
+    """The candidate season statistics of one channel over a set of game rows, keyed by column suffix."""
+    c = pl.col(channel)
+    return {
+        "max": c.max(),
+        "game_med": c.median(),
+        f"top{top_k}": c.drop_nulls().sort(descending=True).head(top_k).mean(),
+    }
+
+
+def counting_games(games: pl.DataFrame, min_game_plays: int) -> pl.DataFrame:
+    """Games that enter season statistics: at least min_game_plays plays."""
+    return games.filter(pl.col("plays") >= min_game_plays)
+
+
+def season_channels(
+    games: pl.DataFrame, min_game_plays: int = 1, min_plays: int = 0, min_games: int = 0, top_k: int = TOP_K
+) -> pl.DataFrame:
+    """Per player-season, over counting games: exposure, a `qualified` flag, and per channel the season peak,
+    median game max and mean of the top-k game maxima."""
+    stats = [e.alias(f"{c}_{k}") for c in CHANNELS for k, e in season_stats(c, top_k).items()]
     return (
-        games.group_by("player_id", "season")
+        counting_games(games, min_game_plays)
+        .group_by("player_id", "season")
         .agg(
             pl.len().alias("games"),
             pl.col("plays").sum(),
@@ -123,12 +139,20 @@ def season_channels(games: pl.DataFrame, top_k: int = TOP_K) -> pl.DataFrame:
             pl.col("burst_a").is_not_null().sum().alias("burst_games"),
             *stats,
         )
+        .with_columns(((pl.col("plays") >= min_plays) & (pl.col("games") >= min_games)).alias("qualified"))
         .sort("player_id", "season")
     )
 
 
-def lab_channels(drills: pl.DataFrame, best: pl.DataFrame, drag: pl.DataFrame, games_cfg: dict) -> pl.DataFrame:
-    """Per prospect, on the best 40 rep up to the finish: the field estimators and the 40 model values."""
+def lab_channels(
+    drills: pl.DataFrame, best: pl.DataFrame, drag: pl.DataFrame, games_cfg: dict, per_rep: bool = False
+) -> pl.DataFrame:
+    """Per prospect, on the best 40 rep up to the finish: the field estimators and the 40 model values.
+
+    ``best`` lists the reps to use (rep_id, v_max, tau, t_finish). With per_rep, one row per rep
+    (rep_id kept) instead of per prospect, e.g. to measure rep-to-rep reliability.
+    """
+    key = ["player_id", "rep_id"] if per_rep else ["player_id"]
     n = games_cfg["sustain_frames"]
     reps = (
         drills.filter(pl.col("drill") == "forty")
@@ -152,7 +176,7 @@ def lab_channels(drills: pl.DataFrame, best: pl.DataFrame, drag: pl.DataFrame, g
             pl.col("p_per_kg").rolling_min(n).over("rep_id").alias("p_sust"),
         )
         .filter(pl.col("t_s") <= pl.col("t_finish"))
-        .group_by("player_id")
+        .group_by(key)
         .agg(
             pl.col("s_sust").max().alias("lab_s_peak"),
             pl.col("a_sust").max().alias("lab_a_peak"),
@@ -162,7 +186,7 @@ def lab_channels(drills: pl.DataFrame, best: pl.DataFrame, drag: pl.DataFrame, g
             (pl.col("v_max") ** 2 / (4 * pl.col("tau"))).first().alias("lab_p_model"),
         )
         .with_columns((0.5 * pl.col("lab_s_peak") ** 2).alias("lab_ke_peak"))
-        .sort("player_id")
+        .sort(key)
     )
 
 
@@ -202,25 +226,25 @@ def main() -> None:
         [play_channels(pl.read_parquet(interim / f"game_tracking_{s}.parquet", columns=cols), drag, g) for s in SEASONS]
     )
     games = game_channels(plays)
-    seasons = season_channels(games)
+    seasons = season_channels(games, g["min_game_plays"], g["min_season_plays"], g["min_season_games"])
     best = best_reps(pl.read_parquet(interim / "forty_fits.parquet"), cfg["sprint"]["max_fit_rmse_mps"])
     lab = lab_channels(pl.read_parquet(interim / "timed_drills.parquet"), best, drag, g)
     for name, df in [("field_plays", plays), ("field_games", games), ("field_seasons", seasons), ("lab_channels", lab)]:
         df.write_parquet(processed / f"{name}.parquet")
 
-    min_plays = 100
-    q = seasons.filter(pl.col("plays") >= min_plays).join(prospects.select("player_id", "pos_group"), on="player_id")
+    stat = g["season_statistic"]
+    q = seasons.filter("qualified").join(prospects.select("player_id", "pos_group"), on="player_id")
     q = q.with_columns(pl.col("pos_group").cast(pl.Enum(POS_ORDER))).sort("pos_group", "player_id", "season")
-    peaks = [f"{c}_max" for c in CHANNELS]
+    peaks = [f"{c}_{stat}" for c in CHANNELS]
     pooled = describe(q, peaks)
-    by_pos = describe(q, ["s_peak_max", "burst_a_max", "p_peak_max"], by="pos_group")
+    by_pos = describe(q, [f"{c}_{stat}" for c in ("s_peak", "burst_a", "p_peak")], by="pos_group")
     exposure = describe(q, ["games", "plays", "burst_plays", "burst_games"], by="pos_group").select(
         "pos_group", "channel", "median", "p10", "p90"
     )
     corr = q.select(peaks).drop_nulls()
     corr_tbl = pl.DataFrame(np.corrcoef(corr.to_numpy().T), schema=peaks).insert_column(0, pl.Series("", peaks))
     both = q.join(lab, on="player_id")
-    lab_cmp = compare(both, {f"{c}_max": LAB[c] for c in CHANNELS}).select(
+    lab_cmp = compare(both, {f"{c}_{stat}": LAB[c] for c in CHANNELS}).select(
         "field", "lab", "n", "field_above_lab", "ratio_median", "pearson", "spearman"
     )
     lab_model = compare(lab, {"lab_s_peak": "lab_v_max", "lab_a_peak": "lab_a0", "lab_p_peak": "lab_p_model"}).select(
@@ -235,10 +259,12 @@ Peaks hold for {g["sustain_frames"]} frames. Burst: first {g["burst_window_s"]} 
 and the lab side in `data/processed/lab_channels.parquet` (not committed). Aggregates only.
 
 - Plays: {plays.height:,} ({plays["burst_eligible"].mean():.0%} burst-eligible); player-games: {games.height:,};
-  player-seasons: {seasons.height} ({q.height} with ≥ {min_plays} plays, {q["player_id"].n_unique()} prospects).
+  player-seasons: {seasons.height} ({q.height} qualified, {q["player_id"].n_unique()} prospects).
+- Season statistic `{stat}` (`games.season_statistic`) over counting games (≥ {g["min_game_plays"]} plays).
+  Qualified: ≥ {g["min_season_plays"]} plays and ≥ {g["min_season_games"]} counting games.
 - Units: speed m/s, ke J/kg, acceleration m/s², power W/kg.
 
-## Season peaks (player-seasons with ≥ {min_plays} plays)
+## Season values (qualified player-seasons)
 
 {_md(pooled, 2)}
 
@@ -252,13 +278,13 @@ By position group (post hoc reading only):
 
 {_md(exposure, 0)}
 
-## Correlation between season-peak channels (Pearson, {corr.height} player-seasons)
+## Correlation between season channels (Pearson, {corr.height} player-seasons)
 
 {_md(corr_tbl, 2)}
 
-## First look: season peak against the lab 40 (same estimators)
+## First look: season value against the lab 40 (same estimators)
 
-Not η yet: the season statistic is chosen in step 4 and role dependence in step 5.
+Not η yet: role dependence is decided in step 5.
 
 {_md(lab_cmp, 3)}
 

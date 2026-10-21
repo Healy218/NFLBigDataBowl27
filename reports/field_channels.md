@@ -6,38 +6,40 @@ Peaks hold for 3 frames. Burst: first 1.5 s after the snap, plays starting below
 and the lab side in `data/processed/lab_channels.parquet` (not committed). Aggregates only.
 
 - Plays: 263,695 (92% burst-eligible); player-games: 8,279;
-  player-seasons: 723 (510 with ≥ 100 plays, 302 prospects).
+  player-seasons: 687 (481 qualified, 288 prospects).
+- Season statistic `top3` (`games.season_statistic`) over counting games (≥ 5 plays).
+  Qualified: ≥ 100 plays and ≥ 6 counting games.
 - Units: speed m/s, ke J/kg, acceleration m/s², power W/kg.
 
-## Season peaks (player-seasons with ≥ 100 plays)
+## Season values (qualified player-seasons)
 
 | channel | n | p10 | median | p90 |
 |---|---|---|---|---|
-| s_peak_max | 510 | 6.43 | 8.28 | 9.37 |
-| ke_peak_max | 510 | 20.65 | 34.28 | 43.85 |
-| a_peak_max | 510 | 4.43 | 5.90 | 7.00 |
-| burst_a_max | 510 | 4.25 | 5.49 | 6.84 |
-| p_peak_max | 510 | 12.39 | 20.09 | 25.32 |
+| s_peak_top3 | 481 | 6.18 | 8.04 | 9.15 |
+| ke_peak_top3 | 481 | 19.16 | 32.35 | 41.89 |
+| a_peak_top3 | 481 | 4.24 | 5.71 | 6.55 |
+| burst_a_top3 | 481 | 4.12 | 5.26 | 6.32 |
+| p_peak_top3 | 481 | 11.94 | 19.56 | 24.41 |
 
 By position group (post hoc reading only):
 
 | pos_group | channel | n | p10 | median | p90 |
 |---|---|---|---|---|---|
-| WR | s_peak_max | 106 | 8.58 | 9.03 | 9.51 |
-| WR | burst_a_max | 106 | 5.64 | 6.15 | 7.37 |
-| WR | p_peak_max | 106 | 22.20 | 24.18 | 27.87 |
-| DB | s_peak_max | 127 | 8.60 | 9.14 | 9.59 |
-| DB | burst_a_max | 127 | 5.14 | 5.66 | 7.02 |
-| DB | p_peak_max | 127 | 20.94 | 23.23 | 26.15 |
-| TE | s_peak_max | 32 | 7.62 | 8.04 | 8.77 |
-| TE | burst_a_max | 32 | 4.96 | 5.59 | 6.56 |
-| TE | p_peak_max | 32 | 17.90 | 19.32 | 23.68 |
-| DL | s_peak_max | 126 | 6.63 | 7.47 | 8.39 |
-| DL | burst_a_max | 126 | 4.20 | 5.02 | 5.93 |
-| DL | p_peak_max | 126 | 13.29 | 16.31 | 21.09 |
-| OL | s_peak_max | 119 | 5.80 | 6.58 | 7.40 |
-| OL | burst_a_max | 119 | 3.91 | 4.43 | 6.13 |
-| OL | p_peak_max | 119 | 10.83 | 12.84 | 15.71 |
+| WR | s_peak_top3 | 105 | 8.46 | 8.89 | 9.25 |
+| WR | burst_a_top3 | 105 | 5.56 | 5.90 | 7.01 |
+| WR | p_peak_top3 | 105 | 21.69 | 23.45 | 26.18 |
+| DB | s_peak_top3 | 116 | 8.38 | 8.90 | 9.28 |
+| DB | burst_a_top3 | 116 | 5.04 | 5.45 | 6.36 |
+| DB | p_peak_top3 | 116 | 20.48 | 22.26 | 24.67 |
+| TE | s_peak_top3 | 27 | 7.34 | 7.85 | 8.46 |
+| TE | burst_a_top3 | 27 | 4.86 | 5.26 | 6.04 |
+| TE | p_peak_top3 | 27 | 17.45 | 18.69 | 21.39 |
+| DL | s_peak_top3 | 122 | 6.44 | 7.20 | 8.04 |
+| DL | burst_a_top3 | 122 | 4.13 | 4.82 | 5.65 |
+| DL | p_peak_top3 | 122 | 12.73 | 15.31 | 19.56 |
+| OL | s_peak_top3 | 111 | 5.69 | 6.30 | 6.91 |
+| OL | burst_a_top3 | 111 | 3.73 | 4.25 | 5.67 |
+| OL | p_peak_top3 | 111 | 10.46 | 12.19 | 14.43 |
 
 ## Exposure by position group (per player-season)
 
@@ -45,48 +47,48 @@ By position group (post hoc reading only):
 
 | pos_group | channel | median | p10 | p90 |
 |---|---|---|---|---|
-| WR | games | 16 | 11 | 19 |
-| WR | plays | 310 | 158 | 554 |
-| WR | burst_plays | 292 | 150 | 507 |
-| WR | burst_games | 16 | 11 | 19 |
+| WR | games | 15 | 10 | 18 |
+| WR | plays | 306 | 155 | 555 |
+| WR | burst_plays | 288 | 147 | 507 |
+| WR | burst_games | 15 | 10 | 18 |
 | DB | games | 14 | 7 | 18 |
-| DB | plays | 469 | 164 | 1022 |
-| DB | burst_plays | 385 | 131 | 806 |
+| DB | plays | 514 | 204 | 1034 |
+| DB | burst_plays | 426 | 164 | 809 |
 | DB | burst_games | 14 | 7 | 18 |
-| TE | games | 16 | 12 | 19 |
-| TE | plays | 206 | 112 | 414 |
-| TE | burst_plays | 187 | 103 | 390 |
-| TE | burst_games | 16 | 12 | 19 |
+| TE | games | 14 | 11 | 17 |
+| TE | plays | 217 | 126 | 420 |
+| TE | burst_plays | 201 | 121 | 396 |
+| TE | burst_games | 14 | 11 | 17 |
 | DL | games | 16 | 8 | 18 |
-| DL | plays | 382 | 138 | 780 |
-| DL | burst_plays | 372 | 132 | 755 |
+| DL | plays | 406 | 149 | 781 |
+| DL | burst_plays | 395 | 142 | 768 |
 | DL | burst_games | 16 | 8 | 18 |
-| OL | games | 14 | 8 | 18 |
-| OL | plays | 807 | 251 | 1128 |
-| OL | burst_plays | 791 | 238 | 1113 |
-| OL | burst_games | 14 | 8 | 18 |
+| OL | games | 14 | 7 | 18 |
+| OL | plays | 865 | 326 | 1128 |
+| OL | burst_plays | 852 | 321 | 1118 |
+| OL | burst_games | 14 | 7 | 18 |
 
-## Correlation between season-peak channels (Pearson, 510 player-seasons)
+## Correlation between season channels (Pearson, 481 player-seasons)
 
-|  | s_peak_max | ke_peak_max | a_peak_max | burst_a_max | p_peak_max |
+|  | s_peak_top3 | ke_peak_top3 | a_peak_top3 | burst_a_top3 | p_peak_top3 |
 |---|---|---|---|---|---|
-| s_peak_max | 1.00 | 1.00 | 0.73 | 0.64 | 0.82 |
-| ke_peak_max | 1.00 | 1.00 | 0.73 | 0.64 | 0.82 |
-| a_peak_max | 0.73 | 0.73 | 1.00 | 0.91 | 0.86 |
-| burst_a_max | 0.64 | 0.64 | 0.91 | 1.00 | 0.80 |
-| p_peak_max | 0.82 | 0.82 | 0.86 | 0.80 | 1.00 |
+| s_peak_top3 | 1.00 | 1.00 | 0.83 | 0.73 | 0.93 |
+| ke_peak_top3 | 1.00 | 1.00 | 0.82 | 0.73 | 0.93 |
+| a_peak_top3 | 0.83 | 0.82 | 1.00 | 0.93 | 0.91 |
+| burst_a_top3 | 0.73 | 0.73 | 0.93 | 1.00 | 0.85 |
+| p_peak_top3 | 0.93 | 0.93 | 0.91 | 0.85 | 1.00 |
 
-## First look: season peak against the lab 40 (same estimators)
+## First look: season value against the lab 40 (same estimators)
 
-Not η yet: the season statistic is chosen in step 4 and role dependence in step 5.
+Not η yet: role dependence is decided in step 5.
 
 | field | lab | n | field_above_lab | ratio_median | pearson | spearman |
 |---|---|---|---|---|---|---|
-| s_peak_max | lab_s_peak | 426 | 0.002 | 0.855 | 0.896 | 0.868 |
-| ke_peak_max | lab_ke_peak | 426 | 0.002 | 0.732 | 0.895 | 0.868 |
-| a_peak_max | lab_a_peak | 426 | 0.754 | 1.110 | 0.454 | 0.502 |
-| burst_a_max | lab_a_peak | 426 | 0.610 | 1.041 | 0.390 | 0.457 |
-| p_peak_max | lab_p_peak | 426 | 0.141 | 0.829 | 0.647 | 0.750 |
+| s_peak_top3 | lab_s_peak | 398 | 0.000 | 0.834 | 0.903 | 0.871 |
+| ke_peak_top3 | lab_ke_peak | 398 | 0.000 | 0.696 | 0.901 | 0.871 |
+| a_peak_top3 | lab_a_peak | 398 | 0.671 | 1.065 | 0.495 | 0.527 |
+| burst_a_top3 | lab_a_peak | 398 | 0.503 | 1.002 | 0.436 | 0.476 |
+| p_peak_top3 | lab_p_peak | 398 | 0.055 | 0.797 | 0.728 | 0.764 |
 
 Inside the lab, measured 40 peaks against the 40 model (417 prospects):
 

@@ -96,7 +96,7 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 - [x] Per-frame $E_k/m$ and propulsive power per kg (inertia + drag) from reported speed and smoothed d(speed)/dt (`ngs/channels.py`); per play → game → player-season, plus the same estimators on the 40
 - [x] Context filters: burst from rest (first 1.5 s after the snap, below 1 m/s at the snap; 92% of plays)
 - [ ] Change-of-direction windows (deferred: lab COD covers only 126–128 profiled prospects)
-- [ ] High-percentile aggregation per player-season; exposure threshold and split-half reliability
+- [x] Season statistic and exposure (`ngs/reliability.py` → `reports/field_reliability.md`): mean of the 3 best game maxima; games count with ≥ 5 plays; ≥ 100 plays and ≥ 6 games (481 player-seasons, 288 prospects); η reliability within position 0.65–0.69
 - [ ] Compute η per matching channel and the overall Explosion Efficiency Gap
 - [ ] η leaderboards per position group
 
