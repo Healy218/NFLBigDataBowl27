@@ -91,7 +91,7 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 ## [-] Iteration 3: NGS Alignment & Explosion Efficiency (η) *(Phase 4a–4b)*  ← CURRENT
 
 - [x] Player-ID link: `nfl_id` is the same in every file; 497 of 510 prospects appear in game tracking, 292 of the 369 profiled in regular-season games
-- [ ] Ingest game tracking (`ingest/load_games.py`): REG + POST, SI units, speed and acceleration re-derived from x/y, glitch flags
+- [x] Ingest game tracking (`ingest/load_games.py`): REG + POST (PRE dropped), SI units, speed and signed tangential acceleration re-derived from x/y, time since snap, glitch flags (452 of 264 k tracks)
 - [ ] Validate field kinematics against the Combine (field top speed vs lab v_max; glitch filter)
 - [ ] Per-frame $E_k$ and propulsive power from NGS speed/acceleration
 - [ ] Context filters: burst-from-rest windows, change-of-direction windows

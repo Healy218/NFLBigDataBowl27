@@ -75,7 +75,7 @@ All integer counts, complete for 510 prospects. Careers are right-censored at th
 | `attempt` | int | 1–4 | A rep = (`nfl_id`, `event_id`, `attempt`) |
 | `x`, `y` | float | yd | Field coordinates. 40-yd start line at x = 10, finish at x = 50 |
 | `s` | float | yd/s | Consistent with x/y displacement (±1%). Max 11.85; no glitches > 13 |
-| `a` | float | yd/s² | |
+| `a` | float | yd/s² | Unsigned magnitude (min 0 in 2024 REG), so no braking sign; negative only in broken 2025 tracks. Use `a_t_mps2` (derived) for signed tangential acceleration |
 | `dis` | float | | **Do not use.** 0.25–0.90 × the x/y step depending on drill. Derive distance from `x`/`y` |
 | `dir` | float | deg | |
 
@@ -97,11 +97,13 @@ Coverage by timed drill: 40 = 418 prospects / 793 reps, shuttle = 170 / 223, 3-c
 | `nfl_id` | int | | Prospects only (156 / 318 / 448 distinct per season; 497 of 510 appear at least once) |
 | `time` | str | UTC ISO timestamp | 10 Hz |
 | `x`, `y` | float | yd | |
-| `s` | float | yd/s | p99.9 ≈ 9.4, but max up to 16.9: **needs glitch filtering** |
+| `s` | float | yd/s | p99.9 ≈ 9.4, but max up to 16.9: **needs glitch filtering**. Otherwise consistent with x/y: reported / central-difference speed 0.98–1.01 (p5–p95) above 9 yd/s |
 | `a` | float | yd/s² | |
-| `dis` | float | yd | Unverified; given the Combine finding, recompute from x/y |
+| `dis` | float | yd | Matches the x/y step here (median ratio 1.00, 2023), unlike the Combine. Dropped anyway: distance comes from x/y |
 | `o`, `dir` | float | deg | Orientation, direction of motion |
 | `event` | str | | Sparse (~7% non-null): `ball_snap`, `pass_forward`, `tackle`, `first_contact`, `pass_arrived`, `play_action`, … |
+
+A track is one prospect on one play (`game_id`, `play_id`, `nfl_id`): ~1 s before the snap to the end of the play (median 69 frames). 99.8% of tracks have one `ball_snap`; a few have two (use the first) or none. Steps are exactly 0.1 s except 1–3 gaps per season.
 
 ## `player_play.csv`
 
@@ -120,6 +122,27 @@ Most player-level columns are null unless relevant to that player's role on the 
 ---
 
 # Derived files
+
+## `data/interim/game_tracking_{season}.parquet`
+
+Built by `uv run python -m eeg.ingest.load_games` from `game_tracking_{season}.csv` and `games.csv`. REG + POST only (`games.season_types`). One row per frame, sorted by track and time. Not committed.
+
+| Column | Units | Notes |
+|---|---|---|
+| `player_id`, `season`, `season_type`, `week`, `game_id`, `play_id` | | `season` is the NFL season (January playoff games belong to the previous year) |
+| `frame_id`, `t_s` | –, s | Index and time within the track |
+| `t_snap_s` | s | Time since the track's first `ball_snap` (negative before it; null if none) |
+| `x_m`, `y_m` | m | Field position |
+| `s_mps`, `a_mps2` | m/s, m/s² | NGS speed and (unsigned) acceleration, converted |
+| `v_xy_mps` | m/s | Speed from central x/y differences, one-sided at track ends |
+| `a_t_mps2` | m/s² | Signed tangential acceleration: central difference of `v_xy_mps`. Unsmoothed, noisy at contact |
+| `dir`, `event` | deg, – | As in the source |
+| `flag_gap`, `flag_jump`, `flag_speed`, `flag_accel` | bool | Glitches: step ≠ 0.1 s; x/y step implying > `games.max_speed_mps`; reported speed > it; reported \|a\| > `games.max_accel_mps2` |
+| `glitch`, `glitch_track` | bool | Any glitch flag on the frame / anywhere in the track. 0–0.23% of tracks per season and type (452 of 264 k) |
+| `flag_mismatch` | bool | Quality only: \|`s_mps` − `v_xy_mps`\| > `games.max_speed_mismatch_mps`. Mostly low-speed contact, where positions stop abruptly and the smoothed NGS speed lags |
+
+Frames (REG): 2.82 M / 6.23 M / 9.06 M for 2023 / 2024 / 2025; POST adds 0.11 M / 0.31 M / 0.52 M.
+
 
 ## `data/processed/tee.parquet`
 

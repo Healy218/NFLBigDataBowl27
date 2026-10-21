@@ -204,3 +204,37 @@ clustering:
       only to describe the profiles. Too sparse to define them (core +
       bench 146, core + both COD drills 89) and imputing would leak position,
       since who skips bench or agility drills depends on position.
+
+games:
+  # Game tracking ingest (src/eeg/ingest/load_games.py). Glitch frames are
+  # flagged, never dropped; downstream code decides what to exclude.
+  season_types:
+    value: [REG, POST]
+    note: >
+      Preseason dropped: ~45-65 plays per prospect per season, and effort and
+      rosters are not comparable (decided 2026-10-21, HANDOFF open decision 1).
+  frame_dt_s:
+    value: 0.1
+    units: s
+    note: 10 Hz. Steps of any other length are flagged as gaps (3 of 3.6 M in 2023 REG + POST)
+  max_speed_mps:
+    value: 11.0
+    units: m/s
+    note: >
+      ~12.0 yd/s, ~24.6 mph: above the fastest Combine 40 frame (10.8 m/s) and
+      the fastest in-game NGS speeds (~10.5 m/s). Reported speed above it, or an
+      x/y step implying it (teleports at the snap), is a glitch.
+  max_accel_mps2:
+    value: 12.0
+    units: m/s^2
+    note: >
+      Above elite sprint-start acceleration (~8-10 m/s^2). Reported p99.999 is
+      ~9.2 m/s^2 (2025 REG + POST).
+  max_speed_mismatch_mps:
+    value: 1.0
+    units: m/s
+    note: >
+      Reported speed vs speed from central x/y differences. They agree within
+      ~1-2% above 8 m/s (|gap| p99.9 0.63 m/s in clean 2024 REG tracks). A quality
+      flag, not a glitch: most flagged frames are low-speed contact, where
+      positions stop abruptly and the smoothed reported speed lags.
