@@ -249,3 +249,23 @@ games:
       ~1-2% above 8 m/s (|gap| p99.9 0.63 m/s in clean 2024 REG tracks). A quality
       flag, not a glitch: most flagged frames are low-speed contact, where
       positions stop abruptly and the smoothed reported speed lags.
+  sustain_frames:
+    value: 3
+    units: frames (10 Hz)
+    note: >
+      A peak (speed, acceleration, power) counts only if held for this many
+      consecutive frames (rolling minimum), so a one-frame spike can't set it.
+      Same on the field and on the 40 (src/eeg/ngs/channels.py, validate.py).
+  burst_window_s:
+    value: 1.5
+    units: s after the snap
+    note: >
+      Burst acceleration is the sustained peak of a_s in [0, burst_window_s]
+      after the snap. 55% of season peak accelerations fall in this window
+      (reports/field_kinematics.md).
+  burst_start_speed_mps:
+    value: 1.0
+    units: m/s
+    note: >
+      A play is burst-eligible only if the player is below this speed at the
+      snap (a start from near rest, like the 40). Excludes pre-snap motion.

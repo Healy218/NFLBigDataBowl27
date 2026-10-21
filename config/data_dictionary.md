@@ -148,6 +148,17 @@ Frames (REG): 2.82 M / 6.23 M / 9.06 M for 2023 / 2024 / 2025; POST adds 0.11 M 
 
 Built by `uv run python -m eeg.ngs.validate`. One row per player-season (723), clean tracks only: `player_id`, `season`, `plays`, `s_peak`, `s_peak_sust` (speed held for 3 frames), `a_peak`, `a_peak_sust` (from `a_s_mps2`), the lab values on the best 40 rep up to the finish (`lab_v_max`, `lab_a0` = v_max/τ, `lab_s_peak`, `lab_s_peak_sust`, `lab_a_peak`, `lab_a_peak_sust`; null without a usable 40), and `pos_group` (reading only). Not committed; the aggregate report is `reports/field_kinematics.md`.
 
+## `data/processed/field_plays.parquet`, `field_games.parquet`, `field_seasons.parquet`, `lab_channels.parquet`
+
+Built by `uv run python -m eeg.ngs.channels` from the game tracking parquets (clean tracks only), `combine_si.parquet` (height, mass for drag) and the best 40 rep. Not committed; aggregates in `reports/field_channels.md`. Units: speed m/s, `ke` J/kg, acceleration m/s², power W/kg. Every peak is sustained for `games.sustain_frames` frames.
+
+| File | Grain | Columns |
+|---|---|---|
+| `field_plays` | track (263,695) | `game_id`, `play_id`, `player_id`, `season`, `season_type`, `week`, `burst_eligible` (below `games.burst_start_speed_mps` at the snap), `s_peak`, `ke_peak` (½ `s_peak`²), `a_peak`, `burst_a` (peak a_s in the first `games.burst_window_s` after the snap; null if not eligible), `p_peak` ((a_s + k v²) v) |
+| `field_games` | player-game (8,279) | keys, `plays`, `burst_plays`, max of each channel over the game's plays |
+| `field_seasons` | player-season (723) | `games`, `plays`, `burst_plays`, `burst_games`; per channel `{ch}_max` (season peak), `{ch}_game_med` (median game max), `{ch}_top3` (mean of the 3 highest game maxima) |
+| `lab_channels` | prospect (417) | same estimators on the best 40 rep up to the finish: `lab_s_peak`, `lab_ke_peak`, `lab_a_peak` (from rest: the burst analogue), `lab_p_peak`; 40 model: `lab_v_max`, `lab_a0` (v_max/τ), `lab_p_model` (v_max²/4τ) |
+
 ## `data/processed/tee.parquet`
 
 Built by `uv run python -m eeg.physics.tee` from `combine_si.parquet`, `forty_fits.parquet` and `cod_reps.parquet`. One row per prospect (510).

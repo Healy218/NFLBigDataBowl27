@@ -28,7 +28,7 @@ from scipy.stats import pearsonr, spearmanr
 from eeg.ngs.kinematics import savgol_track
 
 TRACK = ["game_id", "play_id", "player_id"]
-SUSTAIN_FRAMES = 3
+SUSTAIN_FRAMES = 3  # = games.sustain_frames (config/physics.yaml)
 MIN_PLAYS = 100
 SPEED_BANDS = [0.0, 2.0, 4.0, 6.0, 8.0, 9.0]
 WINDOWS = (3, 5, 7, 9)

@@ -93,8 +93,9 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 - [x] Player-ID link: `nfl_id` is the same in every file; 497 of 510 prospects appear in game tracking, 292 of the 369 profiled in regular-season games
 - [x] Ingest game tracking (`ingest/load_games.py`): REG + POST (PRE dropped), SI units, speed and signed tangential acceleration re-derived from x/y, time since snap, glitch flags (457 of 264 k tracks)
 - [x] Validate field kinematics against the Combine (`ngs/validate.py` → `reports/field_kinematics.md`): reported speed confirmed; NGS `a` is total magnitude, so acceleration = smoothed d(speed)/dt on both sides; glitch rule = drop tracks (457); season peak speed is 0.86 × lab (r 0.90, retest 0.90)
-- [ ] Per-frame $E_k$ and propulsive power from NGS speed/acceleration
-- [ ] Context filters: burst-from-rest windows, change-of-direction windows
+- [x] Per-frame $E_k/m$ and propulsive power per kg (inertia + drag) from reported speed and smoothed d(speed)/dt (`ngs/channels.py`); per play → game → player-season, plus the same estimators on the 40
+- [x] Context filters: burst from rest (first 1.5 s after the snap, below 1 m/s at the snap; 92% of plays)
+- [ ] Change-of-direction windows (deferred: lab COD covers only 126–128 profiled prospects)
 - [ ] High-percentile aggregation per player-season; exposure threshold and split-half reliability
 - [ ] Compute η per matching channel and the overall Explosion Efficiency Gap
 - [ ] η leaderboards per position group
