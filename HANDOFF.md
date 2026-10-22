@@ -4,7 +4,7 @@ Session-start state for the Explosion Efficiency Gap project. Everything here co
 
 - **Current Iteration:** Iteration 3, NGS Alignment & Explosion Efficiency (η)
 - **Roadmap Phase:** Phase 4a–4b, On-field motor and Explosion Efficiency
-- **Last updated:** 2026-10-22 (steps 1–5 done: ingest, validation, field channels, reliability and exposure, η)
+- **Last updated:** 2026-10-22 (steps 1–6 done: ingest, validation, field channels, reliability and exposure, η, readout)
 
 ---
 
@@ -49,9 +49,10 @@ uv run python -m eeg.ngs.validate            # → reports/field_kinematics.md, 
 uv run python -m eeg.ngs.channels            # → data/processed/field_{plays,games,seasons}.parquet, lab_channels.parquet
 uv run python -m eeg.ngs.reliability         # → reports/field_reliability.md, reports/field_reliability.csv
 uv run python -m eeg.ngs.eta                 # → data/processed/eta.parquet, eta_career.parquet, reports/eta.md
+uv run python -m eeg.ngs.eta_readout         # → reports/eta_readout.md, data/processed/eta_leaderboard.parquet (named)
 ```
 
-124 tests (`uv run pytest`). Schemas: [`config/data_dictionary.md`](config/data_dictionary.md). Settings: [`config/physics.yaml`](config/physics.yaml).
+128 tests (`uv run pytest`). Schemas: [`config/data_dictionary.md`](config/data_dictionary.md). Settings: [`config/physics.yaml`](config/physics.yaml).
 
 **What carries into Phase 4:**
 - **Lab channels** (`forty_fits.parquet`, best rep; `combine_si.parquet` mass): v_max (rep-to-rep r 0.97), τ (r 0.51, noisy), E_40. Derived from the 40 model $v(t) = v_{max}(1 - e^{-t/τ})$: initial acceleration $a_0 = v_{max}/τ$ and peak propulsive power per kg $v_{max}^2 / 4τ$ (before drag).
@@ -123,6 +124,16 @@ From the raw files and [`config/data_dictionary.md`](config/data_dictionary.md):
 
 ---
 
+## Reading η (step 6, [`reports/eta_readout.md`](reports/eta_readout.md))
+
+- **Shrinkage** (empirical Bayes on log η_KE, toward the group mean): season-to-season SD 0.080 against a true within-group spread of 0.068, so one season is a weak read. B = 0.42 for one season, 0.59 for two, 0.68 for three. Shrunk η_KE spans about ±0.03–0.05 around each group mean (p10–p90). Credibly off the group mean (90%): WR 0 / 0, DB 3 / 1, TE 1 / 0, DL 8 / 4, OL 6 / 6 (above / below).
+- **Sub-roles** inside a group barely differ in median η_KE (DL: OLB 0.62, NT 0.63, DE 0.60, DT 0.59; DB: CB 0.77, FS and SS 0.76), so the position group is enough role control. OLBs do fill the top of the DL board.
+- **η is nearly independent of the engine** (within group): r −0.05 with 40 speed, −0.15 with `ax_explosive`, −0.03 with the Kinetic Anomaly, −0.07 with TEE_z_rel. A slight lean: bigger engines transfer a little less (−0.22 for `ax_explosive` within listed position). In within-group terciles (24 per cell if independent), low engine → high η holds 30 and low engine → low η 15; high engine → high η 18. So η adds information the Combine doesn't hold.
+- **η goes with college production** (NGS college production score r +0.21, CI 0.09–0.33; +0.20 within listed position) and slightly against the NGS athleticism score (−0.14). The mass link (−0.16) is sub-role: −0.05 within listed position.
+- **Named leaderboards** print to the terminal and live in `data/processed/eta_leaderboard.parquet` (never committed), with "Combine warrior" (high engine, low η) and opposite-corner tags.
+
+---
+
 ## Open decisions (decide when the data is in front of us)
 
 1. ~~**Season types**~~ **Decided 2026-10-21:** REG + POST, PRE dropped (preseason snaps are few, and effort and rosters aren't comparable). `games.season_types` in `config/physics.yaml`.
@@ -138,5 +149,5 @@ From the raw files and [`config/data_dictionary.md`](config/data_dictionary.md):
 3. ~~**Field channels**~~ Done (see above). Change of direction deferred (lab COD covers only 126–128 profiled prospects).
 4. ~~**Exposure and reliability**~~ Done (see above).
 5. ~~**η per matching channel**~~ Done (see above).
-6. **Read the results** (post hoc): η_KE leaderboards per position group (named tables in `data/` only; the committed report keeps aggregates), with shrinkage toward the group median given reliability 0.69 and 1–3 seasons per prospect; η against the profile axes and lab capacity (high-engine, low-η "Combine warriors" vs low-engine, high-η).
+6. ~~**Read the results**~~ Done (see above).
 7. Close Iteration 3 → Iteration 4 (survival).

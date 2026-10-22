@@ -168,6 +168,10 @@ Built by `uv run python -m eeg.ngs.eta` from `field_seasons.parquet` (qualified,
 | `eta` | qualified player-season with a lab 40 (398) | `player_id`, `season`, `games`, `plays`; per channel `speed`, `ke`, `burst`, `power`: `field_*`, `lab_*` and `eta_*` = field / lab (`eta_ke` = `eta_speed`²; `eta_burst` uses `lab_a_peak`); `gap` = 1 − `eta_ke` (`eta.headline`) |
 | `eta_career` | prospect (238) | `seasons`, `first_season`, `plays`; per channel `eta_*_first` (first qualified season) and `eta_*_career` (plays-weighted geometric mean over qualified seasons; uses later seasons, so look-ahead for survival); `gap_first`, `gap_career` |
 
+## `data/processed/eta_leaderboard.parquet`
+
+Built by `uv run python -m eeg.ngs.eta_readout`. One row per prospect with η (238). **Named; not committed** (aggregates in `reports/eta_readout.md`). `player_id`, `group` (pos_group, reading only), `n` (qualified seasons), `raw` (mean season log η_KE), `group_mean`, `B` (shrinkage factor), `shrunk`, `post_sd`, `lo90`, `hi90` (log scale), `credible` (above / below / —: 90% interval excludes the group mean), `rank` (within group), `eta_ke_shrunk`, `eta_ke_career`, `eta_ke_first`, `first_season`, `name`, `pos`, `mass_kg`, NGS scores, `lab_s_peak`, profile axes, `anomaly_d2`, `TEE_z_rel`, `engine` / `efficiency` (within-group terciles of `ax_explosive` and shrunk η; profiled prospects only).
+
 ## `reports/field_reliability.csv` (committed)
 
 Built by `uv run python -m eeg.ngs.reliability`. One row per field channel × season statistic: split-half reliability (`r_half_*`, `rel_*`), reliability of log η with the lab rep-to-rep error (`rel_eta_*`), field–lab correlation and spread of log η; each pooled and within position group (centred on the group mean).
