@@ -339,3 +339,16 @@ Built by `uv run python -m eeg.physics.burst` from `combine_si.parquet`, `forty_
 | `n_reps` | | Well-fit tracked 40 reps (null without any) |
 | `v_max_mean`, `tau_mean`, `lab_a0_mean`, `lab_a_peak_mean`, `t10_trk_mean` | m/s, s, m/s², m/s², s | Geometric mean over well-fit reps. `t10_trk` = 10-yard line crossing − fitted start t0 |
 | `lab_a_peak_best`, `lab_a0_best` | m/s² | Same on the best rep (as in `lab_channels.parquet`) |
+
+## `data/processed/mismatch.parquet`
+
+Built by `uv run python -m eeg.outcomes.mismatch` from `outcomes.parquet`, `profiles.parquet`, `tee.parquet`, `lab_burst.parquet` and `combine_si.parquet`. One row per prospect (510), sorted by `snaps_resid`. **Named; not committed** (aggregates in `reports/mismatch.md`).
+
+| Column | Units | Notes |
+|---|---|---|
+| `player_id`, `name`, `pos`, `group`, `draft_year`, `draft_overall_pick` | | `group` = pos_group (reading only); pick null = undrafted |
+| `scrim_per_season`, `starts_per_season` | | Per available season (from `outcomes`) |
+| `expected_snaps_per_season` | snaps | Draft-slot expectation: per group, log1p snaps on `outcomes.draft_control` with a class intercept, leave-one-out, clipped to the group's range |
+| `snaps_resid`, `starts_resid` | log | Actual − expected (log1p scale); > 0 = plays more than the draft slot predicts |
+| `ax_explosive`, `TEE_z_abs`, `TEE_z_rel`, `a10`, `mass_kg` | | Explosion measures (null where not measured) |
+| `q_<measure>` | | Within group × class rank from the top / count (≤ 0.2 = the tail) |

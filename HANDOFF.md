@@ -4,7 +4,7 @@ Session-start state for the Explosion Efficiency Gap project. Everything here co
 
 - **Current Iteration:** Iteration 4, Explosion Potential → Regular-Season Performance
 - **Roadmap Phase:** Phase 4c
-- **Last updated:** 2026-10-22 (Iteration 4 steps 1–5 done: outcome table, position production, lab burst, what predicts transfer, potential and η → output; η's season value made exposure-free)
+- **Last updated:** 2026-10-22 (Iteration 4 steps 1–6 done: outcome table, position production, lab burst, what predicts transfer, potential and η → output, under- / over-drafted; η's season value made exposure-free)
 
 ---
 
@@ -59,9 +59,10 @@ uv run python -m eeg.outcomes.production     # → data/processed/production_sea
 uv run python -m eeg.physics.burst           # → data/processed/lab_burst.parquet, reports/lab_burst.md (needs production_seasons)
 uv run python -m eeg.ngs.transfer            # → reports/transfer.md, reports/figures/transfer.png
 uv run python -m eeg.outcomes.output         # → reports/output.md, reports/figures/output.png
+uv run python -m eeg.outcomes.mismatch       # → reports/mismatch.md, data/processed/mismatch.parquet (named)
 ```
 
-148 tests (`uv run pytest`). Schemas: [`config/data_dictionary.md`](config/data_dictionary.md). Settings: [`config/physics.yaml`](config/physics.yaml) (`games` and `eta` for Iteration 3, `outcomes` and `lab_burst` for Iteration 4).
+152 tests (`uv run pytest`). Schemas: [`config/data_dictionary.md`](config/data_dictionary.md). Settings: [`config/physics.yaml`](config/physics.yaml) (`games` and `eta` for Iteration 3, `outcomes` and `lab_burst` for Iteration 4).
 
 **What carries into Iteration 4:**
 - **Engine (potential):** `tee.parquet` (J and J/kg per drill, TEE composites; 510), `profiles.parquet` (`ax_explosive`, `ax_speed_vs_bounce`, `ax_up_vs_out`, `anomaly_d2`, `size_class`; 369), `forty_fits.parquet` (v_max rep-to-rep r 0.97; τ r 0.51), `lab_channels.parquet` (40 peaks with the field estimators; 417).
@@ -132,6 +133,18 @@ The season value of every field channel was `top3`, the mean of a player's 3 bes
 
 ---
 
+## Under- / over-drafted (step 6, [`reports/mismatch.md`](reports/mismatch.md))
+
+`eeg.outcomes.mismatch` → `mismatch.parquet` (named, `data/` only). Step 5's linear "nothing beyond the draft" averages over every prospect; mismatches live in the tail. So: snaps (and starts) per available season against a **draft-slot expectation** (per group, pick + undrafted with a class intercept, leave-one-out, clipped to the group's range; the group absorbs "linemen play every snap" and "skill players debut later"), and the **share of a measure's top 20% (within group × class) that beat it**. Permutation p shuffles the measure within group × class. Figure `reports/figures/mismatch.png`.
+- **Raw joules is the mismatch signal.** Its top 20% beat their slot **65%** of the time (CI 54–74%, n 79) against 50% for the rest (p 0.027); for games started 57% vs 38% (p 0.003). A **tail effect**: quintiles 2–5 sit at 48–54%.
+- **Not mass:** the heaviest 20% beat their slot 54% vs 51% (p 0.65). Post hoc, the raw-joule tail who are *not* the heaviest beat it 75% (n 44): energy, not size.
+- **Weaker elsewhere:** size-adjusted axis 59% vs 52% (p 0.27; starts 53% vs 41%, p 0.07), joules per kg 48%, a10 56%.
+- **By group (small tails):** DL raw joules 16 of 18 (p 0.013), OL axis 11 of 15 (p 0.024); WR, TE and DB nothing credible. Ten tests at the top level and fifteen by group, so treat single p near 0.05 as weak; the raw-joules result holds on both outcomes.
+- **Mean residuals are noisy** (log snaps, 0 vs 1,000): `p_mean` 0.22 for raw joules on snaps; the share is the robust statistic.
+- η is not used: it exists only for players who already play, and step 5 found it adds nothing.
+
+---
+
 ## Open decisions (decide when the data is in front of us)
 
 1. ~~**Primary outcome per group**~~ Decided 2026-10-22 (`outcomes` in `config/physics.yaml`): primary = **playing time** for every group (all prospects, zeros kept, within group). Secondary production: WR and TE YPRR, DL pressure rate, OL peak pressure probability allowed; DB none. DL get-off is a realization channel next to η, not an outcome.
@@ -147,5 +160,5 @@ The season value of every field channel was `top3`, the mean of a player's 3 bes
 3. ~~**Sharper lab burst**~~ Done: `eeg.physics.burst`, see "Lab burst" above.
 4. ~~**What predicts transfer**~~ Done: `eeg.ngs.transfer`, see "What predicts transfer" above.
 5. ~~**Potential and η → regular-season output**~~ Done: `eeg.outcomes.output`, see step 5 above (and the η season value fix).
-6. **Under- / over-drafted:** potential × η against draft slot.
+6. ~~**Under- / over-drafted**~~ Done: `eeg.outcomes.mismatch`, see step 6 above.
 7. **Tenure** (secondary, open decision 3), then close Iteration 4 → Iteration 5 (submission).
