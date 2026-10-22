@@ -105,6 +105,12 @@ Source: `notebooks/build_true_ball.py` (edit there, then build and execute: `uv 
 
 ---
 
+## Side projects (`fun/`)
+
+Outside the competition work: week 1 and eight-week team explosion rankings, team explosion vs season results (no signal: only young starters are tracked), and the 2026 rookie class in joules. Public nflverse data is allowed there only (downloaded to `data/external/`, never committed); see [`fun/README.md`](fun/README.md).
+
+---
+
 ## Open decisions (decide when the data is in front of us)
 
 1. ~~**Narrative frame**~~ Decided 2026-10-22 (the user's original intent): **(b) explosion potential is the differentiator.** Physics of the Combine → the explosive tail the draft under-rates → the DL start chain; η stays as a description of how much top speed reaches games, by group. **Presentation title: "True ball is an explosion".**
