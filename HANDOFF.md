@@ -4,7 +4,7 @@ Session-start state for the Explosion Efficiency Gap project. Everything here co
 
 - **Current Iteration:** Iteration 5, Submission
 - **Roadmap Phase:** Phase 4d
-- **Last updated:** 2026-10-22 (Iteration 5: frame decided, "True ball is an explosion"; headline results hardened; final figures built)
+- **Last updated:** 2026-10-22 (Iteration 5: frame decided, "True ball is an explosion"; headline results hardened; final figures built; notebook drafted)
 
 ---
 
@@ -18,7 +18,7 @@ Done means a notebook that runs end-to-end from `data/raw/`, tells one focused s
 - **Position groups are never features.** They scope the study and are used only to read results; models stratify by group or centre within it.
 - **Data:** only the Kaggle competition data. No external sources without asking.
 - **No look-ahead:** predictors of later performance use Combine values or first-season η.
-- **Committed reports hold aggregates only.** Named tables stay in `data/` (competition terms). `reports/figures/` is gitignored: figures are rebuilt by the pipeline.
+- **Committed reports hold aggregates only.** Named tables stay in `data/` (competition terms: don't redistribute the datasets). The notebook names players, as Big Data Bowl entries do (the user's decision, 2026-10-22). `reports/figures/` is gitignored: figures are rebuilt by the pipeline.
 
 ---
 
@@ -97,6 +97,14 @@ Built from the analysis functions (no typed-in numbers), one shared style; the e
 
 ---
 
+## Notebook draft (step 4, [`notebooks/true_ball_is_an_explosion.ipynb`](notebooks/true_ball_is_an_explosion.ipynb))
+
+Source: `notebooks/build_true_ball.py` (edit there, then build and execute: `uv run python notebooks/build_true_ball.py` and `uv run jupyter nbconvert --to notebook --execute --inplace notebooks/true_ball_is_an_explosion.ipynb`). ~1,460 words of narrative, 5 figures and 1 table, executed with outputs.
+- Sections: intro (three questions, short answer) → 1. the explosion in joules (Byron Young) → 2. the Combine shows up on Sundays and the draft knows it → 3. where the draft misses: the explosive tail (+ table of the 10 tail players with the most extra snaps over their slot; misses named too) → 4. up front, explosion is the job (DL chain) → 5. how much of the 40 reaches the game → recommendations → limits → method.
+- **Still to do:** check the 2027 rules for length and figure limits (earlier Big Data Bowls capped the write-up at about 2,000 words and a handful of figures/tables; not verified for 2027); make it run on Kaggle (it imports `eeg` and reads `data/processed`, so the package and pipeline need to ship as a Kaggle utility script or dataset, or the notebook must rebuild from `/kaggle/input`); a read-through with the user.
+
+---
+
 ## Open decisions (decide when the data is in front of us)
 
 1. ~~**Narrative frame**~~ Decided 2026-10-22 (the user's original intent): **(b) explosion potential is the differentiator.** Physics of the Combine → the explosive tail the draft under-rates → the DL start chain; η stays as a description of how much top speed reaches games, by group. **Presentation title: "True ball is an explosion".**
@@ -110,6 +118,6 @@ Built from the analysis functions (no typed-in numbers), one shared style; the e
 1. ~~**Decide the frame**~~ Done: (b), titled "True ball is an explosion".
 2. ~~**Harden the headline results**~~ Done: `eeg.outcomes.robustness`, see "Robustness" above.
 3. ~~**Final figures**~~ Done: `eeg.viz.figures`, see "Final figures" above.
-4. **Notebook narrative**, then the README executive summary to match.
+4. **Notebook narrative:** drafted (see "Notebook draft" above); next the user's read-through, the 2027 rules check and the README executive summary to match.
 5. **Reproducibility pass:** clean run end-to-end from `data/raw/`.
 6. Optional: Combine position skill drills.

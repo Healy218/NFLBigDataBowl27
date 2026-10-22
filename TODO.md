@@ -121,7 +121,7 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 - [x] Narrative frame: explosion potential is the differentiator (the tail the draft under-rates, the DL start chain; η descriptive). Title: **"True ball is an explosion"**
 - [x] Harden the headline results (`eeg.outcomes.robustness` → `reports/robustness.md`): the raw-joules tail beats its slot more often than the rest in all 25 checks (cut-offs 10/20/30%, four expectation models, each class, each group left out); strongest at 20% and with DL in; the tracked 40 energy alone 63% vs 51%, the composite 65% vs 50%. DL chain same sign in every class, weakest in the 2025 rookie class
 - [x] Final figures (`eeg.viz.figures` → `reports/figures/final_*.png`): drill → joules for one described prospect; the Combine on the field vs priced by the draft; the explosive tail by quintile and across checks; the DL start chain; how much of the 40 reaches games by group
-- [ ] Kaggle notebook narrative
+- [-] Kaggle notebook narrative: drafted (`notebooks/true_ball_is_an_explosion.ipynb`, source `notebooks/build_true_ball.py`; ~1,460 words, 5 figures, 1 table); read-through, rules check and Kaggle packaging to go
 - [ ] README executive summary to match the findings
 - [ ] Reproducibility pass: clean run end-to-end from `data/raw/`
 - [ ] Optional: Combine position skill drills (10 Hz, ~60 drills) as position-specific movement
