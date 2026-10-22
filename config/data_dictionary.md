@@ -325,3 +325,17 @@ Built by `uv run python -m eeg.outcomes.production` from `player_play.csv` (`gam
 | `get_off` | DL | mean `player_get_off` (s) | lower |
 | `tackle_rate` | DL, DB | tackle involvements (solo or assist) / snaps | higher |
 | `tfl_rate` | DL, DB | tackles for loss / snaps | higher |
+
+## `data/processed/lab_burst.parquet`
+
+Built by `uv run python -m eeg.physics.burst` from `combine_si.parquet`, `forty_fits.parquet` (well-fit reps) and `timed_drills.parquet`. One row per prospect with an official 10-yard split or a well-fit 40 rep (425). Not committed; aggregates in `reports/lab_burst.md`. The burst input from Iteration 4 on is `a10` (`lab_burst.measure`).
+
+| Column | Units | Notes |
+|---|---|---|
+| `ten_split_s` | s | Official 10-yard split (best attempt) |
+| `fly30_off` | s | `forty_s` − `ten_split_s` |
+| `a10` | m/s² | 2 d10 / t10²: mean acceleration over the first 10 yd from rest (same ranking as the split) |
+| `p10_w` | W | m · a10 · d10 / t10: idealized constant-force power over the first 10 yd |
+| `n_reps` | | Well-fit tracked 40 reps (null without any) |
+| `v_max_mean`, `tau_mean`, `lab_a0_mean`, `lab_a_peak_mean`, `t10_trk_mean` | m/s, s, m/s², m/s², s | Geometric mean over well-fit reps. `t10_trk` = 10-yard line crossing − fitted start t0 |
+| `lab_a_peak_best`, `lab_a0_best` | m/s² | Same on the best rep (as in `lab_channels.parquet`) |

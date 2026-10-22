@@ -205,6 +205,23 @@ clustering:
       bench 146, core + both COD drills 89) and imputing would leak position,
       since who skips bench or agility drills depends on position.
 
+lab_burst:
+  # Which Combine measure of the start to use from Iteration 4 on (src/eeg/physics/burst.py).
+  measure:
+    value: a10
+    units: m/s^2
+    note: >
+      Mean acceleration over the first 10 yd from rest, a10 = 2 d10 / t10^2,
+      from the official 10-yard split (a monotone transform of it). Within
+      group it tracks field burst (r 0.36) and DL get-off (r -0.67) better
+      than any tracked start measure (best: mean of reps of the sustained
+      a_s peak, 0.23 / -0.45; tau alone ~0). For get-off it carries the signal
+      beyond top speed (beta 0.63 with v_max at -0.05). Covers 425 prospects.
+      Tracked reps stay noisy even averaged (mean-of-2 reliability 0.62-0.73).
+      The clustering keeps v_max + tau: with v_max fixed, tau does carry the
+      start (beta 0.31 for get-off). η_burst keeps the same-estimator lab
+      peak; a10 is a predictor, not an η denominator (decided 2026-10-22,
+      reports/lab_burst.md).
 games:
   # Game tracking ingest (src/eeg/ingest/load_games.py). Glitch frames are
   # flagged, never dropped; downstream code decides what to exclude.
