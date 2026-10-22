@@ -106,7 +106,7 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 ## [-] Iteration 4: Explosion Potential → Regular-Season Performance *(Phase 4c)*  ← CURRENT
 
 - [x] Outcome table (`eeg.outcomes.table` → `outcomes_seasons.parquet`, `outcomes.parquet`, `reports/outcomes.md`): 1,007 league player-seasons (722 with a play), draft slot and round band, career totals, exits. player_play holds every scrimmage snap for OL/DL/DB but only route plays for WR (58%) and TE (40%). Draft slot drives playing time (within-class ρ −0.57 to −0.76); 48 exits (0 in round 1, 44% of rounds 6–7 who could)
-- [ ] Position-specific production from `player_play` per player-season (e.g. WR/TE separation and YAC over expected, DL get-off and time to pressure, OL pressure allowed, DB coverage and tackles); coverage and reliability check
+- [x] Position production (`eeg.outcomes.production` → `production_seasons.parquet`, `reports/production.md`): 12 measures with split-half reliability, season retest and validity. Decided (open decision 1): primary outcome = playing time for every group; secondary = YPRR (WR 0.85, TE 0.80), DL pressure rate (0.67), OL peak pressure probability allowed (0.77); DB none credible. DL get-off (rel 0.89, retest 0.84) joins η as an in-game explosion channel
 - [ ] Sharper lab burst: τ, a0 and 10-yard split from all well-fit 40 reps; rep-to-rep reliability against the best-rep values
 - [ ] What predicts transfer: η (first-season / per-season) against the explosion profile, the 40 shape (burst vs top speed), agility traces; within group
 - [ ] Potential and η → regular-season output, within group (stratified), controlling for draft slot; NGS college production as context

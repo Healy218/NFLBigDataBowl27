@@ -304,3 +304,24 @@ Built by `uv run python -m eeg.outcomes.table` from `player_play.csv` (`games.se
 |---|---|---|
 | `outcomes_seasons` | prospect × league season, draft year to `outcomes.last_season` (1,007; zeros kept) | `player_id`, `season`, `year` (1 = rookie), `plays`, `off_plays`, `def_plays`, `games` (with a play), `team` (most plays; null if inactive), `active` (plays > 0) |
 | `outcomes` | prospect (510) | `draft_year`, `draft_round`, `draft_pick_within_round`, `draft_overall_pick` (null = undrafted), `undrafted`, `round_band` (1 / 2-3 / 4-5 / 6-7 / UDFA); `seasons_available`, `seasons_active`, `first_active`, `last_active`, `pp_plays`, `pp_games`; career `scrim_snaps` (offense + defense), `st_snaps`, `games_active`, `games_started`, `all_pro` (1st + 2nd team), `pro_bowl`; `never_played` (no scrimmage snap), `exited` (played, then no play through the last season; right-censored), `gap_seasons` (inactive seasons between active ones), `scrim_per_season`, `starts_per_season` (per available season), `pp_coverage` (pp_plays / scrim_snaps) |
+
+## `data/processed/production_seasons.parquet`
+
+Built by `uv run python -m eeg.outcomes.production` from `player_play.csv` (`games.season_types`). One row per player-season with a play (722). Not committed; aggregates in `reports/production.md`. Each measure is a ratio of season sums; `{measure}_n` is its opportunity count. A measure is null where it doesn't apply to the group or there was no opportunity.
+
+`player_id`, `season`, `group` (scope only), `plays`, `games` (with a play), `plays_per_game`, `qualified` (≥ `games.min_season_plays` plays and ≥ `games.min_season_games` games with a play; 489). Measures:
+
+| Measure | Groups | Definition | Better |
+|---|---|---|---|
+| `target_rate` | WR, TE | targets / routes | higher |
+| `yprr` | WR, TE | receiving yards / routes | higher |
+| `separation` | WR, TE | mean `separation_at_pass_forward` (yd) | higher |
+| `yac_oe` | WR, TE | mean (`yards_after_catch` − `expected_yards_after_catch`) | higher |
+| `pressure_allowed_rate` | OL | pressures allowed / pass blocks (`pressure_allowed` set) | lower |
+| `peak_pressure_prob` | OL | mean `peak_pressure_probability_allowed` | lower |
+| `sack_allowed_rate` | OL | sacks allowed / pass blocks | lower |
+| `pressure_rate` | DL | pressures (`time_to_pressure` set) / pass rushes (`blitzing` on a pass play) | higher |
+| `sack_rate` | DL | sacks / pass rushes | higher |
+| `get_off` | DL | mean `player_get_off` (s) | lower |
+| `tackle_rate` | DL, DB | tackle involvements (solo or assist) / snaps | higher |
+| `tfl_rate` | DL, DB | tackles for loss / snaps | higher |

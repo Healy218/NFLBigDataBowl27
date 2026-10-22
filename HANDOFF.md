@@ -4,7 +4,7 @@ Session-start state for the Explosion Efficiency Gap project. Everything here co
 
 - **Current Iteration:** Iteration 4, Explosion Potential → Regular-Season Performance
 - **Roadmap Phase:** Phase 4c
-- **Last updated:** 2026-10-22 (Iteration 4 step 1 done: outcome table)
+- **Last updated:** 2026-10-22 (Iteration 4 steps 1–2 done: outcome table, position production; open decision 1 settled)
 
 ---
 
@@ -55,9 +55,10 @@ uv run python -m eeg.ngs.reliability         # → reports/field_reliability.md,
 uv run python -m eeg.ngs.eta                 # → data/processed/eta.parquet, eta_career.parquet, reports/eta.md
 uv run python -m eeg.ngs.eta_readout         # → reports/eta_readout.md, data/processed/eta_leaderboard.parquet (named)
 uv run python -m eeg.outcomes.table          # → data/processed/outcomes_seasons.parquet, outcomes.parquet, reports/outcomes.md
+uv run python -m eeg.outcomes.production     # → data/processed/production_seasons.parquet, reports/production.md
 ```
 
-131 tests (`uv run pytest`). Schemas: [`config/data_dictionary.md`](config/data_dictionary.md). Settings: [`config/physics.yaml`](config/physics.yaml) (`games` and `eta` for Iteration 3, `outcomes`).
+135 tests (`uv run pytest`). Schemas: [`config/data_dictionary.md`](config/data_dictionary.md). Settings: [`config/physics.yaml`](config/physics.yaml) (`games` and `eta` for Iteration 3, `outcomes`).
 
 **What carries into Iteration 4:**
 - **Engine (potential):** `tee.parquet` (J and J/kg per drill, TEE composites; 510), `profiles.parquet` (`ax_explosive`, `ax_speed_vs_bounce`, `ax_up_vs_out`, `anomaly_d2`, `size_class`; 369), `forty_fits.parquet` (v_max rep-to-rep r 0.97; τ r 0.51), `lab_channels.parquet` (40 peaks with the field estimators; 417).
@@ -78,9 +79,20 @@ uv run python -m eeg.outcomes.table          # → data/processed/outcomes_seaso
 
 ---
 
+## Position production (step 2, [`reports/production.md`](reports/production.md))
+
+`eeg.outcomes.production` → `production_seasons.parquet`: 12 measures per player-season (ratios of season sums), checked on 489 qualified player-seasons (293 prospects) for within-group split-half reliability, season-to-season retest and validity (r with plays per game, ρ with draft pick).
+- **Reliable and valid:** YPRR (WR rel 0.85, TE 0.80; r with plays per game 0.31 / 0.41), WR target rate (0.87), DL pressure rate (0.67; r 0.46 with plays per game, earlier picks higher), OL peak pressure probability allowed (0.77, against 0.35 for the binary pressure-allowed rate).
+- **Noise per season:** sacks, sacks allowed, tackles for loss (0.2–0.4), WR YAC over expected (0.20).
+- **Role, not quality:** WR separation (rel 0.75 but more separation goes with *fewer* plays and later picks: slot and short routes); DB tackle rate (0.66, unrelated to playing time). player_play has no coverage outcome for the defender, so DB has no credible production measure.
+- **DL get-off** (s from snap): rel 0.89, retest 0.84, faster with earlier picks (ρ 0.19) and with more plays (r −0.21). It is in-game explosion, so it is used alongside η.
+- **Plays per game** when active: rel 0.91–0.97 within a season but retest only 0.39–0.56 (roles change between seasons).
+
+---
+
 ## Open decisions (decide when the data is in front of us)
 
-1. **Primary outcome per group:** playing time (plays per season), position production from `player_play`, or games started. Pick on coverage and reliability (split-half, as for the field channels), and keep one per group that a coach would recognize.
+1. ~~**Primary outcome per group**~~ Decided 2026-10-22 (`outcomes` in `config/physics.yaml`): primary = **playing time** for every group (all prospects, zeros kept, within group). Secondary production: WR and TE YPRR, DL pressure rate, OL peak pressure probability allowed; DB none. DL get-off is a realization channel next to η, not an outcome.
 2. **Draft control:** overall pick with an undrafted indicator, or round bands. Step 1 shows it is strong and monotone within group (ρ −0.57 to −0.76), with the undrafted at the floor; decide the form in step 5.
 3. **Tenure:** 48 exits, concentrated in rounds 4–7 (none in round 1). Enough for a Kaplan–Meier view and a small stratified model, not much more; keep it secondary.
 
@@ -89,9 +101,9 @@ uv run python -m eeg.outcomes.table          # → data/processed/outcomes_seaso
 ## Next Session Steps
 
 1. ~~**Outcome table**~~ Done: `eeg.outcomes.table`, see "Outcome data" above.
-2. **Position production** from `player_play` per player-season: candidates per group (WR/TE separation and YAC over expected, DL get-off and time to pressure, OL pressure allowed rate, DB coverage and tackles); coverage and split-half reliability. Decide open decision 1.
+2. ~~**Position production**~~ Done: `eeg.outcomes.production`, see "Position production" above.
 3. **Sharper lab burst:** τ, a0 and the 10-yard split from all well-fit 40 reps; reliability against the best-rep values.
-4. **What predicts transfer:** η (first-season, per-season) against the explosion profile, the 40 shape and agility traces, within group.
+4. **What predicts transfer:** η (first-season, per-season) and DL get-off against the explosion profile, the 40 shape and agility traces, within group.
 5. **Potential and η → regular-season output**, within group, with the draft control (open decision 2); NGS college production as context.
 6. **Under- / over-drafted:** potential × η against draft slot.
 7. **Tenure** (secondary, open decision 3), then close Iteration 4 → Iteration 5 (submission).

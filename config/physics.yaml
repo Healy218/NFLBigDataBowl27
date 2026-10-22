@@ -331,3 +331,26 @@ outcomes:
       Last regular season in the competition data. Careers are right-censored
       here: a prospect with no play in it has exited only if they played
       before (src/eeg/outcomes/table.py).
+  primary:
+    value: playing_time
+    note: >
+      Main regular-season outcome for every group: playing time (plays per
+      season, zeros kept). Covers all 510 prospects, including those who never
+      played, and is the team's own verdict. Compared within group only (WR/TE
+      plays are routes). Decided 2026-10-22, open decision 1
+      (reports/production.md).
+  production:
+    value: {WR: yprr, TE: yprr, DL: pressure_rate, OL: peak_pressure_prob}
+    note: >
+      Secondary outcome, one per group, picked on within-group split-half
+      reliability and on tracking playing time: YPRR (WR 0.85, TE 0.80),
+      pressure rate (DL 0.67), peak pressure probability allowed (OL 0.77,
+      lower is better; the binary pressure-allowed rate is 0.35). DB has none:
+      player_play has no coverage outcome for the defender, and tackle rate is
+      unrelated to playing time (r 0.00). Exists only for qualified seasons.
+  realization:
+    value: [get_off]
+    note: >
+      Production measures that are in-game explosion rather than output, used
+      alongside η (steps 4-5): DL get-off time (split-half 0.89, season retest
+      0.84, faster with earlier picks).
