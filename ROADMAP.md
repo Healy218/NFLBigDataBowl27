@@ -34,9 +34,9 @@ This is the macro timeline, from the official competition brief to the final del
 | Combine movement from 10 Hz tracking | The 40 trace fit to $v(t) = v_{max}(1 - e^{-t/τ})$ → v_max, τ, sprint energy and power (Phase 2); engine profiles (Phase 3) |
 | Regular-season game performance | The same speed, energy and power estimators on game tracking (Phase 4a) |
 | A new metric | **Explosion Efficiency η = E_field / E_lab**, and the **Explosion Efficiency Gap** 1 − η (Phase 4b) |
-| Hidden talent | Modest engine, high η: gets more of the engine onto the field than the Combine suggests |
-| Draft busts | "Combine warriors": big engine, low η |
-| Position-specific development | η read within each of the 5 groups: where a group's gap sits and who is off the group norm |
+| Hidden talent | The explosive tail: the top fifth by raw explosive energy outplays its draft slot (Phase 4c) |
+| Draft busts | Draft capital alone: the heaviest prospects and the draft's own Combine pricing don't beat the slot; η adds nothing beyond it (Phase 4c) |
+| Position-specific development | DL: the Combine start (10-yard split) → in-game get-off → pressure rate; η read within each of the 5 groups |
 | Focus | One aspect of movement: how much of the 40's straight-line engine shows up in games |
 | Future performance | Explosion potential and η against regular-season output, controlling for draft slot (Phase 4c) |
 
@@ -54,7 +54,7 @@ What the data supports, honestly:
 - **The physics comes from the Combine.** College data is the NGS college production score (one 0–99 composite) and college name and conference: context, not physics.
 - **Movement traces exist for the 40, shuttle, 3-cone and the position skill drills.** The jumps and bench are results (height, distance, reps) converted to energy and work.
 - **Top-speed energy is the strongest channel.** Initial acceleration from the 40 is the weakest lab measure (τ rep-to-rep r 0.51), so "burst" potential needs the most care.
-- **First result:** within a position, the size of the engine says almost nothing about η. Potential and realization are separate dimensions, which is why measuring both adds information the stopwatch can't.
+- **What Iteration 4 found:** potential shows up in games (the Combine predicts game top speed and burst), but η, the fraction that shows up, is mostly the inverse of engine size once measured without exposure bias, and adds nothing to output beyond the draft. The signal beyond draft capital is in the **explosive tail** and, for DL, in the **start**: [`reports/phase4c_outcomes_notes.md`](reports/phase4c_outcomes_notes.md).
 
 ---
 
@@ -184,6 +184,12 @@ The brief's target is regular-season performance, and the draft classes are 2023
 3. Which potential × η combinations are systematically **under- or over-drafted** (hidden talent vs "Combine warriors")?
 4. Per position group, which part of the engine matters most: the input for **position-specific development**.
 
+**Done (Iteration 4):** decisions and results in [`reports/phase4c_outcomes_notes.md`](reports/phase4c_outcomes_notes.md). The answers:
+1. **Nothing predicts higher η.** The Combine predicts η only negatively (CV R² 0.14): bigger engines reach a smaller fraction of themselves in games. The earlier college production link was an exposure artifact, fixed by the exposure-free season value. The Combine does predict game output (top speed CV R² 0.31, burst 0.24).
+2. **On average, no:** the draft has priced the Combine (draft CV R² 0.47, draft + Combine 0.46), and first-season η adds nothing to next season's playing time or to production.
+3. **The explosive tail is under-drafted:** the top 20% by raw joules within group × class beat their draft-slot playing time 65% of the time vs 50% (p 0.027; starts 57% vs 38%, p 0.003), a tail effect not explained by mass. They also exit less than their slot predicts (not significant, 48 exits).
+4. **DL: the start.** a10 → get-off (r −0.44 within NFL position) → pressure rate (get-off β −0.47, a10 β 0.36) beyond the draft. No credible group-specific signal for WR, TE, DB or OL production.
+
 ### 4d. Submission
 
-A Kaggle notebook with the narrative (explosion potential → η → regular-season performance), method, kinetic profile visuals, η leaderboards for the 5 position groups, the potential → performance results, and the specific scouting and development recommendations that follow.
+A Kaggle notebook with the narrative, method, kinetic profile visuals, the potential → performance results, and the specific scouting and development recommendations that follow. The frame is open after Iteration 4 (η-centred as planned, or explosion potential with the tail and the DL start as the findings and η as a description); see `HANDOFF.md`.

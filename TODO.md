@@ -4,7 +4,7 @@ Legend: `[x]` Completed · `[-]` In Progress · `[ ]` Not Started
 
 Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iteration changes, update [`HANDOFF.md`](HANDOFF.md) to match.
 
-> ## ▶ Current Iteration: **Iteration 4, Explosion Potential → Regular-Season Performance** (Phase 4c)
+> ## ▶ Current Iteration: **Iteration 5, Submission** (Phase 4d)
 
 ---
 
@@ -103,7 +103,7 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 - [x] Regular season only (POST dropped 2026-10-22 to match the brief; 4.6% of player-games, headline numbers moved ≤ ~0.01)
 - [x] Close Iteration 3: decisions and results → `reports/phase4_eta_notes.md`; ROADMAP gains the competition brief and the strategy (physics model of explosion potential → η → regular-season performance); HANDOFF rewritten for Iteration 4
 
-## [-] Iteration 4: Explosion Potential → Regular-Season Performance *(Phase 4c)*  ← CURRENT
+## [x] Iteration 4: Explosion Potential → Regular-Season Performance *(Phase 4c)*
 
 - [x] Outcome table (`eeg.outcomes.table` → `outcomes_seasons.parquet`, `outcomes.parquet`, `reports/outcomes.md`): 1,007 league player-seasons (722 with a play), draft slot and round band, career totals, exits. player_play holds every scrimmage snap for OL/DL/DB but only route plays for WR (58%) and TE (40%). Draft slot drives playing time (within-class ρ −0.57 to −0.76); 48 exits (0 in round 1, 44% of rounds 6–7 who could)
 - [x] Position production (`eeg.outcomes.production` → `production_seasons.parquet`, `reports/production.md`): 12 measures with split-half reliability, season retest and validity. Decided (open decision 1): primary outcome = playing time for every group; secondary = YPRR (WR 0.85, TE 0.80), DL pressure rate (0.67), OL peak pressure probability allowed (0.77); DB none credible. DL get-off (rel 0.89, retest 0.84) joins η as an in-game explosion channel
@@ -113,10 +113,15 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 - [x] Potential and η → regular-season output (`eeg.outcomes.output` → `reports/output.md`): draft control = pick + undrafted (CV R² 0.51; open decision 2). The draft has priced the Combine (Combine alone 0.23, draft + Combine 0.46 vs draft 0.47). First-season η adds nothing to next-season playing time (β 0.03) or to production. DL chain beyond the draft, within NFL position: a10 → get-off (−0.44) → pressure rate (get-off β −0.47, a10 0.36, a10 drops to 0.20 with get-off)
 - [x] Under- / over-drafted (`eeg.outcomes.mismatch` → `reports/mismatch.md`; named table in `data/` only): snaps and starts per season against a leave-one-out draft-slot expectation (per group, class intercepts). The top 20% by raw joules within group × class beat their slot 65% of the time vs 50% for the rest (permutation p 0.027; starts 57% vs 38%, p 0.003); a tail effect, flat below it. Not mass (mass tail 54% vs 51%), weaker for the size-adjusted axis (59% vs 52%, p 0.27). Strongest in DL (16 of 18). η not used: it needs playing time to exist, and step 5 found nothing
 - [x] Tenure (`eeg.survival.tenure` → `reports/tenure.md`): 260 prospects at risk, 48 exits (provisional: at most three seasons). The draft dominates (round 1: 0 exits; rounds 6–7: 44% gone after two seasons). Explosive tails exit less than their slot predicts (observed / expected: size-adjusted axis 0.36, raw joules 0.62, a10 0.66; mass 0.89), but none is significant (axis p 0.06; Cox CIs span 1). Same direction as step 6, too few exits to confirm
-- [ ] Optional: Combine position skill drills (10 Hz, ~60 drills) as position-specific movement
+- [ ] Deferred to Iteration 5 (optional): Combine position skill drills (10 Hz, ~60 drills) as position-specific movement
+- [x] Close Iteration 4: decisions and results → `reports/phase4c_outcomes_notes.md`; ROADMAP 4c answers; HANDOFF rewritten for Iteration 5
 
-## [ ] Iteration 5: Submission *(Phase 4d)*
+## [-] Iteration 5: Submission *(Phase 4d)*  ← CURRENT
 
-- [ ] Final figures (kinetic profile map, η leaderboards, potential → performance)
+- [ ] Decide the narrative frame (η-centred, or explosion potential with the tail and the DL start as findings)
+- [ ] Harden the headline results: tail cut-offs (10 / 20 / 30%), expectation model, by class; which TEE channels (tracked 40 vs jumps / bench) carry the tail signal; DL chain by class
+- [ ] Final figures (kinetic profile map, potential → performance, explosive tail vs draft slot, DL chain; η by group if kept)
 - [ ] Kaggle notebook narrative
+- [ ] README executive summary to match the findings
 - [ ] Reproducibility pass: clean run end-to-end from `data/raw/`
+- [ ] Optional: Combine position skill drills (10 Hz, ~60 drills) as position-specific movement
