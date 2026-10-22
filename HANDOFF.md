@@ -4,7 +4,7 @@ Session-start state for the Explosion Efficiency Gap project. Everything here co
 
 - **Current Iteration:** Iteration 5, Submission
 - **Roadmap Phase:** Phase 4d
-- **Last updated:** 2026-10-22 (Iteration 5: frame decided, "True ball is an explosion"; headline results hardened)
+- **Last updated:** 2026-10-22 (Iteration 5: frame decided, "True ball is an explosion"; headline results hardened; final figures built)
 
 ---
 
@@ -57,9 +57,10 @@ uv run python -m eeg.outcomes.output         # → reports/output.md, reports/fi
 uv run python -m eeg.outcomes.mismatch       # → reports/mismatch.md, data/processed/mismatch.parquet (named)
 uv run python -m eeg.survival.tenure         # → reports/tenure.md, reports/figures/tenure.png
 uv run python -m eeg.outcomes.robustness     # → reports/robustness.md, reports/figures/robustness.png
+uv run python -m eeg.viz.figures             # → reports/figures/final_{1..5}_*.png (the write-up figures)
 ```
 
-157 tests (`uv run pytest`). Schemas: [`config/data_dictionary.md`](config/data_dictionary.md). Settings: [`config/physics.yaml`](config/physics.yaml).
+158 tests (`uv run pytest`). Schemas: [`config/data_dictionary.md`](config/data_dictionary.md). Settings: [`config/physics.yaml`](config/physics.yaml).
 
 **The findings to write around** (details and numbers in the notes):
 1. **Explosion potential is real on the field.** Combine values predict game top speed (CV R² 0.31) and burst (0.24) within group.
@@ -85,6 +86,17 @@ uv run python -m eeg.outcomes.robustness     # → reports/robustness.md, report
 
 ---
 
+## Final figures (step 3, `eeg.viz.figures` → `reports/figures/final_*.png`, not committed)
+
+Built from the analysis functions (no typed-in numbers), one shared style; the example prospect is described, not named (`figures.example_prospect` in `config/physics.yaml`).
+1. **`final_1_physics`: from drill to joules.** One edge rusher's tracked 40 (10 Hz points, fitted v(t), ½mv² at top speed) and his energy per drill against his Combine class (+1.25 SD total); pick 77, expected ~279 snaps a season from that slot, played 889.
+2. **`final_2_priced`: real on the field, priced by the draft.** Combine → game top speed CV R² 0.31, burst 0.24; playing time: Combine 0.23, draft 0.47, both 0.46.
+3. **`final_3_tail`: the explosive tail beats its slot.** Share beating the slot by quintile (raw energy vs mass) and 11 robustness checks as a forest plot.
+4. **`final_4_dl_chain`: the DL start.** Partial plots within NFL position: a10 → get-off (β −0.44), get-off → pressure beyond the draft and snaps (β −0.47).
+5. **`final_5_eta`: how much of the 40 reaches the game.** Game top speed as % of Combine top speed by group (WR 83%, DB 78%, TE 79%, DL 69%, OL 58%), and within group, bigger engines reach a smaller share (r −0.27).
+
+---
+
 ## Open decisions (decide when the data is in front of us)
 
 1. ~~**Narrative frame**~~ Decided 2026-10-22 (the user's original intent): **(b) explosion potential is the differentiator.** Physics of the Combine → the explosive tail the draft under-rates → the DL start chain; η stays as a description of how much top speed reaches games, by group. **Presentation title: "True ball is an explosion".**
@@ -97,7 +109,7 @@ uv run python -m eeg.outcomes.robustness     # → reports/robustness.md, report
 
 1. ~~**Decide the frame**~~ Done: (b), titled "True ball is an explosion".
 2. ~~**Harden the headline results**~~ Done: `eeg.outcomes.robustness`, see "Robustness" above.
-3. **Final figures** for the chosen frame.
+3. ~~**Final figures**~~ Done: `eeg.viz.figures`, see "Final figures" above.
 4. **Notebook narrative**, then the README executive summary to match.
 5. **Reproducibility pass:** clean run end-to-end from `data/raw/`.
 6. Optional: Combine position skill drills.

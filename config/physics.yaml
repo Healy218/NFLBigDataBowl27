@@ -405,3 +405,12 @@ outcomes:
       draft control, one measure at a time, and observed vs expected exits in
       each measure's tail (reports/tenure.md). Decided 2026-10-22 (open
       decision 3).
+
+figures:
+  example_prospect:
+    value: {player_id: 55942, label: "An edge rusher from the 2023 class, 250 lb"}
+    note: >
+      The prospect in the physics figure (src/eeg/viz/figures.py, figure 1):
+      top of the explosive tail (raw joules) in his group and class, a clean
+      tracked 40, and a mid-round pick who outplayed his slot. Described, not
+      named, in committed outputs.
