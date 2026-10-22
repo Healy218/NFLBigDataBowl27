@@ -323,3 +323,11 @@ eta:
       Career η per prospect = exp of the plays-weighted mean of season log η
       over qualified seasons. The first qualified season's η is kept as well:
       a career value uses later seasons, so it is look-ahead for survival.
+
+outcomes:
+  last_season:
+    value: 2025
+    note: >
+      Last regular season in the competition data. Careers are right-censored
+      here: a prospect with no play in it has exited only if they played
+      before (src/eeg/outcomes/table.py).

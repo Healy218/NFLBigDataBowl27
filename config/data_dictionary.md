@@ -53,7 +53,7 @@ Raw files live in `data/raw/kaggle/nfl-big-data-bowl-2027/` (gitignored, competi
 
 ## `player_career_successes.csv`
 
-All integer counts, complete for 510 prospects. Careers are right-censored at the end of the 2025 season.
+All integer counts, complete for 510 prospects. **Regular season only** (player_play never exceeds them). Careers are right-censored at the end of the 2025 season.
 
 | Column | Notes |
 |---|---|
@@ -118,6 +118,8 @@ One row per prospect per play (64 columns). Grouped:
 - **Pass rush / defense (player):** `quick_pressure`, `unblocked_pressure`, `blitzing`, `player_get_off`, `sack`, `tackle`, `assist`, `caused_forced_fumble`, `recovered_fumble`, `tackle_for_loss`, `time_to_pressure`, `time_to_qb_hurry`, `coverage_assignment`, `coverage_assignment_at_snap`
 
 Most player-level columns are null unless relevant to that player's role on the play.
+
+**Coverage (regular season, `reports/outcomes.md`):** only scrimmage plays (`down` never null). For OL, DL and DB a row exists for every career scrimmage snap (`player_career_successes` matches exactly). For **WR and TE, rows exist only on plays where they ran a route** (`route_ran` always set): 58% and 40% of their career snaps. Run-blocking snaps are missing, and game tracking has the same plays. `pass_result` is an empty string (not `NA`) on runs.
 
 ---
 
@@ -293,3 +295,12 @@ Built by `uv run python -m eeg.clustering.readout` from `profiles.parquet` and `
 ## `data/processed/anomalies.parquet`
 
 Same script. Prospects with `anomaly_p` < 0.05, sorted by `anomaly_p`: `player_id`, `pos_group`, `size_class`, the axis scores, `anomaly_d2`, `anomaly_p`. Not committed. The aggregate readout is `reports/phase3_readout.md` (committed).
+
+## `data/processed/outcomes_seasons.parquet`, `outcomes.parquet`
+
+Built by `uv run python -m eeg.outcomes.table` from `player_play.csv` (`games.season_types`), `players.csv` and `player_career_successes.csv`. Not committed; aggregates in `reports/outcomes.md`. "Plays" are every scrimmage snap for OL/DL/DB and route plays only for WR/TE (see `player_play.csv`), so compare playing time within group.
+
+| File | Grain | Columns |
+|---|---|---|
+| `outcomes_seasons` | prospect × league season, draft year to `outcomes.last_season` (1,007; zeros kept) | `player_id`, `season`, `year` (1 = rookie), `plays`, `off_plays`, `def_plays`, `games` (with a play), `team` (most plays; null if inactive), `active` (plays > 0) |
+| `outcomes` | prospect (510) | `draft_year`, `draft_round`, `draft_pick_within_round`, `draft_overall_pick` (null = undrafted), `undrafted`, `round_band` (1 / 2-3 / 4-5 / 6-7 / UDFA); `seasons_available`, `seasons_active`, `first_active`, `last_active`, `pp_plays`, `pp_games`; career `scrim_snaps` (offense + defense), `st_snaps`, `games_active`, `games_started`, `all_pro` (1st + 2nd team), `pro_bowl`; `never_played` (no scrimmage snap), `exited` (played, then no play through the last season; right-censored), `gap_seasons` (inactive seasons between active ones), `scrim_per_season`, `starts_per_season` (per available season), `pp_coverage` (pp_plays / scrim_snaps) |

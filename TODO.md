@@ -105,7 +105,7 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 
 ## [-] Iteration 4: Explosion Potential → Regular-Season Performance *(Phase 4c)*  ← CURRENT
 
-- [ ] Outcome table (regular season, competition data only): per player-season playing time (plays, games) from `player_play` / game tracking; draft round/pick and draft year (`players`); career totals (`player_career_successes`); count league exits to decide whether tenure is viable
+- [x] Outcome table (`eeg.outcomes.table` → `outcomes_seasons.parquet`, `outcomes.parquet`, `reports/outcomes.md`): 1,007 league player-seasons (722 with a play), draft slot and round band, career totals, exits. player_play holds every scrimmage snap for OL/DL/DB but only route plays for WR (58%) and TE (40%). Draft slot drives playing time (within-class ρ −0.57 to −0.76); 48 exits (0 in round 1, 44% of rounds 6–7 who could)
 - [ ] Position-specific production from `player_play` per player-season (e.g. WR/TE separation and YAC over expected, DL get-off and time to pressure, OL pressure allowed, DB coverage and tackles); coverage and reliability check
 - [ ] Sharper lab burst: τ, a0 and 10-yard split from all well-fit 40 reps; rep-to-rep reliability against the best-rep values
 - [ ] What predicts transfer: η (first-season / per-season) against the explosion profile, the 40 shape (burst vs top speed), agility traces; within group

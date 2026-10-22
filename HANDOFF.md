@@ -4,7 +4,7 @@ Session-start state for the Explosion Efficiency Gap project. Everything here co
 
 - **Current Iteration:** Iteration 4, Explosion Potential → Regular-Season Performance
 - **Roadmap Phase:** Phase 4c
-- **Last updated:** 2026-10-22 (Iteration 3 closed; Iteration 4 not started)
+- **Last updated:** 2026-10-22 (Iteration 4 step 1 done: outcome table)
 
 ---
 
@@ -54,9 +54,10 @@ uv run python -m eeg.ngs.channels            # → data/processed/field_{plays,g
 uv run python -m eeg.ngs.reliability         # → reports/field_reliability.md, reports/field_reliability.csv
 uv run python -m eeg.ngs.eta                 # → data/processed/eta.parquet, eta_career.parquet, reports/eta.md
 uv run python -m eeg.ngs.eta_readout         # → reports/eta_readout.md, data/processed/eta_leaderboard.parquet (named)
+uv run python -m eeg.outcomes.table          # → data/processed/outcomes_seasons.parquet, outcomes.parquet, reports/outcomes.md
 ```
 
-128 tests (`uv run pytest`). Schemas: [`config/data_dictionary.md`](config/data_dictionary.md). Settings: [`config/physics.yaml`](config/physics.yaml) (`games` and `eta` for Iteration 3).
+131 tests (`uv run pytest`). Schemas: [`config/data_dictionary.md`](config/data_dictionary.md). Settings: [`config/physics.yaml`](config/physics.yaml) (`games` and `eta` for Iteration 3, `outcomes`).
 
 **What carries into Iteration 4:**
 - **Engine (potential):** `tee.parquet` (J and J/kg per drill, TEE composites; 510), `profiles.parquet` (`ax_explosive`, `ax_speed_vs_bounce`, `ax_up_vs_out`, `anomaly_d2`, `size_class`; 369), `forty_fits.parquet` (v_max rep-to-rep r 0.97; τ r 0.51), `lab_channels.parquet` (40 peaks with the field estimators; 417).
@@ -66,27 +67,28 @@ uv run python -m eeg.ngs.eta_readout         # → reports/eta_readout.md, data/
 
 ---
 
-## Outcome data (quick scan, 2026-10-22)
+## Outcome data (step 1, [`reports/outcomes.md`](reports/outcomes.md))
 
-From the raw files and [`config/data_dictionary.md`](config/data_dictionary.md):
-- `players.csv` (510): `draft_year`, `draft_round`, `draft_pick_within_round`, `draft_overall_pick`. **127 are undrafted** (25%, `NA`), so the draft control needs an undrafted indicator or a pick beyond 256. Read with `null_values="NA"`.
-- `player_career_successes.csv` (510): career offensive / defensive / special-teams snaps, games active and started, All-Pro, Pro Bowl. Zero scrimmage snaps: 26 of 160 (2023 class), 33 of 177 (2024), 46 of 173 (2025). Median scrimmage snaps 504 / 341 / 123. Career totals grow with seasons available, so compare within draft class or per season.
-- `player_play.csv` (314 k prospect-plays, 64 columns): situation, EPA, play type, and role-specific player columns: receiving (target, separation at throw, YAC and expected YAC, route), pass protection (pressure / sack allowed, time to pressure), pass rush (get-off, pressure, time to pressure, sack), defense (tackles, coverage assignment). Most player columns are null unless relevant to the role on the play.
-- Only prospects are tracked (not all 22 players), so team snap counts and snap **share** can't be computed directly; playing time is plays and games.
+`eeg.outcomes.table` → `outcomes_seasons.parquet` (every league season of every prospect, zeros kept: 1,007, 722 with a play) and `outcomes.parquet` (per prospect: draft, career totals, exits). Schemas in [`config/data_dictionary.md`](config/data_dictionary.md).
+- **What a play is:** `player_play` holds every regular-season scrimmage snap for OL, DL and DB (matches career snaps exactly), but **only route plays for WR (58% of snaps) and TE (40%)**; run-blocking snaps are missing from player_play and game tracking alike. Playing time is compared within group only. Career snaps are regular season only.
+- **Draft drives playing time:** within group and draft class, ρ of snaps per season with overall pick −0.57 (WR) to −0.76 (OL). Median snaps per season fall from 530–940 (round 1) to 0–14 (undrafted). 61% of undrafted never played a snap, against 0–3% of rounds 1–5 and 21% of rounds 6–7. Any test of potential or η needs the draft control, and the undrafted sit at the floor.
+- **Exits** (played, then no play through 2025; right-censored): 48 (26 of the 2023 class, 22 of 2024). By round, among those who could exit: round 1 0 / 28, 2–3 7 / 78, 4–5 14 / 70, 6–7 24 / 55, UDFA 3 / 29. Only 6 prospects have a gap season.
+- **Active share by year in the league:** ~0.72–0.76 as rookies, 0.66 in year 3 (2023 class).
+- Only prospects are tracked, so snap **share** can't be computed; playing time is plays and games (17 regular-season games per team).
 
 ---
 
 ## Open decisions (decide when the data is in front of us)
 
 1. **Primary outcome per group:** playing time (plays per season), position production from `player_play`, or games started. Pick on coverage and reliability (split-half, as for the field channels), and keep one per group that a coach would recognize.
-2. **Draft control:** overall pick with an undrafted indicator, or round bands. Decide after looking at how outcomes depend on it.
-3. **Tenure:** viable only if enough prospects have exited. Count exits (a full season with no snaps after being in the league) first.
+2. **Draft control:** overall pick with an undrafted indicator, or round bands. Step 1 shows it is strong and monotone within group (ρ −0.57 to −0.76), with the undrafted at the floor; decide the form in step 5.
+3. **Tenure:** 48 exits, concentrated in rounds 4–7 (none in round 1). Enough for a Kaplan–Meier view and a small stratified model, not much more; keep it secondary.
 
 ---
 
 ## Next Session Steps
 
-1. **Outcome table** (`src/eeg/outcomes/` → `data/processed/outcomes.parquet`): per player-season (regular season) plays and games from `player_play`, draft info from `players`, career totals from `player_career_successes`; count exits and zero-snap seasons by draft class.
+1. ~~**Outcome table**~~ Done: `eeg.outcomes.table`, see "Outcome data" above.
 2. **Position production** from `player_play` per player-season: candidates per group (WR/TE separation and YAC over expected, DL get-off and time to pressure, OL pressure allowed rate, DB coverage and tackles); coverage and split-half reliability. Decide open decision 1.
 3. **Sharper lab burst:** τ, a0 and the 10-yard split from all well-fit 40 reps; reliability against the best-rep values.
 4. **What predicts transfer:** η (first-season, per-season) against the explosion profile, the 40 shape and agility traces, within group.
