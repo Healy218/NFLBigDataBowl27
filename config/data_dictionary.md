@@ -125,7 +125,7 @@ Most player-level columns are null unless relevant to that player's role on the 
 
 ## `data/interim/game_tracking_{season}.parquet`
 
-Built by `uv run python -m eeg.ingest.load_games` from `game_tracking_{season}.csv` and `games.csv`. REG + POST only (`games.season_types`). One row per frame, sorted by track and time. Not committed.
+Built by `uv run python -m eeg.ingest.load_games` from `game_tracking_{season}.csv` and `games.csv`. REG only (`games.season_types`; POST dropped 2026-10-22 to match the brief, PRE earlier). One row per frame, sorted by track and time. Not committed.
 
 | Column | Units | Notes |
 |---|---|---|

@@ -38,7 +38,23 @@ This is the macro timeline, from the official competition brief to the final del
 | Draft busts | "Combine warriors": big engine, low η |
 | Position-specific development | η read within each of the 5 groups: where a group's gap sits and who is off the group norm |
 | Focus | One aspect of movement: how much of the 40's straight-line engine shows up in games |
-| Future performance | η and the profiles against NFL outcomes, controlling for draft slot (Phase 4c) |
+| Future performance | Explosion potential and η against regular-season output, controlling for draft slot (Phase 4c) |
+
+---
+
+## Our strategy: a physics model of explosion potential
+
+Describe every prospect by their **literal explosion potential**: the energy and power their body can produce, in joules and watts, measured from the Combine. Then test how much of that potential **goes off on the field** in regular-season games, and what that means for performance.
+
+- **Potential (the engine):** Combine drills turned into physical quantities. The 40 trace gives top-speed kinetic energy, drag work, initial acceleration and peak power. The jumps give take-off energy, the bench gives work, the agility drills give change-of-direction work. Size-adjusted engine profiles summarise them (Phases 2–3).
+- **Realization (η):** the same physics measured in games, divided by the Combine value. η = E_field / E_lab says how much of the engine shows up, and the Explosion Efficiency Gap 1 − η says how much doesn't (Phase 4b).
+- **Performance:** whether potential and realization predict regular-season output beyond what draft slot already says (Phase 4c).
+
+What the data supports, honestly:
+- **The physics comes from the Combine.** College data is the NGS college production score (one 0–99 composite) and college name and conference: context, not physics.
+- **Movement traces exist for the 40, shuttle, 3-cone and the position skill drills.** The jumps and bench are results (height, distance, reps) converted to energy and work.
+- **Top-speed energy is the strongest channel.** Initial acceleration from the 40 is the weakest lab measure (τ rep-to-rep r 0.51), so "burst" potential needs the most care.
+- **First result:** within a position, the size of the engine says almost nothing about η. Potential and realization are separate dimensions, which is why measuring both adds information the stopwatch can't.
 
 ---
 
@@ -49,7 +65,7 @@ This is the macro timeline, from the official competition brief to the final del
 | 1 | Competition Grounding: *Combine to NFL Performance* | 0 | Scoped question, data inventory, repo |
 | 2 | Physics Engine: Drills → Joules | 1 | `TEE_Absolute` (J) and `TEE_Relative` (J/kg) per prospect |
 | 3 | Kinetic Profiles: Position-Blind Engine Analysis | 2 | Engine axis scores, Kinetic Anomaly score and size class per prospect |
-| 4 | Explosion Efficiency (η) + Survival | 3, 4, 5 | η per player, Cox PH tenure model, final submission |
+| 4 | Explosion Efficiency (η) and Regular-Season Performance | 3, 4, 5 | η per player-season, potential → performance models, final submission |
 
 ---
 
@@ -129,7 +145,7 @@ Group prospects by **mechanical signature alone**.
 
 ---
 
-## Phase 4: The End Destination. Explosion Efficiency (η) and NFL Tenure
+## Phase 4: The End Destination. Explosion Efficiency (η) and Regular-Season Performance
 
 ### 4a. On-field motor from NGS
 
@@ -138,6 +154,8 @@ From regular-season game tracking, compute each player's **realized kinetic outp
 - Instantaneous kinetic energy $E_k(t) = \tfrac12 m v(t)^2$ and propulsive power $P(t) = m\,a(t)\,v(t) + F_d\,v(t)$.
 - Use **high-percentile** values (e.g., p95 per game, aggregated over a season) rather than means. Snaps where a player is not asked to be explosive shouldn't dilute capacity.
 - Match the context to each drill where possible: burst from a standstill (40 analogue), change of direction (shuttle analogue).
+
+**Done (Iteration 3):** speed, kinetic energy, burst and power per kg per play → game → season (mean of the 3 best games), regular season only. Decisions and results: [`reports/phase4_eta_notes.md`](reports/phase4_eta_notes.md).
 
 ### 4b. Explosion Efficiency
 
@@ -149,19 +167,23 @@ $$
 - η near 1: the player turns lab capacity into game output.
 - η well below 1: an **Explosion Efficiency Gap**. The engine is there but doesn't transfer (technique, processing speed, role, or injury).
 
-### 4c. Survival analysis (Cox Proportional Hazards)
+**Done (Iteration 3):** the headline is η_KE = η_speed² (kinetic energy, mass cancels), gap = 1 − η_KE, median 0.69. Speed is the only channel where η measures transfer rather than lab noise. η is read within position group, and models stratify by group.
 
-- **Duration:** seasons (or games) from draft to last meaningful participation.
-- **Event:** league exit (no snaps for a full season, or last season on record). Active players are **right-censored**.
-- **Covariates:** Kinetic Profile axis scores and Kinetic Anomaly score (continuous), size class, η, `TEE_Relative` composite, body mass. **Controls:** draft round/pick, so the model measures signal *beyond* draft capital.
-- **Secondary outcomes:** snap share trajectory (from `player_play` / game tracking per season) and career totals in `player_career_successes.csv` (snaps, games active and started, All-Pro / Pro Bowl), modeled as tenure-quality measures. Competition data only: no external value metrics such as wAV.
-- **Diagnostics:** Schoenfeld residuals for the proportional-hazards assumption; Kaplan–Meier curves by profile-axis tertile; concordance index.
+### 4c. From explosion potential to regular-season performance
+
+The brief's target is regular-season performance, and the draft classes are 2023–2025 (at most three seasons), so performance in games comes first and tenure second.
+
+- **Outcomes (competition data only, regular season):** per player-season η and field output (`eta.parquet`, `field_seasons.parquet`); playing time (plays and games from `player_play` / game tracking); position-specific production from `player_play` (e.g. separation and yards after catch over expected for WR/TE, get-off and time to pressure for DL, pressure allowed for OL, coverage and tackles for DB); career totals in `player_career_successes.csv` (snaps, games active and started, All-Pro / Pro Bowl). No external value metrics such as wAV.
+- **Sharper potential:** burst from all well-fit 40 reps rather than the best one (τ, a0, 10-yard split), so the acceleration side of the engine is measured as well as top speed.
+- **Models:** within position group (stratified, position never a covariate), with draft round/pick as a control so the signal is *beyond* draft capital. Predictors: engine profile axes, Kinetic Anomaly, TEE, mass, η (first-season or per-season, never look-ahead career values). The NGS college production score enters as context.
+- **Tenure (secondary):** league exit (no snaps for a full season) with active players right-censored; Kaplan–Meier and stratified Cox if there are enough exits to support it.
 
 **Questions to answer**
-1. Do certain engine profiles have **lower league-exit hazard** regardless of position?
-2. Does η predict tenure **after controlling for draft slot**? (This is where the actionable signal is.)
-3. Which profile × η combinations are systematically **under- or over-drafted**?
+1. **What in the explosion potential predicts transfer (η)?** The engine size barely does; the shape of the 40 (burst vs top speed), the agility traces or the position drills might.
+2. Do potential and η predict **regular-season output after controlling for draft slot**? (This is where the actionable signal is.)
+3. Which potential × η combinations are systematically **under- or over-drafted** (hidden talent vs "Combine warriors")?
+4. Per position group, which part of the engine matters most: the input for **position-specific development**.
 
 ### 4d. Submission
 
-A Kaggle notebook with the narrative, method, kinetic profile visuals, η leaderboards for the 5 position groups, survival curves, and the specific scouting recommendations that follow.
+A Kaggle notebook with the narrative (explosion potential → η → regular-season performance), method, kinetic profile visuals, η leaderboards for the 5 position groups, the potential → performance results, and the specific scouting and development recommendations that follow.

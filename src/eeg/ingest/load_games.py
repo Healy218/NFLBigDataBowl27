@@ -3,7 +3,7 @@
     uv run python -m eeg.ingest.load_games
 
 Joins games.csv for season type and week and keeps `games.season_types`
-(REG + POST). A track is one prospect on one play: (game_id, play_id, nfl_id),
+(regular season only). A track is one prospect on one play: (game_id, play_id, nfl_id),
 ~1 s before the snap to the end of the play at 10 Hz.
 
 Per frame it adds:

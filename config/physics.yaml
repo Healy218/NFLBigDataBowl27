@@ -209,10 +209,12 @@ games:
   # Game tracking ingest (src/eeg/ingest/load_games.py). Glitch frames are
   # flagged, never dropped; downstream code decides what to exclude.
   season_types:
-    value: [REG, POST]
+    value: [REG]
     note: >
-      Preseason dropped: ~45-65 plays per prospect per season, and effort and
-      rosters are not comparable (decided 2026-10-21, HANDOFF open decision 1).
+      Regular season only: the competition brief targets "performance on the
+      field during the NFL regular season" (decided 2026-10-22; POST was 4.6%
+      of player-games). Preseason was dropped earlier: ~45-65 plays per
+      prospect per season, and effort and rosters are not comparable.
   frame_dt_s:
     value: 0.1
     units: s
@@ -286,9 +288,9 @@ games:
     units: games
     note: >
       And this many games that count. The season statistic is a mean over the
-      3 best games; over 6 games its within-position reliability is 0.65 for
-      speed and 0.73-0.84 for burst and power, and it flattens beyond (speed
-      0.68 at 8). 6 rather than 4 costs 13 of 494 player-seasons
+      3 best games; over 6 games its within-position reliability is 0.60 for
+      speed and 0.74-0.79 for burst and power (REG only), and speed reaches
+      0.68 at 8. 6 rather than 4 costs ~13 player-seasons
       (reports/field_reliability.md, exposure curve).
   season_statistic:
     value: top3

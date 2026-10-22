@@ -4,7 +4,7 @@ Legend: `[x]` Completed · `[-]` In Progress · `[ ]` Not Started
 
 Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iteration changes, update [`HANDOFF.md`](HANDOFF.md) to match.
 
-> ## ▶ Current Iteration: **Iteration 3, NGS Alignment & Explosion Efficiency (η)** (Phase 4a–4b)
+> ## ▶ Current Iteration: **Iteration 4, Explosion Potential → Regular-Season Performance** (Phase 4c)
 
 ---
 
@@ -88,29 +88,34 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 - [x] Post-hoc read (`clustering/readout.py` → `reports/phase3_readout.md`): position explains ≤ 4 % of any axis; engine neighbours ≈ chance by position; 95 mutual cross-position twin pairs; OL over-represented among anomalies (wider engine spread); bench / COD nearly independent of the axes; middle-mass bump peaks ~115 kg
 - [x] Close Iteration 2: decisions and results → `reports/phase3_profiles_notes.md`; HANDOFF rewritten for Iteration 3
 
-## [-] Iteration 3: NGS Alignment & Explosion Efficiency (η) *(Phase 4a–4b)*  ← CURRENT
+## [x] Iteration 3: NGS Alignment & Explosion Efficiency (η) *(Phase 4a–4b)*
 
 - [x] Player-ID link: `nfl_id` is the same in every file; 497 of 510 prospects appear in game tracking, 292 of the 369 profiled in regular-season games
-- [x] Ingest game tracking (`ingest/load_games.py`): REG + POST (PRE dropped), SI units, speed and signed tangential acceleration re-derived from x/y, time since snap, glitch flags (457 of 264 k tracks)
-- [x] Validate field kinematics against the Combine (`ngs/validate.py` → `reports/field_kinematics.md`): reported speed confirmed; NGS `a` is total magnitude, so acceleration = smoothed d(speed)/dt on both sides; glitch rule = drop tracks (457); season peak speed is 0.86 × lab (r 0.90, retest 0.90)
+- [x] Ingest game tracking (`ingest/load_games.py`): REG only (PRE and POST dropped), SI units, speed and signed tangential acceleration re-derived from x/y, time since snap, glitch flags (450 of 251 k tracks)
+- [x] Validate field kinematics against the Combine (`ngs/validate.py` → `reports/field_kinematics.md`): reported speed confirmed; NGS `a` is total magnitude, so acceleration = smoothed d(speed)/dt on both sides; glitch rule = drop tracks (450); season peak speed is 0.86 × lab (r 0.89, retest 0.90)
 - [x] Per-frame $E_k/m$ and propulsive power per kg (inertia + drag) from reported speed and smoothed d(speed)/dt (`ngs/channels.py`); per play → game → player-season, plus the same estimators on the 40
 - [x] Context filters: burst from rest (first 1.5 s after the snap, below 1 m/s at the snap; 92% of plays)
 - [ ] Change-of-direction windows (deferred: lab COD covers only 126–128 profiled prospects)
-- [x] Season statistic and exposure (`ngs/reliability.py` → `reports/field_reliability.md`): mean of the 3 best game maxima; games count with ≥ 5 plays; ≥ 100 plays and ≥ 6 games (481 player-seasons, 288 prospects); η reliability within position 0.65–0.69
-- [x] Compute η per matching channel and the overall Explosion Efficiency Gap (`ngs/eta.py` → `reports/eta.md`): 398 player-seasons, 238 prospects; gap = 1 − η_KE (η_KE = η_speed², median 0.70); η raw, read within position, Cox stratified by position in Iteration 4; burst and power η stored but driven by the lab value
-- [x] η leaderboards per position group (`ngs/eta_readout.py` → `reports/eta_readout.md`; named table in `data/` only): empirical-Bayes shrinkage toward the group mean (B 0.42 for one season, 0.68 for three); η_KE barely related to the engine (r −0.05 with 40 speed, −0.15 with `ax_explosive`), +0.21 with NGS college production
+- [x] Season statistic and exposure (`ngs/reliability.py` → `reports/field_reliability.md`): mean of the 3 best game maxima; games count with ≥ 5 plays; ≥ 100 plays and ≥ 6 games (476 player-seasons, 287 prospects); η reliability within position 0.65–0.67
+- [x] Compute η per matching channel and the overall Explosion Efficiency Gap (`ngs/eta.py` → `reports/eta.md`): 394 player-seasons, 237 prospects; gap = 1 − η_KE (η_KE = η_speed², median 0.69); η raw, read within position, models stratified by position; burst and power η stored but driven by the lab value
+- [x] η leaderboards per position group (`ngs/eta_readout.py` → `reports/eta_readout.md`; named table in `data/` only): empirical-Bayes shrinkage toward the group mean (B 0.44 for one season, 0.70 for three); η_KE barely related to the engine (r −0.08 with 40 speed, −0.17 with `ax_explosive`), +0.23 with NGS college production
 
-## [ ] Iteration 4: Survival Modeling *(Phase 4c)*
+- [x] Regular season only (POST dropped 2026-10-22 to match the brief; 4.6% of player-games, headline numbers moved ≤ ~0.01)
+- [x] Close Iteration 3: decisions and results → `reports/phase4_eta_notes.md`; ROADMAP gains the competition brief and the strategy (physics model of explosion potential → η → regular-season performance); HANDOFF rewritten for Iteration 4
 
-- [ ] Build duration/event table (draft → exit; right-censor active players)
-- [ ] Join career outcomes (`player_career_successes`, per-season snaps from `player_play`) and draft round/pick (`players`)
-- [ ] Kaplan–Meier by profile-axis tertile
-- [ ] Cox PH: profile axes + anomaly score + η + TEE_Relative + mass, controlling for draft capital
-- [ ] Schoenfeld residuals; concordance index; stratify if PH is violated
-- [ ] Secondary models: snap-share trajectory, games started
+## [-] Iteration 4: Explosion Potential → Regular-Season Performance *(Phase 4c)*  ← CURRENT
+
+- [ ] Outcome table (regular season, competition data only): per player-season playing time (plays, games) from `player_play` / game tracking; draft round/pick and draft year (`players`); career totals (`player_career_successes`); count league exits to decide whether tenure is viable
+- [ ] Position-specific production from `player_play` per player-season (e.g. WR/TE separation and YAC over expected, DL get-off and time to pressure, OL pressure allowed, DB coverage and tackles); coverage and reliability check
+- [ ] Sharper lab burst: τ, a0 and 10-yard split from all well-fit 40 reps; rep-to-rep reliability against the best-rep values
+- [ ] What predicts transfer: η (first-season / per-season) against the explosion profile, the 40 shape (burst vs top speed), agility traces; within group
+- [ ] Potential and η → regular-season output, within group (stratified), controlling for draft slot; NGS college production as context
+- [ ] Under- / over-drafted: potential × η against draft slot (hidden talent vs "Combine warriors")
+- [ ] Tenure (secondary): league exit with right-censoring; Kaplan–Meier and stratified Cox if events allow
+- [ ] Optional: Combine position skill drills (10 Hz, ~60 drills) as position-specific movement
 
 ## [ ] Iteration 5: Submission *(Phase 4d)*
 
-- [ ] Final figures (kinetic profile map, η vs. tenure, survival curves)
+- [ ] Final figures (kinetic profile map, η leaderboards, potential → performance)
 - [ ] Kaggle notebook narrative
 - [ ] Reproducibility pass: clean run end-to-end from `data/raw/`

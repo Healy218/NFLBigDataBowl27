@@ -5,45 +5,45 @@ both sides. Gap = 1 − η_ke (`eta.headline`). η is raw (`eta.role` = stratify
 read it. Per-season and per-prospect tables are in `data/processed/eta.parquet` and `eta_career.parquet` (not
 committed). Aggregates only.
 
-- Player-seasons with η: 398 of 481 qualified (83 seasons of
-  50 prospects have no well-fit 40); prospects: 238, of which
-  212 have a kinetic profile.
-- Qualified seasons per prospect: 1: 120, 2: 76, 3: 42.
+- Player-seasons with η: 394 of 476 qualified (82 seasons of
+  50 prospects have no well-fit 40); prospects: 237, of which
+  211 have a kinetic profile.
+- Qualified seasons per prospect: 1: 121, 2: 75, 3: 41.
 
 ## η per player-season
 
 | channel | n | p10 | median | p90 |
 |---|---|---|---|---|
-| eta_speed | 398 | 0.717 | 0.834 | 0.904 |
-| eta_ke | 398 | 0.514 | 0.696 | 0.818 |
-| eta_burst | 398 | 0.830 | 1.002 | 1.232 |
-| eta_power | 398 | 0.615 | 0.797 | 0.969 |
-| gap | 398 | 0.182 | 0.304 | 0.486 |
+| eta_speed | 394 | 0.713 | 0.832 | 0.904 |
+| eta_ke | 394 | 0.511 | 0.693 | 0.817 |
+| eta_burst | 394 | 0.830 | 0.999 | 1.235 |
+| eta_power | 394 | 0.613 | 0.795 | 0.970 |
+| gap | 394 | 0.183 | 0.307 | 0.489 |
 
 By position group (post hoc reading):
 
 | pos_group | channel | n | p10 | median | p90 |
 |---|---|---|---|---|---|
-| WR | eta_ke | 92 | 0.711 | 0.774 | 0.827 |
-| WR | eta_speed | 92 | 0.843 | 0.879 | 0.909 |
+| WR | eta_ke | 92 | 0.711 | 0.773 | 0.825 |
+| WR | eta_speed | 92 | 0.843 | 0.879 | 0.908 |
 | WR | eta_burst | 92 | 0.919 | 1.070 | 1.331 |
-| WR | eta_power | 92 | 0.716 | 0.885 | 1.014 |
-| DB | eta_ke | 97 | 0.694 | 0.780 | 0.850 |
-| DB | eta_speed | 97 | 0.832 | 0.881 | 0.922 |
-| DB | eta_burst | 97 | 0.863 | 1.013 | 1.193 |
-| DB | eta_power | 97 | 0.736 | 0.847 | 0.970 |
-| TE | eta_ke | 23 | 0.604 | 0.687 | 0.768 |
-| TE | eta_speed | 23 | 0.777 | 0.829 | 0.876 |
-| TE | eta_burst | 23 | 0.892 | 1.039 | 1.216 |
+| WR | eta_power | 92 | 0.716 | 0.881 | 1.014 |
+| DB | eta_ke | 95 | 0.698 | 0.781 | 0.850 |
+| DB | eta_speed | 95 | 0.835 | 0.881 | 0.922 |
+| DB | eta_burst | 95 | 0.862 | 1.013 | 1.181 |
+| DB | eta_power | 95 | 0.729 | 0.847 | 0.970 |
+| TE | eta_ke | 23 | 0.604 | 0.687 | 0.765 |
+| TE | eta_speed | 23 | 0.777 | 0.829 | 0.874 |
+| TE | eta_burst | 23 | 0.892 | 1.031 | 1.216 |
 | TE | eta_power | 23 | 0.768 | 0.888 | 0.994 |
-| DL | eta_ke | 96 | 0.537 | 0.613 | 0.708 |
-| DL | eta_speed | 96 | 0.732 | 0.783 | 0.841 |
-| DL | eta_burst | 96 | 0.827 | 0.964 | 1.141 |
-| DL | eta_power | 96 | 0.606 | 0.734 | 0.848 |
-| OL | eta_ke | 90 | 0.448 | 0.540 | 0.629 |
-| OL | eta_speed | 90 | 0.669 | 0.735 | 0.793 |
-| OL | eta_burst | 90 | 0.766 | 0.941 | 1.250 |
-| OL | eta_power | 90 | 0.548 | 0.688 | 0.863 |
+| DL | eta_ke | 95 | 0.534 | 0.613 | 0.705 |
+| DL | eta_speed | 95 | 0.730 | 0.783 | 0.839 |
+| DL | eta_burst | 95 | 0.827 | 0.962 | 1.132 |
+| DL | eta_power | 95 | 0.597 | 0.732 | 0.848 |
+| OL | eta_ke | 89 | 0.448 | 0.536 | 0.626 |
+| OL | eta_speed | 89 | 0.669 | 0.727 | 0.791 |
+| OL | eta_burst | 89 | 0.755 | 0.932 | 1.256 |
+| OL | eta_power | 89 | 0.548 | 0.692 | 0.865 |
 
 ## Role and what drives each ratio (log η)
 
@@ -53,18 +53,18 @@ tracks (minus) its lab side mostly measures the lab value.
 
 | channel | n | sd_pooled | sd_within | between_share | r_lab_within | r_field_within |
 |---|---|---|---|---|---|---|
-| speed | 398 | 0.091 | 0.052 | 0.676 | -0.025 | 0.793 |
-| ke | 398 | 0.182 | 0.104 | 0.674 | -0.025 | 0.793 |
-| burst | 398 | 0.158 | 0.150 | 0.099 | -0.607 | 0.717 |
-| power | 398 | 0.182 | 0.150 | 0.321 | -0.648 | 0.516 |
+| speed | 394 | 0.092 | 0.051 | 0.692 | -0.042 | 0.785 |
+| ke | 394 | 0.183 | 0.102 | 0.689 | -0.042 | 0.785 |
+| burst | 394 | 0.159 | 0.151 | 0.102 | -0.612 | 0.719 |
+| power | 394 | 0.183 | 0.151 | 0.320 | -0.659 | 0.513 |
 
 Within-group correlation between channels:
 
 |  | speed | burst | power |
 |---|---|---|---|
-| speed | 1.00 | 0.19 | 0.29 |
-| burst | 0.19 | 1.00 | 0.78 |
-| power | 0.29 | 0.78 | 1.00 |
+| speed | 1.00 | 0.18 | 0.28 |
+| burst | 0.18 | 1.00 | 0.78 |
+| power | 0.28 | 0.78 | 1.00 |
 
 ## Retest across consecutive seasons
 
@@ -73,10 +73,10 @@ change (role, development, injury) plus game noise.
 
 | channel | pairs | r_pooled | r_within |
 |---|---|---|---|
-| speed | 157 | 0.803 | 0.418 |
-| ke | 157 | 0.801 | 0.414 |
-| burst | 157 | 0.623 | 0.624 |
-| power | 157 | 0.792 | 0.736 |
+| speed | 154 | 0.815 | 0.384 |
+| ke | 154 | 0.813 | 0.380 |
+| burst | 154 | 0.619 | 0.620 |
+| power | 154 | 0.796 | 0.742 |
 
 ## Per prospect
 
@@ -86,19 +86,19 @@ geometric mean over qualified seasons (uses later seasons: look-ahead for surviv
 | pos_group | channel | n | p10 | median | p90 |
 |---|---|---|---|---|---|
 | WR | eta_ke_first | 54 | 0.715 | 0.774 | 0.833 |
-| WR | eta_ke_career | 54 | 0.715 | 0.773 | 0.814 |
-| WR | gap_career | 54 | 0.186 | 0.227 | 0.285 |
-| DB | eta_ke_first | 58 | 0.681 | 0.765 | 0.851 |
-| DB | eta_ke_career | 58 | 0.682 | 0.779 | 0.850 |
-| DB | gap_career | 58 | 0.150 | 0.221 | 0.318 |
-| TE | eta_ke_first | 14 | 0.608 | 0.676 | 0.753 |
-| TE | eta_ke_career | 14 | 0.612 | 0.687 | 0.761 |
-| TE | gap_career | 14 | 0.239 | 0.313 | 0.388 |
-| DL | eta_ke_first | 58 | 0.526 | 0.609 | 0.699 |
-| DL | eta_ke_career | 58 | 0.530 | 0.605 | 0.693 |
-| DL | gap_career | 58 | 0.307 | 0.395 | 0.470 |
-| OL | eta_ke_first | 54 | 0.443 | 0.533 | 0.623 |
-| OL | eta_ke_career | 54 | 0.441 | 0.547 | 0.611 |
-| OL | gap_career | 54 | 0.389 | 0.453 | 0.559 |
+| WR | eta_ke_career | 54 | 0.715 | 0.766 | 0.806 |
+| WR | gap_career | 54 | 0.194 | 0.234 | 0.285 |
+| DB | eta_ke_first | 58 | 0.681 | 0.759 | 0.851 |
+| DB | eta_ke_career | 58 | 0.682 | 0.774 | 0.849 |
+| DB | gap_career | 58 | 0.151 | 0.226 | 0.318 |
+| TE | eta_ke_first | 14 | 0.608 | 0.663 | 0.733 |
+| TE | eta_ke_career | 14 | 0.611 | 0.677 | 0.761 |
+| TE | gap_career | 14 | 0.239 | 0.323 | 0.389 |
+| DL | eta_ke_first | 58 | 0.514 | 0.609 | 0.693 |
+| DL | eta_ke_career | 58 | 0.524 | 0.605 | 0.692 |
+| DL | gap_career | 58 | 0.308 | 0.395 | 0.476 |
+| OL | eta_ke_first | 53 | 0.444 | 0.523 | 0.615 |
+| OL | eta_ke_career | 53 | 0.442 | 0.545 | 0.609 |
+| OL | gap_career | 53 | 0.391 | 0.455 | 0.558 |
 
 Figure: `reports/figures/eta.png`.

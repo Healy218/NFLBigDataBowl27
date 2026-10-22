@@ -23,9 +23,9 @@ $$
 
 A prospect with a large lab engine and a low η is a "Combine warrior" whose power doesn't transfer to the field. A modest engine with high η is a player who gets the most out of the engine they have.
 
-5. **Tenure.** Cox Proportional Hazards survival models test whether engine profile and η predict how long a player lasts in the NFL (snap share, games started, and league-exit risk) beyond what draft slot already tells us.
+5. **Regular-Season Performance.** Models within each position group test whether explosion potential and η predict regular-season output (playing time, position-specific production from `player_play`, games started) beyond what draft slot already tells us. Tenure (league-exit risk, Cox Proportional Hazards) is a secondary outcome: the draft classes have at most three seasons.
 
-The deliverable is a scouting signal that doesn't depend on positions. It measures how much engine a player has, separately from how efficiently he uses it.
+The deliverable is a scouting signal that doesn't depend on positions. It measures how much engine a player has, separately from how efficiently they use it.
 
 ---
 
@@ -37,7 +37,7 @@ The deliverable is a scouting signal that doesn't depend on positions. It measur
                                                                                    ▼
  NGS game tracking ──► On-field kinetic output ──────────────────────────► η = E_field / E_lab
                                                                                    │
- Snaps, games, draft slot (competition data) ──────────────────────────────► Cox PH survival
+ Snaps, production, draft slot (competition data) ──────────────────► potential → performance models
 ```
 
 | Layer | Primary (Python) | Alternative (R) |
@@ -59,7 +59,7 @@ Python is the primary implementation language. R is an optional mirror for the s
 ```
 NFLBigDataBowl27/
 ├── README.md              # This file: concept, stack, layout
-├── ROADMAP.md             # Macro timeline: Phase 1 (competition theme) → Phase 4 (η + survival)
+├── ROADMAP.md             # Macro timeline: Phase 1 (competition theme) → Phase 4 (η + regular-season performance)
 ├── TODO.md                # Micro task tracker by iteration; marks the Current Iteration
 ├── HANDOFF.md             # Session-start state: read this first when resuming work
 ├── .gitignore             # Excludes all data (competition terms) and build artifacts
