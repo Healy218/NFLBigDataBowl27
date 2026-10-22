@@ -118,7 +118,7 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 
 ## [-] Iteration 5: Submission *(Phase 4d)*  ← CURRENT
 
-- [ ] Decide the narrative frame (η-centred, or explosion potential with the tail and the DL start as findings)
+- [x] Narrative frame: explosion potential is the differentiator (the tail the draft under-rates, the DL start chain; η descriptive). Title: **"True ball is an explosion"**
 - [ ] Harden the headline results: tail cut-offs (10 / 20 / 30%), expectation model, by class; which TEE channels (tracked 40 vs jumps / bench) carry the tail signal; DL chain by class
 - [ ] Final figures (kinetic profile map, potential → performance, explosive tail vs draft slot, DL chain; η by group if kept)
 - [ ] Kaggle notebook narrative

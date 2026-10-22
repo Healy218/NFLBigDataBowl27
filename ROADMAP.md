@@ -192,4 +192,4 @@ The brief's target is regular-season performance, and the draft classes are 2023
 
 ### 4d. Submission
 
-A Kaggle notebook with the narrative, method, kinetic profile visuals, the potential → performance results, and the specific scouting and development recommendations that follow. The frame is open after Iteration 4 (η-centred as planned, or explosion potential with the tail and the DL start as the findings and η as a description); see `HANDOFF.md`.
+A Kaggle notebook with the narrative, method, kinetic profile visuals, the potential → performance results, and the specific scouting and development recommendations that follow. **Title: "True ball is an explosion".** Frame (decided 2026-10-22): explosion potential is the differentiator. The physics of the Combine, the explosive tail the draft under-rates and the DL start chain carry the story; η describes how much top speed reaches games, by group.

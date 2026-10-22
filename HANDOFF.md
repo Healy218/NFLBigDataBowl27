@@ -4,13 +4,13 @@ Session-start state for the Explosion Efficiency Gap project. Everything here co
 
 - **Current Iteration:** Iteration 5, Submission
 - **Roadmap Phase:** Phase 4d
-- **Last updated:** 2026-10-22 (Iteration 4 closed; Iteration 5 not started)
+- **Last updated:** 2026-10-22 (Iteration 4 closed; Iteration 5 frame decided: "True ball is an explosion")
 
 ---
 
 ## Current Objective
 
-Turn the analysis into the **Kaggle notebook** for the NFL Big Data Bowl 2027 ("Combine to NFL Performance"; brief in [`ROADMAP.md`](ROADMAP.md)): a narrative a coach, scout or front office can use, the method, the figures, and specific scouting and development recommendations. First decide the frame (open decision 1), then harden the headline results before writing around them.
+Turn the analysis into the **Kaggle notebook** for the NFL Big Data Bowl 2027 ("Combine to NFL Performance"; brief in [`ROADMAP.md`](ROADMAP.md)): a narrative a coach, scout or front office can use, the method, the figures, and specific scouting and development recommendations. The frame is set (open decision 1): **"True ball is an explosion"**, explosion potential as the differentiator. Harden the headline results before writing around them.
 
 Done means a notebook that runs end-to-end from `data/raw/`, tells one focused story with the findings below, and a README that matches it.
 
@@ -73,15 +73,15 @@ uv run python -m eeg.survival.tenure         # → reports/tenure.md, reports/fi
 
 ## Open decisions (decide when the data is in front of us)
 
-1. **Narrative frame.** The project is named for η, but Iteration 4 moved the signal elsewhere. (a) Keep η central and report that it mostly measures engine size and doesn't predict output; (b) lead with explosion potential: physics of the Combine → the explosive tail the draft under-rates → the DL start chain, with η as a description of how much top speed reaches games by group. The evidence favours (b); it is the user's call, and it sets the title, README and figures.
-2. **η beyond expectation** (deferred): game output relative to what the engine predicts, which removes the engine-size dependence. Only worth building if η stays central.
+1. ~~**Narrative frame**~~ Decided 2026-10-22 (the user's original intent): **(b) explosion potential is the differentiator.** Physics of the Combine → the explosive tail the draft under-rates → the DL start chain; η stays as a description of how much top speed reaches games, by group. **Presentation title: "True ball is an explosion".**
+2. ~~**η beyond expectation**~~ Not needed: η is descriptive under frame (b).
 3. **Brief emphasis on 10 Hz tracking.** The raw-joules composite mixes the tracked 40 (E_40) with results (jumps, bench), and a10 is the official split. Measure how much of the tail signal comes from the tracking before choosing what to headline.
 
 ---
 
 ## Next Session Steps
 
-1. **Decide the frame** (open decision 1), with the user.
+1. ~~**Decide the frame**~~ Done: (b), titled "True ball is an explosion".
 2. **Harden the headline results:** tail cut-offs (10 / 20 / 30%), an alternative expectation model, each class separately; which TEE channels carry the tail (open decision 3); the DL chain by class. Write the checks to a report.
 3. **Final figures** for the chosen frame.
 4. **Notebook narrative**, then the README executive summary to match.
