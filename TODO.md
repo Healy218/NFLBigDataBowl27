@@ -97,7 +97,7 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 - [x] Context filters: burst from rest (first 1.5 s after the snap, below 1 m/s at the snap; 92% of plays)
 - [ ] Change-of-direction windows (deferred: lab COD covers only 126–128 profiled prospects)
 - [x] Season statistic and exposure (`ngs/reliability.py` → `reports/field_reliability.md`): mean of the 3 best game maxima; games count with ≥ 5 plays; ≥ 100 plays and ≥ 6 games (481 player-seasons, 288 prospects); η reliability within position 0.65–0.69
-- [ ] Compute η per matching channel and the overall Explosion Efficiency Gap
+- [x] Compute η per matching channel and the overall Explosion Efficiency Gap (`ngs/eta.py` → `reports/eta.md`): 398 player-seasons, 238 prospects; gap = 1 − η_KE (η_KE = η_speed², median 0.70); η raw, read within position, Cox stratified by position in Iteration 4; burst and power η stored but driven by the lab value
 - [ ] η leaderboards per position group
 
 ## [ ] Iteration 4: Survival Modeling *(Phase 4c)*

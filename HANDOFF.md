@@ -4,7 +4,7 @@ Session-start state for the Explosion Efficiency Gap project. Everything here co
 
 - **Current Iteration:** Iteration 3, NGS Alignment & Explosion Efficiency (η)
 - **Roadmap Phase:** Phase 4a–4b, On-field motor and Explosion Efficiency
-- **Last updated:** 2026-10-21 (steps 1–4 done: ingest, validation, field channels, reliability and exposure)
+- **Last updated:** 2026-10-22 (steps 1–5 done: ingest, validation, field channels, reliability and exposure, η)
 
 ---
 
@@ -48,9 +48,10 @@ uv run python -m eeg.ingest.load_games       # → data/interim/game_tracking_{s
 uv run python -m eeg.ngs.validate            # → reports/field_kinematics.md, data/processed/field_validation.parquet
 uv run python -m eeg.ngs.channels            # → data/processed/field_{plays,games,seasons}.parquet, lab_channels.parquet
 uv run python -m eeg.ngs.reliability         # → reports/field_reliability.md, reports/field_reliability.csv
+uv run python -m eeg.ngs.eta                 # → data/processed/eta.parquet, eta_career.parquet, reports/eta.md
 ```
 
-120 tests (`uv run pytest`). Schemas: [`config/data_dictionary.md`](config/data_dictionary.md). Settings: [`config/physics.yaml`](config/physics.yaml).
+124 tests (`uv run pytest`). Schemas: [`config/data_dictionary.md`](config/data_dictionary.md). Settings: [`config/physics.yaml`](config/physics.yaml).
 
 **What carries into Phase 4:**
 - **Lab channels** (`forty_fits.parquet`, best rep; `combine_si.parquet` mass): v_max (rep-to-rep r 0.97), τ (r 0.51, noisy), E_40. Derived from the 40 model $v(t) = v_{max}(1 - e^{-t/τ})$: initial acceleration $a_0 = v_{max}/τ$ and peak propulsive power per kg $v_{max}^2 / 4τ$ (before drag).
@@ -111,11 +112,22 @@ From the raw files and [`config/data_dictionary.md`](config/data_dictionary.md):
 
 ---
 
+## η and the Explosion Efficiency Gap (step 5, [`reports/eta.md`](reports/eta.md))
+
+- **Coverage:** 398 of 481 qualified player-seasons have a well-fit 40 (50 prospects have none); **238 prospects**, 212 of them profiled. Qualified seasons per prospect: 1 (120), 2 (76), 3 (42).
+- **Headline:** gap = 1 − η_KE, η_KE = E_field / E_lab = η_speed² (`eta.headline`). Median η_KE 0.70 (p10–p90 0.51–0.82), i.e. η_speed 0.83. By group: WR 0.77, DB 0.78, TE 0.69, DL 0.61, OL 0.54.
+- **Why speed:** within position, log η_speed is unrelated to the lab value (r −0.03) and tracks the field value (r 0.79), so it is game output against a fixed engine. Burst and power η are mostly minus the lab value (r −0.61, −0.65; noisy 40 acceleration), so they're stored and reported but are not the gap. Within position, η_burst and η_power correlate 0.78 and only 0.19–0.29 with η_speed.
+- **Role:** position explains 68% of the variance of log η_speed (10% for burst, 32% for power). η stays raw (`eta.role`); leaderboards are read within position and **Iteration 4 stratifies Cox models by position group**.
+- **Season to season** (157 consecutive pairs, within position): η_speed r 0.42 against a within-season reliability of 0.69, so speed η changes between seasons (role, development, injury). Burst 0.62 and power 0.74 look steadier only because the shared lab value repeats.
+- **Per prospect:** `eta_*_first` (first qualified season) and `eta_*_career` (plays-weighted geometric mean). The career value uses later seasons, so for survival it is look-ahead; prefer the first-season value or a time-varying season value.
+
+---
+
 ## Open decisions (decide when the data is in front of us)
 
 1. ~~**Season types**~~ **Decided 2026-10-21:** REG + POST, PRE dropped (preseason snaps are few, and effort and rosters aren't comparable). `games.season_types` in `config/physics.yaml`.
 2. ~~**Field statistic**~~ **Decided 2026-10-21:** `top3`, the mean of the 3 best game maxima, with the exposure rules above (`games.*` in `config/physics.yaml`).
-3. **Role dependence of field output:** an OL rarely needs top speed in a game, so raw η for speed will track role. Options: read η within position group (a scope use, already how the leaderboards work), restrict channels to contexts every role shares (e.g. the first second after the snap), or both. Decide at step 5. The gap is measured: OL 0.78 → DB 0.90 of lab speed.
+3. ~~**Role dependence of field output**~~ **Decided 2026-10-22:** η stays raw; leaderboards within position group; Iteration 4 stratifies Cox models by position group, so η acts only within groups and position is never a covariate (`eta.role`). The headline gap is 1 − η_KE (`eta.headline`).
 
 ---
 
@@ -125,6 +137,6 @@ From the raw files and [`config/data_dictionary.md`](config/data_dictionary.md):
 2. ~~**Validate field kinematics**~~ Done (see findings above).
 3. ~~**Field channels**~~ Done (see above). Change of direction deferred (lab COD covers only 126–128 profiled prospects).
 4. ~~**Exposure and reliability**~~ Done (see above).
-5. **η per matching channel** (`src/eeg/ngs/eta.py` → `data/processed/eta.parquet`): η = field `top3` / lab peak for speed, $E_k$ (= η_speed²), burst and power on qualified player-seasons, plus a career value per prospect (pooled over qualified seasons, for Iteration 4). Decide role dependence (open decision 3) and how to combine channels into the Explosion Efficiency Gap given the reliability table: speed is clean; burst η is mostly field burst.
-6. **Read the results** (post hoc): η leaderboards per position group; η against the profile axes.
+5. ~~**η per matching channel**~~ Done (see above).
+6. **Read the results** (post hoc): η_KE leaderboards per position group (named tables in `data/` only; the committed report keeps aggregates), with shrinkage toward the group median given reliability 0.69 and 1–3 seasons per prospect; η against the profile axes and lab capacity (high-engine, low-η "Combine warriors" vs low-engine, high-η).
 7. Close Iteration 3 → Iteration 4 (survival).

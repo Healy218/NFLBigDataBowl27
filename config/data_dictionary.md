@@ -159,6 +159,15 @@ Built by `uv run python -m eeg.ngs.channels` from the game tracking parquets (cl
 | `field_seasons` | player-season | Over counting games (≥ `games.min_game_plays` plays): `games`, `plays`, `burst_plays`, `burst_games`, `qualified` (≥ `games.min_season_plays` plays and ≥ `games.min_season_games` games; 481); per channel `{ch}_max` (season peak), `{ch}_game_med` (median game max), `{ch}_top3` (mean of the 3 highest game maxima: the season value, `games.season_statistic`) |
 | `lab_channels` | prospect (417) | same estimators on the best 40 rep up to the finish: `lab_s_peak`, `lab_ke_peak`, `lab_a_peak` (from rest: the burst analogue), `lab_p_peak`; 40 model: `lab_v_max`, `lab_a0` (v_max/τ), `lab_p_model` (v_max²/4τ) |
 
+## `data/processed/eta.parquet`, `eta_career.parquet`
+
+Built by `uv run python -m eeg.ngs.eta` from `field_seasons.parquet` (qualified, season value `games.season_statistic`) and `lab_channels.parquet`. Not committed; aggregates in `reports/eta.md`. η is raw (`eta.role`): position groups only read it.
+
+| File | Grain | Columns |
+|---|---|---|
+| `eta` | qualified player-season with a lab 40 (398) | `player_id`, `season`, `games`, `plays`; per channel `speed`, `ke`, `burst`, `power`: `field_*`, `lab_*` and `eta_*` = field / lab (`eta_ke` = `eta_speed`²; `eta_burst` uses `lab_a_peak`); `gap` = 1 − `eta_ke` (`eta.headline`) |
+| `eta_career` | prospect (238) | `seasons`, `first_season`, `plays`; per channel `eta_*_first` (first qualified season) and `eta_*_career` (plays-weighted geometric mean over qualified seasons; uses later seasons, so look-ahead for survival); `gap_first`, `gap_career` |
+
 ## `reports/field_reliability.csv` (committed)
 
 Built by `uv run python -m eeg.ngs.reliability`. One row per field channel × season statistic: split-half reliability (`r_half_*`, `rel_*`), reliability of log η with the lab rep-to-rep error (`rel_eta_*`), field–lab correlation and spread of log η; each pooled and within position group (centred on the group mean).

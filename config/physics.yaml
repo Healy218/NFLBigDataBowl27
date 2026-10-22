@@ -297,3 +297,27 @@ games:
       Highest (or tied) within-position reliability of η for every channel;
       the single season peak is the least reliable (decided 2026-10-21, open
       decision 2; reports/field_reliability.md).
+
+eta:
+  headline:
+    value: ke
+    note: >
+      The Explosion Efficiency Gap is 1 − η_KE, η_KE = E_field / E_lab on
+      kinetic energy per kg = η_speed² (the README definition). Speed is the
+      clean channel: within position, log η_speed is unrelated to lab speed
+      (r −0.03), while burst and power η are mostly the inverse of the noisy
+      lab value (r −0.61, −0.65). Burst and power η are stored and reported,
+      not part of the gap (decided 2026-10-22; reports/eta.md).
+  role:
+    value: stratify
+    note: >
+      η is stored raw. Position explains ~2/3 of speed-η variance (OL 0.73 →
+      DB 0.88), so leaderboards are read within position group and Iteration 4
+      stratifies Cox models by position group (risk sets within a group), so
+      position never enters as a covariate (decided 2026-10-22, open decision 3).
+  career_weight:
+    value: plays
+    note: >
+      Career η per prospect = exp of the plays-weighted mean of season log η
+      over qualified seasons. The first qualified season's η is kept as well:
+      a career value uses later seasons, so it is look-ahead for survival.
