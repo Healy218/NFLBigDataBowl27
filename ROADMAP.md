@@ -40,6 +40,9 @@ This is the macro timeline, from the official competition brief to the final del
 | Focus | One aspect of movement: how much of the 40's straight-line engine shows up in games |
 | Future performance | η and the profiles against NFL outcomes, controlling for draft slot (Phase 4c) |
 
+---
+
+## Phases
 
 | Phase | Name | Iterations | Output |
 |---|---|---|---|
