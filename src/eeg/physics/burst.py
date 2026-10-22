@@ -13,8 +13,8 @@ Candidates per prospect, from the 40:
 Checks (logs, within position group; groups only read results):
 - rep-to-rep reliability of one tracked rep (first two well-fit reps) and of their mean (Spearman–Brown);
   the official split is a single value, so it has no rep reliability;
-- validity against games: r with the prospect's field burst (`burst_a_top3`) and peak acceleration
-  (`a_peak_top3`), geometric mean over qualified seasons, and with DL get-off (`get_off`, qualified seasons);
+- validity against games: r with the prospect's field burst (`burst_a`) and peak acceleration (`a_peak`),
+  season value `games.season_statistic`, geometric mean over qualified seasons, and with DL get-off (`get_off`, qualified seasons);
 - does the start add beyond top speed: standardized betas of the split with the rest of the 40
   (fly30_off = forty − split) or with v_max, and of τ with v_max (the clustering pair).
 
@@ -155,10 +155,11 @@ def main() -> None:
     )
     lab.drop("group").write_parquet(processed / "lab_burst.parquet")
 
+    stat = cfg["games"]["season_statistic"]
     fs = pl.read_parquet(processed / "field_seasons.parquet").filter("qualified")
     field = fs.group_by("player_id").agg(
-        pl.col("burst_a_top3").log().mean().exp().alias("field_burst"),
-        pl.col("a_peak_top3").log().mean().exp().alias("field_a_peak"),
+        pl.col(f"burst_a_{stat}").log().mean().exp().alias("field_burst"),
+        pl.col(f"a_peak_{stat}").log().mean().exp().alias("field_a_peak"),
     )
     prod = pl.read_parquet(processed / "production_seasons.parquet").filter("qualified")
     get_off = prod.drop_nulls("get_off").group_by("player_id").agg(pl.col("get_off").log().mean().exp())
@@ -220,7 +221,7 @@ First two well-fit reps of each prospect. The official split is a single best-at
 
 ## Which start measure shows up in games
 
-Within-group r with field burst (`burst_a_top3`) and field peak acceleration (`a_peak_top3`), geometric mean over
+Within-group r with field burst (`burst_a_{stat}`) and field peak acceleration (`a_peak_{stat}`), geometric mean over
 qualified seasons, and with DL get-off (lower is faster, so a good start measure correlates negatively if it
 grows with explosiveness, positively if it is a time). `forty_s` for comparison.
 

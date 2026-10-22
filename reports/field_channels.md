@@ -7,7 +7,8 @@ and the lab side in `data/processed/lab_channels.parquet` (not committed). Aggre
 
 - Plays: 250,657 (92% burst-eligible); player-games: 7,899;
   player-seasons: 686 (476 qualified, 287 prospects).
-- Season statistic `top3` (`games.season_statistic`) over counting games (≥ 5 plays).
+- Season statistic `top3_of50` (`games.season_statistic`): expected mean of the 3 best plays in 50 random
+  plays of the season (exposure-free), over plays in counting games (≥ 5 plays).
   Qualified: ≥ 100 plays and ≥ 6 counting games.
 - Units: speed m/s, ke J/kg, acceleration m/s², power W/kg.
 
@@ -15,31 +16,31 @@ and the lab side in `data/processed/lab_channels.parquet` (not committed). Aggre
 
 | channel | n | p10 | median | p90 |
 |---|---|---|---|---|
-| s_peak_top3 | 476 | 6.17 | 8.02 | 9.14 |
-| ke_peak_top3 | 476 | 19.10 | 32.20 | 41.77 |
-| a_peak_top3 | 476 | 4.24 | 5.68 | 6.55 |
-| burst_a_top3 | 476 | 4.10 | 5.26 | 6.33 |
-| p_peak_top3 | 476 | 11.80 | 19.48 | 24.40 |
+| s_peak_top3_of50 | 476 | 4.98 | 7.36 | 8.41 |
+| ke_peak_top3_of50 | 476 | 12.56 | 27.11 | 35.40 |
+| a_peak_top3_of50 | 476 | 3.68 | 5.13 | 5.79 |
+| burst_a_top3_of50 | 476 | 3.58 | 4.73 | 5.69 |
+| p_peak_top3_of50 | 476 | 9.17 | 17.30 | 22.20 |
 
 By position group (post hoc reading only):
 
 | pos_group | channel | n | p10 | median | p90 |
 |---|---|---|---|---|---|
-| WR | s_peak_top3 | 105 | 8.45 | 8.87 | 9.25 |
-| WR | burst_a_top3 | 105 | 5.56 | 5.90 | 6.99 |
-| WR | p_peak_top3 | 105 | 21.65 | 23.44 | 26.18 |
-| DB | s_peak_top3 | 113 | 8.37 | 8.90 | 9.27 |
-| DB | burst_a_top3 | 113 | 5.05 | 5.45 | 6.38 |
-| DB | p_peak_top3 | 113 | 20.47 | 22.15 | 24.71 |
-| TE | s_peak_top3 | 27 | 7.34 | 7.82 | 8.46 |
-| TE | burst_a_top3 | 27 | 4.84 | 5.26 | 6.04 |
-| TE | p_peak_top3 | 27 | 17.45 | 18.69 | 21.39 |
-| DL | s_peak_top3 | 121 | 6.45 | 7.19 | 8.00 |
-| DL | burst_a_top3 | 121 | 4.13 | 4.78 | 5.59 |
-| DL | p_peak_top3 | 121 | 12.65 | 15.31 | 19.56 |
-| OL | s_peak_top3 | 110 | 5.72 | 6.26 | 6.88 |
-| OL | burst_a_top3 | 110 | 3.73 | 4.24 | 5.69 |
-| OL | p_peak_top3 | 110 | 10.52 | 12.07 | 14.46 |
+| WR | s_peak_top3_of50 | 105 | 8.01 | 8.35 | 8.78 |
+| WR | burst_a_top3_of50 | 105 | 5.36 | 5.59 | 6.47 |
+| WR | p_peak_top3_of50 | 105 | 20.62 | 22.04 | 23.94 |
+| DB | s_peak_top3_of50 | 113 | 7.61 | 7.93 | 8.20 |
+| DB | burst_a_top3_of50 | 113 | 4.52 | 4.81 | 5.34 |
+| DB | p_peak_top3_of50 | 113 | 18.16 | 19.20 | 20.49 |
+| TE | s_peak_top3_of50 | 27 | 7.13 | 7.43 | 7.84 |
+| TE | burst_a_top3_of50 | 27 | 4.70 | 4.99 | 5.60 |
+| TE | p_peak_top3_of50 | 27 | 16.78 | 17.55 | 19.54 |
+| DL | s_peak_top3_of50 | 121 | 5.65 | 6.34 | 7.02 |
+| DL | burst_a_top3_of50 | 121 | 3.72 | 4.41 | 5.09 |
+| DL | p_peak_top3_of50 | 121 | 10.66 | 13.15 | 16.32 |
+| OL | s_peak_top3_of50 | 110 | 4.61 | 5.02 | 5.34 |
+| OL | burst_a_top3_of50 | 110 | 3.20 | 3.63 | 4.21 |
+| OL | p_peak_top3_of50 | 110 | 8.23 | 9.29 | 10.29 |
 
 ## Exposure by position group (per player-season)
 
@@ -70,13 +71,13 @@ By position group (post hoc reading only):
 
 ## Correlation between season channels (Pearson, 476 player-seasons)
 
-|  | s_peak_top3 | ke_peak_top3 | a_peak_top3 | burst_a_top3 | p_peak_top3 |
+|  | s_peak_top3_of50 | ke_peak_top3_of50 | a_peak_top3_of50 | burst_a_top3_of50 | p_peak_top3_of50 |
 |---|---|---|---|---|---|
-| s_peak_top3 | 1.00 | 1.00 | 0.83 | 0.73 | 0.93 |
-| ke_peak_top3 | 1.00 | 1.00 | 0.82 | 0.73 | 0.93 |
-| a_peak_top3 | 0.83 | 0.82 | 1.00 | 0.93 | 0.90 |
-| burst_a_top3 | 0.73 | 0.73 | 0.93 | 1.00 | 0.85 |
-| p_peak_top3 | 0.93 | 0.93 | 0.90 | 0.85 | 1.00 |
+| s_peak_top3_of50 | 1.00 | 1.00 | 0.91 | 0.85 | 0.98 |
+| ke_peak_top3_of50 | 1.00 | 1.00 | 0.91 | 0.85 | 0.98 |
+| a_peak_top3_of50 | 0.91 | 0.91 | 1.00 | 0.96 | 0.96 |
+| burst_a_top3_of50 | 0.85 | 0.85 | 0.96 | 1.00 | 0.91 |
+| p_peak_top3_of50 | 0.98 | 0.98 | 0.96 | 0.91 | 1.00 |
 
 ## First look: season value against the lab 40 (same estimators)
 
@@ -84,11 +85,11 @@ Not η yet: role dependence is decided in step 5.
 
 | field | lab | n | field_above_lab | ratio_median | pearson | spearman |
 |---|---|---|---|---|---|---|
-| s_peak_top3 | lab_s_peak | 394 | 0.000 | 0.832 | 0.903 | 0.872 |
-| ke_peak_top3 | lab_ke_peak | 394 | 0.000 | 0.693 | 0.902 | 0.872 |
-| a_peak_top3 | lab_a_peak | 394 | 0.665 | 1.064 | 0.489 | 0.525 |
-| burst_a_top3 | lab_a_peak | 394 | 0.497 | 0.999 | 0.430 | 0.474 |
-| p_peak_top3 | lab_p_peak | 394 | 0.053 | 0.795 | 0.724 | 0.760 |
+| s_peak_top3_of50 | lab_s_peak | 394 | 0.000 | 0.754 | 0.891 | 0.855 |
+| ke_peak_top3_of50 | lab_ke_peak | 394 | 0.000 | 0.572 | 0.892 | 0.857 |
+| a_peak_top3_of50 | lab_a_peak | 394 | 0.363 | 0.954 | 0.532 | 0.571 |
+| burst_a_top3_of50 | lab_a_peak | 394 | 0.234 | 0.896 | 0.480 | 0.526 |
+| p_peak_top3_of50 | lab_p_peak | 394 | 0.005 | 0.680 | 0.734 | 0.753 |
 
 Inside the lab, measured 40 peaks against the 40 model (417 prospects):
 

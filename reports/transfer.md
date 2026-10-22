@@ -12,50 +12,52 @@ results. Aggregates only. Predictors are measured at the Combine, so the career 
 
 | variable | eta_career | eta_first | field_speed | field_burst | get_off |
 |---|---|---|---|---|---|
-| ax_explosive | -0.18 | -0.11 | 0.23 | 0.26 | -0.35 |
-| ax_speed_vs_bounce | -0.10 | -0.05 | 0.05 | -0.05 | 0.13 |
-| ax_up_vs_out | -0.09 | -0.10 | -0.20 | 0.00 | -0.02 |
-| log_anomaly | -0.02 | -0.02 | 0.01 | -0.01 | -0.07 |
-| TEE_z_rel | -0.11 | -0.09 | 0.36 | 0.34 | -0.64 |
-| log_a10 | 0.01 | 0.01 | 0.47 | 0.36 | -0.67 |
-| split_share | -0.08 | -0.05 | 0.20 | 0.07 | -0.14 |
-| log_v_max | -0.14 | -0.10 | 0.50 | 0.34 | -0.58 |
-| log_mass | -0.10 | -0.07 | -0.45 | -0.38 | 0.69 |
-| log_shuttle | 0.03 | 0.03 | -0.24 | -0.27 | 0.56 |
-| log_cone | 0.14 | 0.13 | -0.23 | -0.40 | 0.61 |
-| ngs_college_production_score | 0.20 | 0.22 | 0.27 | 0.24 | -0.36 |
-| ngs_athleticism_score | -0.16 | -0.14 | 0.18 | 0.14 | -0.21 |
+| ax_explosive | -0.38 | -0.34 | 0.11 | 0.26 | -0.35 |
+| ax_speed_vs_bounce | -0.15 | -0.13 | 0.01 | -0.07 | 0.13 |
+| ax_up_vs_out | 0.05 | 0.06 | -0.10 | -0.04 | -0.02 |
+| log_anomaly | -0.08 | -0.12 | -0.04 | 0.00 | -0.07 |
+| TEE_z_rel | -0.19 | -0.17 | 0.35 | 0.40 | -0.64 |
+| log_a10 | -0.10 | -0.09 | 0.43 | 0.45 | -0.67 |
+| split_share | -0.18 | -0.14 | 0.15 | 0.08 | -0.14 |
+| log_v_max | -0.30 | -0.27 | 0.44 | 0.43 | -0.58 |
+| log_mass | -0.19 | -0.17 | -0.58 | -0.51 | 0.69 |
+| log_shuttle | 0.08 | 0.08 | -0.24 | -0.32 | 0.56 |
+| log_cone | 0.16 | 0.15 | -0.28 | -0.45 | 0.61 |
+| ngs_college_production_score | -0.06 | -0.06 | 0.06 | 0.13 | -0.36 |
+| ngs_athleticism_score | -0.36 | -0.32 | 0.09 | 0.10 | -0.21 |
 
 Intervals that exclude 0 (95%, Fisher z):
 
 | target | variable | n | r | lo95 | hi95 |
 |---|---|---|---|---|---|
-| eta_career | ax_explosive | 211 | -0.18 | -0.31 | -0.05 |
-| eta_career | ngs_athleticism_score | 237 | -0.16 | -0.28 | -0.03 |
-| eta_career | log_v_max | 237 | -0.14 | -0.27 | -0.02 |
-| eta_career | ngs_college_production_score | 236 | 0.20 | 0.07 | 0.32 |
-| eta_first | ngs_athleticism_score | 237 | -0.14 | -0.26 | -0.01 |
-| eta_first | ngs_college_production_score | 236 | 0.22 | 0.10 | 0.34 |
-| field_burst | log_cone | 102 | -0.40 | -0.56 | -0.22 |
-| field_burst | log_mass | 287 | -0.38 | -0.47 | -0.27 |
-| field_burst | log_shuttle | 115 | -0.27 | -0.43 | -0.09 |
-| field_burst | ngs_athleticism_score | 287 | 0.14 | 0.02 | 0.25 |
-| field_burst | ngs_college_production_score | 286 | 0.24 | 0.12 | 0.34 |
-| field_burst | ax_explosive | 211 | 0.26 | 0.13 | 0.39 |
-| field_burst | TEE_z_rel | 234 | 0.34 | 0.22 | 0.45 |
-| field_burst | log_v_max | 237 | 0.34 | 0.22 | 0.45 |
-| field_burst | log_a10 | 240 | 0.36 | 0.24 | 0.46 |
-| field_speed | log_mass | 287 | -0.45 | -0.54 | -0.36 |
+| eta_career | ax_explosive | 211 | -0.38 | -0.49 | -0.25 |
+| eta_career | ngs_athleticism_score | 237 | -0.36 | -0.46 | -0.24 |
+| eta_career | log_v_max | 237 | -0.30 | -0.41 | -0.18 |
+| eta_career | log_mass | 237 | -0.19 | -0.31 | -0.07 |
+| eta_career | TEE_z_rel | 218 | -0.19 | -0.32 | -0.06 |
+| eta_career | split_share | 237 | -0.18 | -0.30 | -0.05 |
+| eta_career | ax_speed_vs_bounce | 211 | -0.15 | -0.28 | -0.01 |
+| eta_first | ax_explosive | 211 | -0.34 | -0.45 | -0.21 |
+| eta_first | ngs_athleticism_score | 237 | -0.32 | -0.43 | -0.20 |
+| eta_first | log_v_max | 237 | -0.27 | -0.39 | -0.15 |
+| eta_first | log_mass | 237 | -0.17 | -0.29 | -0.04 |
+| eta_first | TEE_z_rel | 218 | -0.17 | -0.29 | -0.03 |
+| eta_first | split_share | 237 | -0.14 | -0.27 | -0.01 |
+| field_burst | log_mass | 287 | -0.51 | -0.59 | -0.41 |
+| field_burst | log_cone | 102 | -0.45 | -0.60 | -0.28 |
+| field_burst | log_shuttle | 115 | -0.32 | -0.48 | -0.14 |
+| field_burst | ngs_college_production_score | 286 | 0.13 | 0.01 | 0.24 |
+| field_burst | ax_explosive | 211 | 0.26 | 0.13 | 0.38 |
+| field_burst | TEE_z_rel | 234 | 0.40 | 0.29 | 0.51 |
+| field_burst | log_v_max | 237 | 0.43 | 0.32 | 0.53 |
+| field_burst | log_a10 | 240 | 0.45 | 0.34 | 0.55 |
+| field_speed | log_mass | 287 | -0.58 | -0.65 | -0.49 |
+| field_speed | log_cone | 102 | -0.28 | -0.45 | -0.09 |
 | field_speed | log_shuttle | 115 | -0.24 | -0.41 | -0.06 |
-| field_speed | log_cone | 102 | -0.23 | -0.41 | -0.04 |
-| field_speed | ax_up_vs_out | 211 | -0.20 | -0.33 | -0.07 |
-| field_speed | ngs_athleticism_score | 287 | 0.18 | 0.07 | 0.29 |
-| field_speed | split_share | 240 | 0.20 | 0.07 | 0.32 |
-| field_speed | ax_explosive | 211 | 0.23 | 0.09 | 0.35 |
-| field_speed | ngs_college_production_score | 286 | 0.27 | 0.16 | 0.37 |
-| field_speed | TEE_z_rel | 234 | 0.36 | 0.25 | 0.47 |
-| field_speed | log_a10 | 240 | 0.47 | 0.36 | 0.56 |
-| field_speed | log_v_max | 237 | 0.50 | 0.40 | 0.59 |
+| field_speed | split_share | 240 | 0.15 | 0.02 | 0.27 |
+| field_speed | TEE_z_rel | 234 | 0.35 | 0.23 | 0.46 |
+| field_speed | log_a10 | 240 | 0.43 | 0.33 | 0.53 |
+| field_speed | log_v_max | 237 | 0.44 | 0.33 | 0.54 |
 | get_off | log_a10 | 59 | -0.67 | -0.79 | -0.50 |
 | get_off | TEE_z_rel | 60 | -0.64 | -0.77 | -0.47 |
 | get_off | log_v_max | 58 | -0.58 | -0.73 | -0.38 |
@@ -72,10 +74,10 @@ sample, `cv_r2` out of sample beyond the group mean (5-fold × 20; ≤ 0 means n
 
 | target | n | r2 | cv_r2 | b_ax_explosive | b_ax_speed_vs_bounce | b_ax_up_vs_out | b_log_a10 | b_log_mass | b_ngs_college_production_score |
 |---|---|---|---|---|---|---|---|---|---|
-| eta_career | 210 | 0.10 | 0.03 | -0.19 | -0.08 | -0.10 | 0.01 | -0.03 | 0.22 |
-| eta_first | 210 | 0.07 | -0.01 | -0.12 | -0.05 | -0.11 | 0.02 | -0.00 | 0.21 |
-| field_speed | 210 | 0.34 | 0.29 | 0.12 | 0.10 | -0.21 | 0.24 | -0.28 | 0.19 |
-| field_burst | 210 | 0.21 | 0.15 | 0.20 | -0.03 | -0.02 | 0.14 | -0.23 | 0.15 |
+| eta_career | 210 | 0.20 | 0.14 | -0.33 | -0.12 | 0.04 | -0.12 | -0.23 | -0.07 |
+| eta_first | 210 | 0.16 | 0.10 | -0.30 | -0.10 | 0.05 | -0.09 | -0.19 | -0.08 |
+| field_speed | 210 | 0.36 | 0.31 | 0.04 | 0.07 | -0.11 | 0.17 | -0.49 | -0.05 |
+| field_burst | 210 | 0.30 | 0.24 | 0.19 | -0.02 | -0.05 | 0.17 | -0.38 | 0.00 |
 
 ## DL get-off
 

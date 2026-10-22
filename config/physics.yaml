@@ -304,18 +304,33 @@ games:
     value: 6
     units: games
     note: >
-      And this many games that count. The season statistic is a mean over the
-      3 best games; over 6 games its within-position reliability is 0.60 for
+      And this many games that count. Set under the game-based top3
+      statistic: over 6 games its within-position reliability is 0.60 for
       speed and 0.74-0.79 for burst and power (REG only), and speed reaches
       0.68 at 8. 6 rather than 4 costs ~13 player-seasons
-      (reports/field_reliability.md, exposure curve).
+      (reports/field_reliability.md, exposure curve). Kept with top3_of50 so
+      a season value spans several games.
   season_statistic:
-    value: top3
+    value: top3_of50
     note: >
-      Season value of every field channel: mean of the 3 highest game maxima.
-      Highest (or tied) within-position reliability of η for every channel;
-      the single season peak is the least reliable (decided 2026-10-21, open
-      decision 2; reports/field_reliability.md).
+      Season value of every field channel: expected mean of the 3 best plays
+      in 50 plays drawn at random from the season (`season_sample_plays`),
+      computed exactly over all 50-play subsets. Replaces top3 (mean of the 3
+      highest game maxima, decided 2026-10-21): maxima over games grow with
+      exposure, so top3 η rose with playing time (within-group r +0.46 with
+      season plays) and step 5 would have credited η for playing time it
+      measured. The fixed-K value is the same functional for every player
+      (r −0.06 with plays for speed) and, for speed, is also more reliable:
+      split-half 0.84 vs 0.80, η 0.75 vs 0.67, season retest 0.77 vs 0.61.
+      Decided 2026-10-22 (reports/field_reliability.md).
+  season_sample_plays:
+    value: 50
+    units: plays
+    note: >
+      K of the season statistic. Every qualified season has ≥ 79 burst-eligible
+      plays, so 50 defines every channel; within-group r with plays is −0.07
+      (25), −0.07 (50), −0.05 (75), −0.03 (100) for speed, and field speed
+      retest 0.78, 0.76, 0.75, 0.74.
 
 eta:
   headline:
@@ -323,10 +338,12 @@ eta:
     note: >
       The Explosion Efficiency Gap is 1 − η_KE, η_KE = E_field / E_lab on
       kinetic energy per kg = η_speed² (the README definition). Speed is the
-      clean channel: within position, log η_speed is unrelated to lab speed
-      (r −0.03), while burst and power η are mostly the inverse of the noisy
-      lab value (r −0.61, −0.65). Burst and power η are stored and reported,
-      not part of the gap (decided 2026-10-22; reports/eta.md).
+      clean channel: within position, log η_speed tracks the field value
+      (r 0.71) more than the lab one (r −0.23; with the exposure-free season
+      value the bigger engines reach a smaller fraction, which top3 hid),
+      while burst and power η are mostly the inverse of the noisy lab value
+      (r −0.70, −0.72). Burst and power η are stored and reported, not part
+      of the gap (decided 2026-10-22; reports/eta.md).
   role:
     value: stratify
     note: >
@@ -356,6 +373,13 @@ outcomes:
       played, and is the team's own verdict. Compared within group only (WR/TE
       plays are routes). Decided 2026-10-22, open decision 1
       (reports/production.md).
+  draft_control:
+    value: [pick, udfa]
+    note: >
+      Draft slot as a control: overall pick (undrafted set to 258) plus an
+      undrafted indicator. Within group × draft class it explains playing
+      time best out of sample (CV R² 0.51 vs 0.50 round bands, 0.47 log pick;
+      reports/output.md). Decided 2026-10-22 (open decision 2).
   production:
     value: {WR: yprr, TE: yprr, DL: pressure_rate, OL: peak_pressure_prob}
     note: >

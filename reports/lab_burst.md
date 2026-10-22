@@ -31,22 +31,22 @@ First two well-fit reps of each prospect. The official split is a single best-at
 
 ## Which start measure shows up in games
 
-Within-group r with field burst (`burst_a_top3`) and field peak acceleration (`a_peak_top3`), geometric mean over
+Within-group r with field burst (`burst_a_top3_of50`) and field peak acceleration (`a_peak_top3_of50`), geometric mean over
 qualified seasons, and with DL get-off (lower is faster, so a good start measure correlates negatively if it
 grows with explosiveness, positively if it is a time). `forty_s` for comparison.
 
 | measure | r_field_burst | n_field_burst | r_field_a_peak | n_field_a_peak | r_get_off | n_get_off |
 |---|---|---|---|---|---|---|
-| lab_a_peak_best | 0.16 | 237 | 0.22 | 237 | -0.44 | 58 |
-| lab_a_peak_mean | 0.23 | 237 | 0.29 | 237 | -0.45 | 58 |
-| lab_a0_best | 0.11 | 237 | 0.16 | 237 | -0.39 | 58 |
-| lab_a0_mean | 0.14 | 237 | 0.20 | 237 | -0.42 | 58 |
-| tau_mean | -0.00 | 237 | -0.06 | 237 | 0.05 | 58 |
-| t10_trk_mean | -0.20 | 237 | -0.26 | 237 | 0.50 | 58 |
-| ten_split_s | -0.36 | 240 | -0.37 | 240 | 0.67 | 59 |
-| a10 | 0.36 | 240 | 0.37 | 240 | -0.67 | 59 |
-| p10_w | 0.13 | 240 | 0.11 | 240 | -0.33 | 59 |
-| forty_s | -0.40 | 240 | -0.41 | 240 | 0.66 | 59 |
+| lab_a_peak_best | 0.17 | 237 | 0.20 | 237 | -0.44 | 58 |
+| lab_a_peak_mean | 0.22 | 237 | 0.26 | 237 | -0.45 | 58 |
+| lab_a0_best | 0.09 | 237 | 0.11 | 237 | -0.39 | 58 |
+| lab_a0_mean | 0.12 | 237 | 0.14 | 237 | -0.42 | 58 |
+| tau_mean | 0.05 | 237 | 0.03 | 237 | 0.05 | 58 |
+| t10_trk_mean | -0.19 | 237 | -0.22 | 237 | 0.50 | 58 |
+| ten_split_s | -0.45 | 240 | -0.45 | 240 | 0.67 | 59 |
+| a10 | 0.45 | 240 | 0.45 | 240 | -0.67 | 59 |
+| p10_w | 0.12 | 240 | 0.11 | 240 | -0.33 | 59 |
+| forty_s | -0.50 | 240 | -0.49 | 240 | 0.66 | 59 |
 
 ## Does the start add beyond top speed?
 
@@ -55,10 +55,10 @@ split) or with tracked v_max, and the profile pair (τ with v_max; the clusterin
 
 | target | n | beta_ten_split_s | beta_fly30_off | r2 | beta_mass_kg | beta_tau_mean | beta_v_max_mean |
 |---|---|---|---|---|---|---|---|
-| field_burst | 240 | -0.22 | -0.24 | 0.17 | None | None | None |
-| field_a_peak | 240 | -0.23 | -0.24 | 0.17 | None | None | None |
+| field_burst | 240 | -0.29 | -0.28 | 0.26 | None | None | None |
+| field_a_peak | 240 | -0.29 | -0.27 | 0.25 | None | None | None |
 | get_off | 59 | 0.48 | 0.22 | 0.46 | None | None | None |
 | get_off | 59 | 0.35 | 0.13 | 0.48 | 0.25 | None | None |
-| field_burst | 237 | None | None | 0.15 | None | -0.20 | 0.43 |
+| field_burst | 237 | None | None | 0.22 | None | -0.19 | 0.52 |
 | get_off | 58 | None | None | 0.42 | None | 0.31 | -0.70 |
 | get_off | 58 | 0.63 | None | 0.45 | None | None | -0.05 |

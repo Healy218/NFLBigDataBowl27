@@ -2,6 +2,8 @@
 
 Moved from `HANDOFF.md` when Iteration 3 closed (2026-10-22). This is the reference for how game tracking was turned into field channels, how η was defined and why, and what it shows. Use it for the methods and results sections of the write-up. All figures are **regular season only** (see decision 1).
 
+> **Correction (2026-10-22, Iteration 4 step 5).** The season value below (`top3`, the mean of the 3 best game maxima) grows with exposure: more games and snaps give more chances at a fast one, so η rose with playing time (within-group r +0.46 with season plays). The season value is now `top3_of50`, the expected mean of the 3 best plays in 50 random plays of the season (`games.season_statistic`, `reports/field_reliability.md`), which has no exposure bias (r −0.06) and is more reliable for speed (split-half 0.84 vs 0.80, η 0.75 vs 0.67, season retest 0.77 vs 0.61). Figures in this note are the `top3` values. What changed in the conclusions: η_KE median 0.57 (WR 0.70, DB 0.62, TE 0.62, DL 0.47, OL 0.34); shrinkage B 0.64 for one season; **η is not independent of the engine** (within group r −0.26 with 40 speed, −0.36 with `ax_explosive`: bigger engines reach a smaller fraction of themselves in games), and **the college production link was the exposure artifact** (r −0.05 now). Current numbers: `reports/eta.md`, `reports/eta_readout.md`, `reports/transfer.md`.
+
 ## Pipeline
 
 ```

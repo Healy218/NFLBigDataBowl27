@@ -6,8 +6,8 @@ Targets, per prospect, log scale:
 - `eta_career` (η_KE, plays-weighted over qualified seasons) and `eta_first` (first qualified season). Every
   predictor here is measured at the Combine, before any season, so the career value is not look-ahead in this
   step: it is simply the more reliable read of the same quantity.
-- `field_speed`, `field_burst`: realized game output (`s_peak_top3`, `burst_a_top3`, geometric mean over qualified
-  seasons). η_KE = (field speed / lab speed)², so contrasting the two separates "does the engine show up in games"
+- `field_speed`, `field_burst`: realized game output (`s_peak` and `burst_a` season values, `games.season_statistic`, geometric mean
+  over qualified seasons). η_KE = (field speed / lab speed)², so contrasting the two separates "does the engine show up in games"
   from "what fraction of it shows up".
 - `get_off` (DL only): mean get-off time over qualified seasons (lower is faster).
 
@@ -105,7 +105,7 @@ def cv_r2(d: pl.DataFrame, y: str, xs, group: str = "group", folds=FOLDS, repeat
     return 1 - sse_m / sse_0
 
 
-def prospect_table(processed, interim) -> pl.DataFrame:
+def prospect_table(processed, interim, stat: str) -> pl.DataFrame:
     """One row per prospect: group, sub-position, predictors and targets (logs where noted)."""
     cs = pl.read_parquet(interim / "combine_si.parquet")
     base = cs.select(
@@ -138,8 +138,8 @@ def prospect_table(processed, interim) -> pl.DataFrame:
         .filter("qualified")
         .group_by("player_id")
         .agg(
-            pl.col("s_peak_top3").log().mean().alias("field_speed"),
-            pl.col("burst_a_top3").log().mean().alias("field_burst"),
+            pl.col(f"s_peak_{stat}").log().mean().alias("field_speed"),
+            pl.col(f"burst_a_{stat}").log().mean().alias("field_burst"),
         )
     )
     get_off = (
@@ -201,11 +201,12 @@ def plot_transfer(uni: pl.DataFrame, d: pl.DataFrame, path) -> None:
 
 
 def main() -> None:
+    from eeg import config
     from eeg.clustering.audit import _md
     from eeg.config import PROJECT_ROOT
 
     interim, processed, reports = (PROJECT_ROOT / d for d in ("data/interim", "data/processed", "reports"))
-    d = prospect_table(processed, interim)
+    d = prospect_table(processed, interim, config.load()["games"]["season_statistic"])
     uni = univariate(d)
     wide = uni.pivot(on="target", index="variable", values="r").select("variable", *TARGETS)
     sig = uni.filter((pl.col("lo95") > 0) | (pl.col("hi95") < 0)).sort("target", "r")

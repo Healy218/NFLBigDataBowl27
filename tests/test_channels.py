@@ -91,3 +91,31 @@ def test_lab_channels_same_estimators():
     assert lab["lab_s_peak"] == pytest.approx(s[-12])  # sustained, up to the finish
     assert lab["lab_a0"] == 9.0 and lab["lab_p_model"] == pytest.approx(81 / 4)
     assert 0 < lab["lab_a_peak"] < 9.0 and 0 < lab["lab_p_peak"] < 81 / 4
+
+
+def test_expected_top_matches_brute_force_over_subsets():
+    from itertools import combinations
+
+    v = np.array([9.0, 3.0, 7.0, 7.0, 1.0, 5.0, 8.0])
+    for k in (3, 4, 7):
+        brute = np.mean([np.sort(c)[-3:].mean() for c in combinations(v, k)])
+        assert C.expected_top(v, k) == pytest.approx(brute)
+    assert np.isnan(C.expected_top(v, 8))
+
+
+def test_play_statistic_does_not_grow_with_exposure():
+    """Two players with the same play distribution, one with 4x the plays: game-based top3 favours the busier
+    player, top3_of{K} does not."""
+    rng = np.random.default_rng(1)
+    rows = []
+    for pid, n_games in [(1, 4), (2, 16)]:
+        for g in range(n_games):
+            for p in range(20):
+                rows.append((pid, 2024, g, p, float(rng.normal(8.0, 0.5)), None))
+    plays = _plays(rows)
+    games = C.game_channels(plays)
+    season = C.season_channels(games).join(C.play_season_stats(plays, games, 20), on=["player_id", "season"])
+    s = {r["player_id"]: r for r in season.iter_rows(named=True)}
+    assert s[2]["s_peak_top3"] - s[1]["s_peak_top3"] > 0.2
+    assert abs(s[2]["s_peak_top3_of20"] - s[1]["s_peak_top3_of20"]) < 0.15
+    assert s[1]["burst_a_top3_of20"] is None  # no burst plays

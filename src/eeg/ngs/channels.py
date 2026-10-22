@@ -15,13 +15,15 @@ Peaks are "sustained": the frame value must hold for `games.sustain_frames`
 - burst_a       sustained peak acceleration in [0, `games.burst_window_s`] after the
                 snap, only on plays starting below `games.burst_start_speed_mps`
 - p_peak        sustained peak propulsive power per kg
-Per game: the maximum of each over the game's plays. Per player-season, three
-candidate statistics for each channel (chosen on reliability in step 4):
-`{ch}_max` (season peak), `{ch}_game_med` (median of game maxima) and
-`{ch}_top3` (mean of the 3 highest game maxima), over games with at least
-`games.min_game_plays` plays; `qualified` marks seasons with enough exposure
-(`games.min_season_plays`, `games.min_season_games`). The season value used
-downstream is `games.season_statistic` (top3; see eeg.ngs.reliability).
+Per game: the maximum of each over the game's plays. Per player-season, over games with at least
+`games.min_game_plays` plays, candidate statistics for each channel: `{ch}_max` (season peak),
+`{ch}_game_med` (median of game maxima), `{ch}_top3` (mean of the 3 highest game maxima) and
+`{ch}_top3_of{K}` (expected mean of the 3 highest plays in K plays drawn at random from the season,
+K = `games.season_sample_plays`; computed exactly over all K-subsets). Maxima over games grow with
+exposure (more games and snaps, more chances at a fast one), so they rise with playing time; the
+fixed-K statistic is the same functional for every player whatever their exposure (a U-statistic).
+`qualified` marks seasons with enough exposure (`games.min_season_plays`, `games.min_season_games`).
+The season value used downstream is `games.season_statistic` (top3_of50; see eeg.ngs.reliability).
 
 Lab: the same estimators on each prospect's best 40 rep up to the finish line
 (the 40 starts from rest, so its acceleration peak is the burst analogue), plus
@@ -35,6 +37,7 @@ from __future__ import annotations
 
 import numpy as np
 import polars as pl
+from scipy.special import gammaln
 
 from eeg.ngs.kinematics import savgol_track
 from eeg.physics.sprint import frontal_area
@@ -116,6 +119,38 @@ def season_stats(channel: str, top_k: int = TOP_K) -> dict[str, pl.Expr]:
         "game_med": c.median(),
         f"top{top_k}": c.drop_nulls().sort(descending=True).head(top_k).mean(),
     }
+
+
+def expected_top(values: np.ndarray, sample: int, top: int = TOP_K) -> float:
+    """Expected mean of the `top` largest of `sample` values drawn without replacement from values (exact, over
+    all subsets); NaN with fewer than `sample` values. The i-th largest value is the j-th largest of a random
+    subset with probability C(i−1, j−1) C(N−i, K−j) / C(N, K)."""
+    v, n = np.sort(np.asarray(values, float))[::-1], len(values)
+    if n < sample:
+        return float("nan")
+
+    def lcomb(a, b):
+        return gammaln(a + 1) - gammaln(b + 1) - gammaln(a - b + 1)
+
+    i = np.arange(1, n + 1)
+    w = np.zeros(n)
+    for j in range(1, top + 1):
+        ok = (i - 1 >= j - 1) & (n - i >= sample - j)
+        w[ok] += np.exp(lcomb(i[ok] - 1, j - 1) + lcomb(n - i[ok], sample - j) - lcomb(n, sample))
+    return float(w @ v / top)
+
+
+def play_season_stats(
+    plays: pl.DataFrame, games: pl.DataFrame, sample: int, channels=CHANNELS, top: int = TOP_K, by=("season",)
+) -> pl.DataFrame:
+    """Per player-season (or player × `by`): `{ch}_top{top}_of{sample}` over plays in the given (counting) games."""
+    key = ["player_id", *by]
+    rows = []
+    p = plays.join(games.select("player_id", "game_id").unique(), on=["player_id", "game_id"])
+    for k, r in p.group_by(key, maintain_order=True):
+        rows.append(dict(zip(key, k)) | {c: expected_top(r[c].drop_nulls().to_numpy(), sample, top) for c in channels})
+    out = pl.DataFrame(rows, schema={**{c: p.schema[c] for c in key}, **{c: pl.Float64 for c in channels}})
+    return out.with_columns(pl.col(c).fill_nan(None).alias(f"{c}_top{top}_of{sample}") for c in channels).drop(channels)
 
 
 def counting_games(games: pl.DataFrame, min_game_plays: int) -> pl.DataFrame:
@@ -226,7 +261,11 @@ def main() -> None:
         [play_channels(pl.read_parquet(interim / f"game_tracking_{s}.parquet", columns=cols), drag, g) for s in SEASONS]
     )
     games = game_channels(plays)
-    seasons = season_channels(games, g["min_game_plays"], g["min_season_plays"], g["min_season_games"])
+    seasons = season_channels(games, g["min_game_plays"], g["min_season_plays"], g["min_season_games"]).join(
+        play_season_stats(plays, counting_games(games, g["min_game_plays"]), g["season_sample_plays"]),
+        on=["player_id", "season"],
+        how="left",
+    )
     best = best_reps(pl.read_parquet(interim / "forty_fits.parquet"), cfg["sprint"]["max_fit_rmse_mps"])
     lab = lab_channels(pl.read_parquet(interim / "timed_drills.parquet"), best, drag, g)
     for name, df in [("field_plays", plays), ("field_games", games), ("field_seasons", seasons), ("lab_channels", lab)]:
@@ -260,7 +299,8 @@ and the lab side in `data/processed/lab_channels.parquet` (not committed). Aggre
 
 - Plays: {plays.height:,} ({plays["burst_eligible"].mean():.0%} burst-eligible); player-games: {games.height:,};
   player-seasons: {seasons.height} ({q.height} qualified, {q["player_id"].n_unique()} prospects).
-- Season statistic `{stat}` (`games.season_statistic`) over counting games (≥ {g["min_game_plays"]} plays).
+- Season statistic `{stat}` (`games.season_statistic`): expected mean of the 3 best plays in {g["season_sample_plays"]} random
+  plays of the season (exposure-free), over plays in counting games (≥ {g["min_game_plays"]} plays).
   Qualified: ≥ {g["min_season_plays"]} plays and ≥ {g["min_season_games"]} counting games.
 - Units: speed m/s, ke J/kg, acceleration m/s², power W/kg.
 

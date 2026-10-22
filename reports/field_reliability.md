@@ -8,25 +8,61 @@ read results); "pooled": not centred. Full table: `reports/field_reliability.csv
 
 `rel_*`: reliability of the full-season field statistic. `rel_eta_*`: reliability of log(field / lab) with the
 lab rep-to-rep error below. `r_field_lab_within`: correlation of field and lab within position group.
-`sd_log_eta_within`: spread of log η within position group (0.10 ≈ ±10%).
+`sd_log_eta_within`: spread of log η within position group (0.10 ≈ ±10%). `top3_of50`: expected mean of the
+3 best plays in 50 random plays; its halves need 50 plays each, so its `n` is smaller (burst most).
 
 | channel | stat | n | rel_pooled | rel_within | rel_eta_pooled | rel_eta_within | r_field_lab_within | sd_log_eta_within |
 |---|---|---|---|---|---|---|---|---|
 | s_peak | max | 476 | 0.939 | 0.678 | 0.817 | 0.500 | 0.569 | 0.056 |
 | s_peak | game_med | 476 | 0.969 | 0.751 | 0.926 | 0.648 | 0.502 | 0.059 |
 | s_peak | top3 | 476 | 0.968 | 0.803 | 0.902 | 0.673 | 0.586 | 0.051 |
+| s_peak | top3_of50 | 460 | 0.989 | 0.837 | 0.973 | 0.754 | 0.524 | 0.047 |
 | ke_peak | max | 476 | 0.939 | 0.678 | 0.817 | 0.500 | 0.569 | 0.112 |
 | ke_peak | game_med | 476 | 0.969 | 0.751 | 0.925 | 0.648 | 0.503 | 0.118 |
 | ke_peak | top3 | 476 | 0.967 | 0.800 | 0.900 | 0.668 | 0.586 | 0.102 |
+| ke_peak | top3_of50 | 460 | 0.988 | 0.833 | 0.972 | 0.745 | 0.532 | 0.093 |
 | a_peak | max | 476 | 0.888 | 0.719 | 0.613 | 0.542 | 0.146 | 0.152 |
 | a_peak | game_med | 476 | 0.971 | 0.891 | 0.655 | 0.569 | 0.133 | 0.127 |
 | a_peak | top3 | 476 | 0.957 | 0.874 | 0.655 | 0.606 | 0.141 | 0.138 |
+| a_peak | top3_of50 | 460 | 0.983 | 0.915 | 0.688 | 0.556 | 0.147 | 0.123 |
 | burst_a | max | 476 | 0.878 | 0.761 | 0.654 | 0.615 | 0.094 | 0.169 |
 | burst_a | game_med | 476 | 0.968 | 0.913 | 0.692 | 0.631 | 0.130 | 0.139 |
 | burst_a | top3 | 476 | 0.959 | 0.908 | 0.695 | 0.672 | 0.109 | 0.151 |
+| burst_a | top3_of50 | 456 | 0.979 | 0.920 | 0.722 | 0.611 | 0.125 | 0.133 |
 | p_peak | max | 476 | 0.944 | 0.690 | 0.736 | 0.582 | 0.259 | 0.172 |
 | p_peak | game_med | 476 | 0.982 | 0.870 | 0.819 | 0.626 | 0.376 | 0.141 |
 | p_peak | top3 | 476 | 0.976 | 0.848 | 0.779 | 0.653 | 0.308 | 0.151 |
+| p_peak | top3_of50 | 460 | 0.992 | 0.916 | 0.873 | 0.660 | 0.344 | 0.139 |
+
+## Exposure bias and season retest
+
+`r_plays_within`: within-group r of the log season value with log season plays. Maxima over games grow with
+exposure (more games and snaps, more chances at a fast one), so a statistic built on them credits playing time to
+the player. `retest_within`: r across consecutive qualified seasons of a player (role and development change
+included).
+
+| channel | stat | r_plays_within | retest_within | n_pairs |
+|---|---|---|---|---|
+| s_peak | max | 0.347 | 0.529 | 186 |
+| s_peak | game_med | 0.352 | 0.662 | 186 |
+| s_peak | top3 | 0.439 | 0.610 | 186 |
+| s_peak | top3_of50 | -0.060 | 0.772 | 186 |
+| ke_peak | max | 0.347 | 0.529 | 186 |
+| ke_peak | game_med | 0.352 | 0.662 | 186 |
+| ke_peak | top3 | 0.436 | 0.608 | 186 |
+| ke_peak | top3_of50 | -0.053 | 0.771 | 186 |
+| a_peak | max | 0.329 | 0.241 | 186 |
+| a_peak | game_med | 0.292 | 0.494 | 186 |
+| a_peak | top3 | 0.371 | 0.402 | 186 |
+| a_peak | top3_of50 | 0.079 | 0.592 | 186 |
+| burst_a | max | 0.309 | 0.209 | 186 |
+| burst_a | game_med | 0.350 | 0.430 | 186 |
+| burst_a | top3 | 0.362 | 0.341 | 186 |
+| burst_a | top3_of50 | 0.136 | 0.513 | 186 |
+| p_peak | max | 0.344 | 0.319 | 186 |
+| p_peak | game_med | 0.316 | 0.776 | 186 |
+| p_peak | top3 | 0.397 | 0.558 | 186 |
+| p_peak | top3_of50 | 0.059 | 0.810 | 186 |
 
 ## Lab channels: rep-to-rep (first two well-fit 40 reps; reliability of one rep)
 
@@ -37,29 +73,33 @@ lab rep-to-rep error below. `r_field_lab_within`: correlation of field and lab w
 | lab_p_peak | 363 | 0.877 | 0.690 |
 | lab_s_peak | 363 | 0.987 | 0.951 |
 
-## Picked statistic per channel (highest within-position η reliability)
+## Season statistic in use: `top3_of50` (`games.season_statistic`)
 
-| channel | stat |
-|---|---|
-| s_peak | top3 |
-| ke_peak | top3 |
-| a_peak | top3 |
-| burst_a | top3 |
-| p_peak | top3 |
+The game-based statistics (`max`, `game_med`, `top3`) all rise with season plays; `top3` was the season value
+until 2026-10-22, when the exposure bias showed up against playing time (Iteration 4, step 5). The play-based
+statistic removes it and, for speed and kinetic energy, is also more reliable (split-half, η) and retests better
+across seasons. For burst its η split-half is a little lower (its halves are the shortest), its retest higher.
 
-## Exposure: reliability within position group of the picked statistic over k games
+## Exposure: reliability within position group over k games
 
-Two disjoint random sets of k games per player-season with ≥ 2k games; r between them (no step-up).
-Figure: `reports/figures/reliability_by_games.png`.
+Two disjoint random sets of k games per player-season with ≥ 2k games; r between them (no step-up). For
+`top3_of50` a set of k games needs 50 plays, so its rows for few games rest on high-snap seasons.
+Figure (statistic in use): `reports/figures/reliability_by_games.png`.
 
-| games | s_peak | ke_peak | a_peak | burst_a | p_peak |
-|---|---|---|---|---|---|
-| 1 | 0.275 | 0.275 | 0.394 | 0.465 | 0.388 |
-| 2 | 0.372 | 0.375 | 0.607 | 0.626 | 0.575 |
-| 3 | 0.535 | 0.535 | 0.739 | 0.767 | 0.732 |
-| 4 | 0.552 | 0.545 | 0.751 | 0.788 | 0.758 |
-| 6 | 0.595 | 0.591 | 0.743 | 0.792 | 0.743 |
-| 8 | 0.677 | 0.673 | 0.804 | 0.850 | 0.784 |
+| stat | games | s_peak | ke_peak | a_peak | burst_a | p_peak |
+|---|---|---|---|---|---|---|
+| top3 | 1 | 0.275 | 0.275 | 0.394 | 0.465 | 0.388 |
+| top3 | 2 | 0.372 | 0.375 | 0.607 | 0.626 | 0.575 |
+| top3 | 3 | 0.535 | 0.535 | 0.739 | 0.767 | 0.732 |
+| top3 | 4 | 0.552 | 0.545 | 0.751 | 0.788 | 0.758 |
+| top3 | 6 | 0.595 | 0.591 | 0.743 | 0.792 | 0.743 |
+| top3 | 8 | 0.677 | 0.673 | 0.804 | 0.850 | 0.784 |
+| top3_of50 | 1 | 0.255 | 0.246 | 0.349 | 0.339 | 0.381 |
+| top3_of50 | 2 | 0.467 | 0.461 | 0.674 | 0.649 | 0.629 |
+| top3_of50 | 3 | 0.532 | 0.530 | 0.751 | 0.767 | 0.759 |
+| top3_of50 | 4 | 0.646 | 0.636 | 0.777 | 0.789 | 0.801 |
+| top3_of50 | 6 | 0.751 | 0.744 | 0.839 | 0.863 | 0.861 |
+| top3_of50 | 8 | 0.860 | 0.854 | 0.927 | 0.934 | 0.935 |
 
 Player-seasons (≥ 100 plays) kept by the minimum number of counting games:
 

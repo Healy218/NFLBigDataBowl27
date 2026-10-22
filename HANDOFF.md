@@ -4,7 +4,7 @@ Session-start state for the Explosion Efficiency Gap project. Everything here co
 
 - **Current Iteration:** Iteration 4, Explosion Potential → Regular-Season Performance
 - **Roadmap Phase:** Phase 4c
-- **Last updated:** 2026-10-22 (Iteration 4 steps 1–4 done: outcome table, position production, lab burst, what predicts transfer)
+- **Last updated:** 2026-10-22 (Iteration 4 steps 1–5 done: outcome table, position production, lab burst, what predicts transfer, potential and η → output; η's season value made exposure-free)
 
 ---
 
@@ -58,14 +58,15 @@ uv run python -m eeg.outcomes.table          # → data/processed/outcomes_seaso
 uv run python -m eeg.outcomes.production     # → data/processed/production_seasons.parquet, reports/production.md
 uv run python -m eeg.physics.burst           # → data/processed/lab_burst.parquet, reports/lab_burst.md (needs production_seasons)
 uv run python -m eeg.ngs.transfer            # → reports/transfer.md, reports/figures/transfer.png
+uv run python -m eeg.outcomes.output         # → reports/output.md, reports/figures/output.png
 ```
 
-142 tests (`uv run pytest`). Schemas: [`config/data_dictionary.md`](config/data_dictionary.md). Settings: [`config/physics.yaml`](config/physics.yaml) (`games` and `eta` for Iteration 3, `outcomes` and `lab_burst` for Iteration 4).
+148 tests (`uv run pytest`). Schemas: [`config/data_dictionary.md`](config/data_dictionary.md). Settings: [`config/physics.yaml`](config/physics.yaml) (`games` and `eta` for Iteration 3, `outcomes` and `lab_burst` for Iteration 4).
 
 **What carries into Iteration 4:**
 - **Engine (potential):** `tee.parquet` (J and J/kg per drill, TEE composites; 510), `profiles.parquet` (`ax_explosive`, `ax_speed_vs_bounce`, `ax_up_vs_out`, `anomaly_d2`, `size_class`; 369), `forty_fits.parquet` (v_max rep-to-rep r 0.97; τ r 0.51), `lab_channels.parquet` (40 peaks with the field estimators; 417).
 - **Realization:** `eta.parquet` (394 player-seasons, 237 prospects; `eta_ke`, `gap` = 1 − η_KE, plus speed, burst, power), `eta_career.parquet` (`eta_*_first`, `eta_*_career`), `eta_leaderboard.parquet` (shrunk η_KE, engine × efficiency terciles), `field_seasons.parquet` (field output per channel; 476 qualified player-seasons).
-- **Key facts:** η_KE median 0.69 (WR 0.77, DB 0.78, TE 0.69, DL 0.61, OL 0.54). Within group, η is nearly independent of the engine (r −0.08 with 40 speed, −0.17 with `ax_explosive`) and goes with NGS college production (+0.23). Speed η changes between seasons (retest 0.38 against within-season reliability 0.67), so one season is a weak read (shrinkage B 0.44).
+- **Key facts (exposure-free season value, see "η season value" below):** η_KE median 0.57 (WR 0.70, DB 0.62, TE 0.62, DL 0.47, OL 0.34). Within group, η falls with the engine (r −0.26 with 40 speed, −0.36 with `ax_explosive`, −0.35 with NGS athleticism) and is unrelated to NGS college production (−0.05). Speed η reliability 0.75, season retest 0.68; shrinkage B 0.64 for one season. The Iteration 3 notes (`phase4_eta_notes.md`) carry the old `top3` numbers with a correction at the top.
 - **Coverage gaps:** 50 prospects with qualified seasons have no well-fit 40 (no η); 77 of the 369 profiled never play a regular-season snap in tracking, which is itself an outcome (the earliest exit).
 
 ---
@@ -102,20 +103,39 @@ uv run python -m eeg.ngs.transfer            # → reports/transfer.md, reports/
 
 ---
 
-## What predicts transfer (step 4, [`reports/transfer.md`](reports/transfer.md))
+## η season value: exposure-free (found in step 5, [`reports/field_reliability.md`](reports/field_reliability.md))
+
+The season value of every field channel was `top3`, the mean of a player's 3 best **game maxima**. More games and snaps give more chances at a fast one, so it grew with exposure: η had within-group r **+0.46** with season plays, and "η predicts playing time" (r +0.22 with next season's plays) was that artifact. It is now **`top3_of50`** (`games.season_statistic`, `games.season_sample_plays`): the expected mean of the 3 best plays in 50 plays drawn at random from the season, computed exactly over all 50-play subsets (`eeg.ngs.channels.expected_top`), the same functional for every player whatever their exposure.
+- **No exposure bias** (speed r −0.06 with plays) and **more reliable** for speed: split-half 0.84 vs 0.80, η 0.75 vs 0.67, season retest 0.77 vs 0.61. For burst, η split-half a little lower (0.61 vs 0.67), retest higher.
+- Reran channels, reliability, η, readout, lab burst and transfer. Conclusions that changed: η is not independent of the engine (bigger engines reach a smaller fraction of themselves in games); **the college production link was the artifact** (as was college production's link to game speed, now r 0.06).
+
+---
+
+## What predicts transfer (step 4, [`reports/transfer.md`](reports/transfer.md); numbers with the exposure-free season value)
 
 `eeg.ngs.transfer`: Combine predictors against η_KE, game output and DL get-off, per prospect and within group (univariate r with CIs; compact model with cross-validated R² beyond the group mean). Predictors are all Combine values, so career η is not look-ahead here.
-- **The Combine predicts game output, not transfer.** Compact model (profile axes, a10, mass, college production): game top speed CV R² 0.29, game burst 0.15, but η_KE 0.03 (career) and ~0 (first season). a10 r 0.47 and v_max 0.50 with game top speed, 0.01 and −0.14 with η. Potential is real in games; the fraction used is something else.
-- **What little predicts η:** NGS college production (r +0.20, β 0.22 in the model) and, against it, the explosive axis (−0.18) and NGS athleticism (−0.16). The big engines use a slightly smaller fraction of it; productive college players use more.
-- **DL get-off is predictable:** CV R² 0.43 within DL (a10 −0.67, mass +0.69, v_max −0.58, 3-cone +0.61 on 28). Much of it is edge vs interior: within NFL position CV R² 0.16, a10 r −0.44 (CI −0.63 to −0.20), mass +0.44, college production −0.35. a10 and mass can't be separated at n 53 (both betas' CIs cross 0 in the model).
-- **Agility times** relate to game burst (3-cone r −0.40) but cover ~40% of prospects.
+- **The Combine predicts game output.** Compact model (profile axes, a10, mass, college production): game top speed CV R² 0.31, game burst 0.24 (a10 r 0.43 / 0.45, v_max 0.44 / 0.43, mass −0.58 / −0.51).
+- **It predicts η only negatively:** CV R² 0.14 (career), 0.10 (first season), through the explosive axis (r −0.38), NGS athleticism (−0.36) and v_max (−0.30). Game speeds compress: the bigger the Combine engine, the smaller the fraction reached in games. Nothing in the Combine or college data predicts *higher* η.
+- **DL get-off is predictable** (unchanged; it isn't a season-value channel): CV R² 0.43 within DL, 0.16 within NFL position; a10 r −0.44 (CI −0.63 to −0.20) within position, mass +0.44, college production −0.35. a10 and mass can't be separated at n 53.
+- **Lab burst** (step 3) with the new season value: a10 r 0.45 with field burst (was 0.36); the decision stands.
+
+---
+
+## Potential and η → regular-season output (step 5, [`reports/output.md`](reports/output.md))
+
+`eeg.outcomes.output`: within group (centred on group × draft class or group × season), draft slot as control. Figure `reports/figures/output.png`.
+- **Draft control (open decision 2 settled, `outcomes.draft_control`):** overall pick (undrafted = 258) + undrafted indicator. CV R² for playing time 0.51, against round bands 0.50 and log pick 0.47. Within-class r of pick with playing time −0.62 (DL) to −0.81 (OL).
+- **The draft has priced the Combine.** On 368 prospects: Combine alone CV R² 0.23 (college production β 0.38, explosive axis 0.27), draft alone 0.47, draft + Combine 0.46. Beyond the draft no Combine beta's CI excludes 0.
+- **η adds nothing to next season's playing time.** First qualified η season s → plays in s + 1 (151 prospects): draft + plays in s CV R² 0.21; adding η 0.20 (β 0.03, CI −0.12 to 0.18); engine and η together, both ~0. η alone r −0.10.
+- **η and production (same seasons, per prospect, beyond draft and plays):** nothing for WR YPRR (r 0.00), OL (−0.09), DL pressure (−0.01); TE n 14.
+- **The DL chain is the result.** Per DL prospect, pressure rate beyond the draft and plays, centred on NFL position (role check): **get-off β −0.47** (CI −0.67 to −0.27, n 75), **a10 β 0.36** (0.13 to 0.60, n 59), and a10 drops to 0.20 once get-off is in the model (get-off −0.38). The Combine start → the game start → pressure, beyond draft capital. Centred on DL only, all larger (a10 0.55, get-off −0.63).
 
 ---
 
 ## Open decisions (decide when the data is in front of us)
 
 1. ~~**Primary outcome per group**~~ Decided 2026-10-22 (`outcomes` in `config/physics.yaml`): primary = **playing time** for every group (all prospects, zeros kept, within group). Secondary production: WR and TE YPRR, DL pressure rate, OL peak pressure probability allowed; DB none. DL get-off is a realization channel next to η, not an outcome.
-2. **Draft control:** overall pick with an undrafted indicator, or round bands. Step 1 shows it is strong and monotone within group (ρ −0.57 to −0.76), with the undrafted at the floor; decide the form in step 5.
+2. ~~**Draft control**~~ Decided 2026-10-22 (`outcomes.draft_control`): overall pick + undrafted indicator (CV R² 0.51 for playing time, best of four forms).
 3. **Tenure:** 48 exits, concentrated in rounds 4–7 (none in round 1). Enough for a Kaplan–Meier view and a small stratified model, not much more; keep it secondary.
 
 ---
@@ -126,6 +146,6 @@ uv run python -m eeg.ngs.transfer            # → reports/transfer.md, reports/
 2. ~~**Position production**~~ Done: `eeg.outcomes.production`, see "Position production" above.
 3. ~~**Sharper lab burst**~~ Done: `eeg.physics.burst`, see "Lab burst" above.
 4. ~~**What predicts transfer**~~ Done: `eeg.ngs.transfer`, see "What predicts transfer" above.
-5. **Potential and η → regular-season output**, within group, with the draft control (open decision 2); NGS college production as context.
+5. ~~**Potential and η → regular-season output**~~ Done: `eeg.outcomes.output`, see step 5 above (and the η season value fix).
 6. **Under- / over-drafted:** potential × η against draft slot.
 7. **Tenure** (secondary, open decision 3), then close Iteration 4 → Iteration 5 (submission).

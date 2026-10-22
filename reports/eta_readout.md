@@ -6,15 +6,15 @@ results: the shrinkage target is the group mean and every correlation is within 
 
 ## Shrinkage (log η_KE)
 
-- Between seasons of a prospect: SD 0.078 (pooled over 116 prospects with ≥ 2 seasons).
-- Between prospects within a group (true spread): SD 0.069 (237 prospects).
+- Between seasons of a prospect: SD 0.057 (pooled over 116 prospects with ≥ 2 seasons).
+- Between prospects within a group (true spread): SD 0.076 (237 prospects).
 - So one season is a weak read: a prospect's value is pulled toward the group mean by a factor B.
 
 | seasons | B | post_sd |
 |---|---|---|
-| 1 | 0.438 | 0.052 |
-| 2 | 0.609 | 0.043 |
-| 3 | 0.700 | 0.038 |
+| 1 | 0.638 | 0.046 |
+| 2 | 0.779 | 0.036 |
+| 3 | 0.841 | 0.030 |
 
 ## Per group
 
@@ -22,28 +22,28 @@ results: the shrinkage target is the group mean and every correlation is within 
 
 | group | prospects | group_eta_ke | shrunk_p10 | shrunk_p90 | credibly_above | credibly_below |
 |---|---|---|---|---|---|---|
-| WR | 54 | 0.764 | 0.736 | 0.793 | 0 | 0 |
-| DB | 58 | 0.761 | 0.725 | 0.804 | 3 | 1 |
-| TE | 14 | 0.675 | 0.640 | 0.716 | 1 | 0 |
-| DL | 58 | 0.598 | 0.560 | 0.650 | 8 | 5 |
-| OL | 53 | 0.526 | 0.476 | 0.566 | 5 | 7 |
+| WR | 54 | 0.691 | 0.650 | 0.717 | 1 | 4 |
+| DB | 58 | 0.618 | 0.585 | 0.646 | 3 | 2 |
+| TE | 14 | 0.614 | 0.572 | 0.658 | 2 | 1 |
+| DL | 58 | 0.474 | 0.431 | 0.524 | 11 | 12 |
+| OL | 53 | 0.340 | 0.303 | 0.377 | 11 | 12 |
 
 By listed position (groups of ≥ 3): sub-roles inside a group differ little in median η_KE.
 
 | group | pos | prospects | median_eta_ke | median_mass_kg |
 |---|---|---|---|---|
-| WR | WR | 53 | 0.765 | 89.811 |
-| DB | CB | 31 | 0.772 | 86.183 |
-| DB | FS | 10 | 0.752 | 90.492 |
-| DB | SS | 16 | 0.756 | 91.626 |
-| TE | TE | 14 | 0.674 | 112.264 |
-| DL | DE | 21 | 0.597 | 121.563 |
-| DL | DT | 22 | 0.588 | 138.346 |
-| DL | NT | 4 | 0.624 | 147.871 |
-| DL | OLB | 11 | 0.622 | 115.212 |
-| OL | C | 8 | 0.523 | 137.438 |
-| OL | G | 21 | 0.540 | 143.789 |
-| OL | T | 24 | 0.529 | 145.150 |
+| WR | WR | 53 | 0.695 | 89.811 |
+| DB | CB | 31 | 0.629 | 86.183 |
+| DB | FS | 10 | 0.607 | 90.492 |
+| DB | SS | 16 | 0.612 | 91.626 |
+| TE | TE | 14 | 0.621 | 112.264 |
+| DL | DE | 21 | 0.476 | 121.563 |
+| DL | DT | 22 | 0.461 | 138.346 |
+| DL | NT | 4 | 0.493 | 147.871 |
+| DL | OLB | 11 | 0.490 | 115.212 |
+| OL | C | 8 | 0.347 | 137.438 |
+| OL | G | 21 | 0.345 | 143.789 |
+| OL | T | 24 | 0.334 | 145.150 |
 
 ## What goes with efficiency (within group, shrunk log η_KE)
 
@@ -51,17 +51,17 @@ By listed position (groups of ≥ 3): sub-roles inside a group differ little in 
 
 | variable | meaning | n | r | lo95 | hi95 | r_within_pos |
 |---|---|---|---|---|---|---|
-| log_lab_speed | 40 peak speed (log; the η denominator) | 237 | -0.08 | -0.20 | 0.05 | -0.20 |
-| ax_explosive | profile axis 1: overall engine | 211 | -0.17 | -0.29 | -0.03 | -0.24 |
-| ax_speed_vs_bounce | profile axis 2: speed vs bounce | 211 | -0.08 | -0.22 | 0.05 | -0.10 |
-| ax_up_vs_out | profile axis 3: vertical vs broad | 211 | -0.06 | -0.19 | 0.08 | -0.07 |
-| anomaly_d2 | Kinetic Anomaly (Mahalanobis d²) | 211 | -0.02 | -0.16 | 0.12 | -0.05 |
-| TEE_z_rel | TEE relative (J/kg composite) | 218 | -0.09 | -0.22 | 0.04 | -0.20 |
-| log_mass | body mass (log) | 237 | -0.14 | -0.26 | -0.01 | -0.04 |
-| ngs_athleticism_score | NGS athleticism score | 237 | -0.16 | -0.28 | -0.03 | -0.16 |
-| ngs_college_production_score | NGS college production score | 236 | 0.23 | 0.10 | 0.35 | 0.21 |
+| log_lab_speed | 40 peak speed (log; the η denominator) | 237 | -0.26 | -0.37 | -0.13 | -0.37 |
+| ax_explosive | profile axis 1: overall engine | 211 | -0.36 | -0.47 | -0.23 | -0.40 |
+| ax_speed_vs_bounce | profile axis 2: speed vs bounce | 211 | -0.15 | -0.28 | -0.02 | -0.16 |
+| ax_up_vs_out | profile axis 3: vertical vs broad | 211 | 0.07 | -0.06 | 0.21 | 0.04 |
+| anomaly_d2 | Kinetic Anomaly (Mahalanobis d²) | 211 | -0.09 | -0.22 | 0.05 | -0.09 |
+| TEE_z_rel | TEE relative (J/kg composite) | 218 | -0.17 | -0.29 | -0.03 | -0.28 |
+| log_mass | body mass (log) | 237 | -0.22 | -0.33 | -0.09 | -0.15 |
+| ngs_athleticism_score | NGS athleticism score | 237 | -0.35 | -0.46 | -0.23 | -0.36 |
+| ngs_college_production_score | NGS college production score | 236 | -0.05 | -0.18 | 0.08 | -0.09 |
 
-First-season η_KE against the shrunk career value: r 0.89 (n 237); the career
+First-season η_KE against the shrunk career value: r 0.92 (n 237); the career
 value contains the first season and half the prospects have only one, so this is not a retest (that is r 0.42,
 `reports/eta.md`).
 
@@ -72,8 +72,8 @@ Rows: engine (`ax_explosive`). Columns: shrunk η_KE. Independence would put ~23
 
 | engine | low | mid | high |
 |---|---|---|---|
-| low | 15 | 26 | 29 |
-| mid | 28 | 21 | 22 |
-| high | 27 | 24 | 19 |
+| low | 12 | 25 | 33 |
+| mid | 24 | 25 | 22 |
+| high | 34 | 21 | 15 |
 
 Figure: `reports/figures/eta_readout.png`.

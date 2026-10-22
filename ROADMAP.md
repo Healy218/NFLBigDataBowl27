@@ -167,7 +167,7 @@ $$
 - η near 1: the player turns lab capacity into game output.
 - η well below 1: an **Explosion Efficiency Gap**. The engine is there but doesn't transfer (technique, processing speed, role, or injury).
 
-**Done (Iteration 3):** the headline is η_KE = η_speed² (kinetic energy, mass cancels), gap = 1 − η_KE, median 0.69. Speed is the only channel where η measures transfer rather than lab noise. η is read within position group, and models stratify by group.
+**Done (Iteration 3):** the headline is η_KE = η_speed² (kinetic energy, mass cancels), gap = 1 − η_KE, median 0.69 (0.57 with the exposure-free season value adopted in Iteration 4, step 5). Speed is the only channel where η measures transfer rather than lab noise. η is read within position group, and models stratify by group.
 
 ### 4c. From explosion potential to regular-season performance
 
