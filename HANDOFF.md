@@ -4,7 +4,7 @@ Session-start state for the Explosion Efficiency Gap project. Everything here co
 
 - **Current Iteration:** Iteration 4, Explosion Potential → Regular-Season Performance
 - **Roadmap Phase:** Phase 4c
-- **Last updated:** 2026-10-22 (Iteration 4 steps 1–6 done: outcome table, position production, lab burst, what predicts transfer, potential and η → output, under- / over-drafted; η's season value made exposure-free)
+- **Last updated:** 2026-10-22 (Iteration 4 steps 1–7 done: outcome table, position production, lab burst, what predicts transfer, potential and η → output, under- / over-drafted, tenure; η's season value made exposure-free. Next: close Iteration 4)
 
 ---
 
@@ -60,9 +60,10 @@ uv run python -m eeg.physics.burst           # → data/processed/lab_burst.parq
 uv run python -m eeg.ngs.transfer            # → reports/transfer.md, reports/figures/transfer.png
 uv run python -m eeg.outcomes.output         # → reports/output.md, reports/figures/output.png
 uv run python -m eeg.outcomes.mismatch       # → reports/mismatch.md, data/processed/mismatch.parquet (named)
+uv run python -m eeg.survival.tenure         # → reports/tenure.md, reports/figures/tenure.png
 ```
 
-152 tests (`uv run pytest`). Schemas: [`config/data_dictionary.md`](config/data_dictionary.md). Settings: [`config/physics.yaml`](config/physics.yaml) (`games` and `eta` for Iteration 3, `outcomes` and `lab_burst` for Iteration 4).
+155 tests (`uv run pytest`). Schemas: [`config/data_dictionary.md`](config/data_dictionary.md). Settings: [`config/physics.yaml`](config/physics.yaml) (`games` and `eta` for Iteration 3, `outcomes` and `lab_burst` for Iteration 4).
 
 **What carries into Iteration 4:**
 - **Engine (potential):** `tee.parquet` (J and J/kg per drill, TEE composites; 510), `profiles.parquet` (`ax_explosive`, `ax_speed_vs_bounce`, `ax_up_vs_out`, `anomaly_d2`, `size_class`; 369), `forty_fits.parquet` (v_max rep-to-rep r 0.97; τ r 0.51), `lab_channels.parquet` (40 peaks with the field estimators; 417).
@@ -145,11 +146,19 @@ The season value of every field channel was `top3`, the mean of a player's 3 bes
 
 ---
 
+## Tenure (step 7, [`reports/tenure.md`](reports/tenure.md))
+
+`eeg.survival.tenure`: prospects who played and debuted by 2024 (260 at risk, 48 exits); time = seasons from debut to the last play, exit = no play in any later season through 2025, still playing in 2025 = censored. Exits are early and partly provisional (a 2024 debut exits by missing 2025 alone). Figure `reports/figures/tenure.png`.
+- **The draft dominates:** still playing after two seasons, round 1 100%, 2–3 91%, 4–5 80%, 6–7 56%; undrafted who played 90% (survivors of a filter). Cox stratified by group: HR 1.011 per pick.
+- **Explosive tails exit less than their slot predicts, but it can't be confirmed.** Observed / expected exits (expected from the draft-only Cox): size-adjusted axis 0.36 (3 vs 8.3, permutation p 0.06), raw joules 0.62 (6 vs 9.6, p 0.26), a10 0.66; mass 0.89. Cox hazard ratios beyond the draft all have CIs spanning 1. Same direction as step 6; 48 exits are too few.
+
+---
+
 ## Open decisions (decide when the data is in front of us)
 
 1. ~~**Primary outcome per group**~~ Decided 2026-10-22 (`outcomes` in `config/physics.yaml`): primary = **playing time** for every group (all prospects, zeros kept, within group). Secondary production: WR and TE YPRR, DL pressure rate, OL peak pressure probability allowed; DB none. DL get-off is a realization channel next to η, not an outcome.
 2. ~~**Draft control**~~ Decided 2026-10-22 (`outcomes.draft_control`): overall pick + undrafted indicator (CV R² 0.51 for playing time, best of four forms).
-3. **Tenure:** 48 exits, concentrated in rounds 4–7 (none in round 1). Enough for a Kaplan–Meier view and a small stratified model, not much more; keep it secondary.
+3. ~~**Tenure**~~ Decided 2026-10-22 (`outcomes.tenure`): secondary; Kaplan–Meier, stratified Cox and tail O/E only (48 exits).
 
 ---
 
@@ -161,4 +170,5 @@ The season value of every field channel was `top3`, the mean of a player's 3 bes
 4. ~~**What predicts transfer**~~ Done: `eeg.ngs.transfer`, see "What predicts transfer" above.
 5. ~~**Potential and η → regular-season output**~~ Done: `eeg.outcomes.output`, see step 5 above (and the η season value fix).
 6. ~~**Under- / over-drafted**~~ Done: `eeg.outcomes.mismatch`, see step 6 above.
-7. **Tenure** (secondary, open decision 3), then close Iteration 4 → Iteration 5 (submission).
+7. ~~**Tenure**~~ Done: `eeg.survival.tenure`, see step 7 above.
+8. **Close Iteration 4** → Iteration 5 (submission): move the step notes to `reports/phase4c_outcomes_notes.md`, update ROADMAP with the findings, rewrite this file for the write-up.

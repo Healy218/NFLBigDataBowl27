@@ -395,3 +395,13 @@ outcomes:
       Production measures that are in-game explosion rather than output, used
       alongside η (steps 4-5): DL get-off time (split-half 0.89, season retest
       0.84, faster with earlier picks).
+  tenure:
+    value: secondary
+    note: >
+      League exit (played, then no play in any later season through
+      last_season) stays a secondary outcome: 48 exits among 260 prospects at
+      risk, at most three seasons, and 2024-debut exits rest on one missed
+      season. Kaplan-Meier plus Cox stratified by position group with the
+      draft control, one measure at a time, and observed vs expected exits in
+      each measure's tail (reports/tenure.md). Decided 2026-10-22 (open
+      decision 3).
