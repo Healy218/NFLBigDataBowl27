@@ -119,7 +119,7 @@ Iterations map to phases in [`ROADMAP.md`](ROADMAP.md). When the Current Iterati
 ## [-] Iteration 5: Submission *(Phase 4d)*  ← CURRENT
 
 - [x] Narrative frame: explosion potential is the differentiator (the tail the draft under-rates, the DL start chain; η descriptive). Title: **"True ball is an explosion"**
-- [ ] Harden the headline results: tail cut-offs (10 / 20 / 30%), expectation model, by class; which TEE channels (tracked 40 vs jumps / bench) carry the tail signal; DL chain by class
+- [x] Harden the headline results (`eeg.outcomes.robustness` → `reports/robustness.md`): the raw-joules tail beats its slot more often than the rest in all 25 checks (cut-offs 10/20/30%, four expectation models, each class, each group left out); strongest at 20% and with DL in; the tracked 40 energy alone 63% vs 51%, the composite 65% vs 50%. DL chain same sign in every class, weakest in the 2025 rookie class
 - [ ] Final figures (kinetic profile map, potential → performance, explosive tail vs draft slot, DL chain; η by group if kept)
 - [ ] Kaggle notebook narrative
 - [ ] README executive summary to match the findings

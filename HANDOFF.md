@@ -4,7 +4,7 @@ Session-start state for the Explosion Efficiency Gap project. Everything here co
 
 - **Current Iteration:** Iteration 5, Submission
 - **Roadmap Phase:** Phase 4d
-- **Last updated:** 2026-10-22 (Iteration 4 closed; Iteration 5 frame decided: "True ball is an explosion")
+- **Last updated:** 2026-10-22 (Iteration 5: frame decided, "True ball is an explosion"; headline results hardened)
 
 ---
 
@@ -56,9 +56,10 @@ uv run python -m eeg.ngs.transfer            # → reports/transfer.md, reports/
 uv run python -m eeg.outcomes.output         # → reports/output.md, reports/figures/output.png
 uv run python -m eeg.outcomes.mismatch       # → reports/mismatch.md, data/processed/mismatch.parquet (named)
 uv run python -m eeg.survival.tenure         # → reports/tenure.md, reports/figures/tenure.png
+uv run python -m eeg.outcomes.robustness     # → reports/robustness.md, reports/figures/robustness.png
 ```
 
-155 tests (`uv run pytest`). Schemas: [`config/data_dictionary.md`](config/data_dictionary.md). Settings: [`config/physics.yaml`](config/physics.yaml).
+157 tests (`uv run pytest`). Schemas: [`config/data_dictionary.md`](config/data_dictionary.md). Settings: [`config/physics.yaml`](config/physics.yaml).
 
 **The findings to write around** (details and numbers in the notes):
 1. **Explosion potential is real on the field.** Combine values predict game top speed (CV R² 0.31) and burst (0.24) within group.
@@ -71,18 +72,31 @@ uv run python -m eeg.survival.tenure         # → reports/tenure.md, reports/fi
 
 ---
 
+## Robustness (step 2, [`reports/robustness.md`](reports/robustness.md))
+
+`eeg.outcomes.robustness`: the raw-joules tail (share beating its draft slot, permutation p within group × class) under every check, plus the DL chain by class. Figure `reports/figures/robustness.png` (a forest plot fit for the notebook).
+- **The direction never flips.** In all 25 tail checks on raw joules the tail beats its slot more often than the rest. The 20% cut was the only one tried before this step.
+- **Cut-off:** 10% 59% vs 52% (snaps, p 0.47; starts 57% vs 41%, p 0.08), 20% 65% vs 50% (p 0.026), 30% 59% vs 50% (p 0.10; starts p 0.008). Strongest at 20%; the top 10% alone is too small (37) to tell.
+- **Expectation model:** pick 65% (p 0.026), log pick 67% (0.011), round bands 70% (0.002), nearest-picks 65% vs 52% (0.07); starts p ≤ 0.016 under all four.
+- **Each class:** snaps 65% / 57% / 72% (2023 / 2024 / 2025) against ~50%; none significant alone (25–28 per tail). Starts 62% / 61% / 48% (rookie starts in 2025).
+- **Groups left out:** holds without WR, TE, DB or OL (64–67%, p 0.01–0.06); **without DL it drops to 57% vs 48% (p 0.23)**, so DL carries much of it.
+- **Channels:** the 10 Hz tracked 40 energy alone 63% vs 51% (snaps p 0.08; starts p 0.03); vertical 60% (starts p 0.008), broad 59%, bench nothing; jumps + bench together 65% (p 0.023). r(E_40, jumps + bench) 0.63: the **composite** carries it, each channel alone is weaker. The tracked 40 is one of its pillars, not the whole signal.
+- **DL chain by class:** a10 → get-off negative in all three (−0.35, −0.50, −0.44); get-off → pressure −0.45 and −0.51 in 2023 and 2024, −0.15 in 2025 (rookies only); a10 → pressure 0.32, 0.34, 0.18. Same direction everywhere; single classes are too small for tight intervals.
+
+---
+
 ## Open decisions (decide when the data is in front of us)
 
 1. ~~**Narrative frame**~~ Decided 2026-10-22 (the user's original intent): **(b) explosion potential is the differentiator.** Physics of the Combine → the explosive tail the draft under-rates → the DL start chain; η stays as a description of how much top speed reaches games, by group. **Presentation title: "True ball is an explosion".**
 2. ~~**η beyond expectation**~~ Not needed: η is descriptive under frame (b).
-3. **Brief emphasis on 10 Hz tracking.** The raw-joules composite mixes the tracked 40 (E_40) with results (jumps, bench), and a10 is the official split. Measure how much of the tail signal comes from the tracking before choosing what to headline.
+3. **Brief emphasis on 10 Hz tracking** (measured in step 2): the tracked 40 energy alone carries most of the tail signal (63% vs 51%), the composite with jumps and bench is stronger (65% vs 50%). Frame it as total explosive energy, with the 10 Hz 40 trace as its tracked core; a10 (DL chain) is the official split.
 
 ---
 
 ## Next Session Steps
 
 1. ~~**Decide the frame**~~ Done: (b), titled "True ball is an explosion".
-2. **Harden the headline results:** tail cut-offs (10 / 20 / 30%), an alternative expectation model, each class separately; which TEE channels carry the tail (open decision 3); the DL chain by class. Write the checks to a report.
+2. ~~**Harden the headline results**~~ Done: `eeg.outcomes.robustness`, see "Robustness" above.
 3. **Final figures** for the chosen frame.
 4. **Notebook narrative**, then the README executive summary to match.
 5. **Reproducibility pass:** clean run end-to-end from `data/raw/`.
