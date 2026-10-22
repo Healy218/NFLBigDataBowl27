@@ -2,6 +2,45 @@
 
 This is the macro timeline, from the official competition brief to the final deliverable. Each phase maps to one or more iterations in [`TODO.md`](TODO.md).
 
+---
+
+## The competition: NFL Big Data Bowl 2027, "Combine to NFL Performance"
+
+**The challenge (official):** build an analytical framework that uncovers **non-obvious, actionable linkages between 10 Hz Combine sensor tracking data and future regular-season NFL game performance**. Look beyond conventional scouting wisdom and identify novel signals that help coaches and evaluators:
+
+1. **identify hidden talent,**
+2. **avoid costly draft busts,** and
+3. **design position-specific player development protocols.**
+
+**Overview (official):**
+
+> Every spring, college football's top prospects gather in Indianapolis for the NFL Scouting Combine. For decades, player evaluation at the Combine has relied on standardized stopwatch timings and physical testing numbers, such as the 40-yard dash, short shuttle, 3-cone drill, and vertical jump. While these numbers provide a baseline measure of straight-line speed and explosiveness, player tracking sensors worn during workouts now capture the full details of how athletes move throughout each drill.
+>
+> The 2027 Big Data Bowl provides player tracking data from the NFL Scouting Combine alongside regular-season NFL game tracking data. The goal of this year's competition is to better understand how player movement during Combine drills translates to performance on the field during the NFL regular season.
+>
+> In this competition, participants are tasked with analyzing prospect movement in a way that is actionable and accessible to coaches, scouts, and front offices. This could include creating a new metric or comparing movement traits across position groups. As is often the case in Big Data Bowl analytics competitions, participants are encouraged to focus on one small aspect of movement, a specific position group, or an individual drill, rather than attempting to evaluate every prospect across all drills.
+
+**What the brief asks of a submission:**
+- **Source:** movement *during Combine drills* from the 10 Hz sensor tracking, not only the stopwatch and tape-measure results.
+- **Target:** performance *on the field during the NFL regular season*, from game tracking.
+- **Non-obvious:** beyond conventional scouting wisdom (more than "fast 40, high pick").
+- **Actionable and accessible:** a coach, scout or front office can use it. A new metric is explicitly welcome.
+- **Focused:** depth on one aspect of movement, one position group or one drill beats breadth across every drill.
+
+**How this project answers it:**
+
+| Brief | This project |
+|---|---|
+| Combine movement from 10 Hz tracking | The 40 trace fit to $v(t) = v_{max}(1 - e^{-t/τ})$ → v_max, τ, sprint energy and power (Phase 2); engine profiles (Phase 3) |
+| Regular-season game performance | The same speed, energy and power estimators on game tracking (Phase 4a) |
+| A new metric | **Explosion Efficiency η = E_field / E_lab**, and the **Explosion Efficiency Gap** 1 − η (Phase 4b) |
+| Hidden talent | Modest engine, high η: gets more of the engine onto the field than the Combine suggests |
+| Draft busts | "Combine warriors": big engine, low η |
+| Position-specific development | η read within each of the 5 groups: where a group's gap sits and who is off the group norm |
+| Focus | One aspect of movement: how much of the 40's straight-line engine shows up in games |
+| Future performance | η and the profiles against NFL outcomes, controlling for draft slot (Phase 4c) |
+
+
 | Phase | Name | Iterations | Output |
 |---|---|---|---|
 | 1 | Competition Grounding: *Combine to NFL Performance* | 0 | Scoped question, data inventory, repo |
@@ -13,14 +52,12 @@ This is the macro timeline, from the official competition brief to the final del
 
 ## Phase 1: The Start. Competition Grounding
 
-**Official theme: NFL Big Data Bowl 2027, "Combine to NFL Performance."**
-
-The competition asks entrants to connect what the Combine measures to what happens in the NFL. Our scope comes from that brief:
+The scope comes from the competition brief above:
 
 - **Data in play:**
   - The **10 Hz Combine sensor tracking data**: player-level position/speed/acceleration traces captured during Combine drills.
   - **Regular-season NFL game tracking data** (Next Gen Stats): player positions at 10 Hz across real snaps.
-- **Target:** uncover **non-obvious, actionable linkages** between Combine output and NFL performance. That means more than a correlation between the 40 time and draft slot.
+- **Target:** uncover **non-obvious, actionable linkages** between Combine movement and future regular-season performance. That means more than a correlation between the 40 time and draft slot.
 - **Population:** the **5 target position groups** defined by the competition:
 
 | Group | Code |
