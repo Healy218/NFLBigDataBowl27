@@ -4,7 +4,7 @@ Session-start state for the Explosion Efficiency Gap project. Everything here co
 
 - **Current Iteration:** Iteration 4, Explosion Potential → Regular-Season Performance
 - **Roadmap Phase:** Phase 4c
-- **Last updated:** 2026-10-22 (Iteration 4 steps 1–3 done: outcome table, position production, lab burst)
+- **Last updated:** 2026-10-22 (Iteration 4 steps 1–4 done: outcome table, position production, lab burst, what predicts transfer)
 
 ---
 
@@ -57,9 +57,10 @@ uv run python -m eeg.ngs.eta_readout         # → reports/eta_readout.md, data/
 uv run python -m eeg.outcomes.table          # → data/processed/outcomes_seasons.parquet, outcomes.parquet, reports/outcomes.md
 uv run python -m eeg.outcomes.production     # → data/processed/production_seasons.parquet, reports/production.md
 uv run python -m eeg.physics.burst           # → data/processed/lab_burst.parquet, reports/lab_burst.md (needs production_seasons)
+uv run python -m eeg.ngs.transfer            # → reports/transfer.md, reports/figures/transfer.png
 ```
 
-139 tests (`uv run pytest`). Schemas: [`config/data_dictionary.md`](config/data_dictionary.md). Settings: [`config/physics.yaml`](config/physics.yaml) (`games` and `eta` for Iteration 3, `outcomes` and `lab_burst` for Iteration 4).
+142 tests (`uv run pytest`). Schemas: [`config/data_dictionary.md`](config/data_dictionary.md). Settings: [`config/physics.yaml`](config/physics.yaml) (`games` and `eta` for Iteration 3, `outcomes` and `lab_burst` for Iteration 4).
 
 **What carries into Iteration 4:**
 - **Engine (potential):** `tee.parquet` (J and J/kg per drill, TEE composites; 510), `profiles.parquet` (`ax_explosive`, `ax_speed_vs_bounce`, `ax_up_vs_out`, `anomaly_d2`, `size_class`; 369), `forty_fits.parquet` (v_max rep-to-rep r 0.97; τ r 0.51), `lab_channels.parquet` (40 peaks with the field estimators; 417).
@@ -101,6 +102,16 @@ uv run python -m eeg.physics.burst           # → data/processed/lab_burst.parq
 
 ---
 
+## What predicts transfer (step 4, [`reports/transfer.md`](reports/transfer.md))
+
+`eeg.ngs.transfer`: Combine predictors against η_KE, game output and DL get-off, per prospect and within group (univariate r with CIs; compact model with cross-validated R² beyond the group mean). Predictors are all Combine values, so career η is not look-ahead here.
+- **The Combine predicts game output, not transfer.** Compact model (profile axes, a10, mass, college production): game top speed CV R² 0.29, game burst 0.15, but η_KE 0.03 (career) and ~0 (first season). a10 r 0.47 and v_max 0.50 with game top speed, 0.01 and −0.14 with η. Potential is real in games; the fraction used is something else.
+- **What little predicts η:** NGS college production (r +0.20, β 0.22 in the model) and, against it, the explosive axis (−0.18) and NGS athleticism (−0.16). The big engines use a slightly smaller fraction of it; productive college players use more.
+- **DL get-off is predictable:** CV R² 0.43 within DL (a10 −0.67, mass +0.69, v_max −0.58, 3-cone +0.61 on 28). Much of it is edge vs interior: within NFL position CV R² 0.16, a10 r −0.44 (CI −0.63 to −0.20), mass +0.44, college production −0.35. a10 and mass can't be separated at n 53 (both betas' CIs cross 0 in the model).
+- **Agility times** relate to game burst (3-cone r −0.40) but cover ~40% of prospects.
+
+---
+
 ## Open decisions (decide when the data is in front of us)
 
 1. ~~**Primary outcome per group**~~ Decided 2026-10-22 (`outcomes` in `config/physics.yaml`): primary = **playing time** for every group (all prospects, zeros kept, within group). Secondary production: WR and TE YPRR, DL pressure rate, OL peak pressure probability allowed; DB none. DL get-off is a realization channel next to η, not an outcome.
@@ -114,7 +125,7 @@ uv run python -m eeg.physics.burst           # → data/processed/lab_burst.parq
 1. ~~**Outcome table**~~ Done: `eeg.outcomes.table`, see "Outcome data" above.
 2. ~~**Position production**~~ Done: `eeg.outcomes.production`, see "Position production" above.
 3. ~~**Sharper lab burst**~~ Done: `eeg.physics.burst`, see "Lab burst" above.
-4. **What predicts transfer:** η (first-season, per-season) and DL get-off against the explosion profile, a10 (the start), the 40 shape and agility traces, within group.
+4. ~~**What predicts transfer**~~ Done: `eeg.ngs.transfer`, see "What predicts transfer" above.
 5. **Potential and η → regular-season output**, within group, with the draft control (open decision 2); NGS college production as context.
 6. **Under- / over-drafted:** potential × η against draft slot.
 7. **Tenure** (secondary, open decision 3), then close Iteration 4 → Iteration 5 (submission).
